@@ -1,0 +1,667 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/admin/profit-loss/page.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=96fa1abf"; const Fragment = __vite__cjsImport0_react_jsxDevRuntime["Fragment"]; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import { SectionHeader } from "/src/components/section-header.tsx";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
+import { InlineAlert } from "/src/components/ui/inline-alert.tsx?t=1768439845259";
+import { Skeleton } from "/src/components/ui/skeleton.tsx";
+import { useAuth } from "/src/vite/auth/auth-provider.tsx";
+import { roleMeetsMinimum } from "/src/lib/auth/roles.ts";
+import { ExcelUploadForm } from "/src/components/profit-loss/excel-upload-form.tsx?t=1768439845259";
+import { PeriodSelector } from "/src/components/profit-loss/period-selector.tsx";
+import { ComparisonToggle } from "/src/components/profit-loss/comparison-toggle.tsx";
+import { ComparisonSummary } from "/src/components/profit-loss/comparison-summary.tsx";
+import { ProfitLossStatement } from "/src/components/profit-loss/profit-loss-statement.tsx";
+import { ProfitLossCharts } from "/src/components/profit-loss/charts/index.tsx";
+import { useProfitLoss } from "/src/hooks/use-profit-loss.ts";
+import { formatCurrency, formatPercent } from "/src/lib/data/profit-loss.ts";
+import { TrendingUp, TrendingDown, DollarSign, Percent } from "/node_modules/.vite/deps/lucide-react.js?v=8e4fabdf";
+export function ProfitLossPage() {
+  _s();
+  const auth = useAuth();
+  const canUpload = roleMeetsMinimum(auth.role, "admin");
+  const {
+    // Periods
+    periods,
+    selectedPeriodId,
+    setSelectedPeriodId,
+    // P&L Data
+    profitLossData,
+    comparisonData,
+    // Comparison Mode
+    comparisonMode,
+    setComparisonMode,
+    // Loading States
+    loadingPeriods,
+    loadingData,
+    loadingComparison,
+    // Error States
+    periodsError,
+    dataError,
+    comparisonError,
+    // Actions
+    handleExportCSV,
+    handleExportExcel,
+    handleUploadSuccess
+  } = useProfitLoss();
+  if (loadingPeriods && !periodsError) {
+    return /* @__PURE__ */ jsxDEV("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxDEV(
+        SectionHeader,
+        {
+          title: "Profit & Loss",
+          description: "Financial reporting, revenue analysis, and expense tracking.",
+          badge: "Admin"
+        },
+        void 0,
+        false,
+        {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 107,
+          columnNumber: 9
+        },
+        this
+      ),
+      /* @__PURE__ */ jsxDEV("div", { className: "text-sm text-muted-foreground", children: "Loading P&L data..." }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 112,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+      lineNumber: 106,
+      columnNumber: 7
+    }, this);
+  }
+  if (periodsError) {
+    return /* @__PURE__ */ jsxDEV("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxDEV(
+        SectionHeader,
+        {
+          title: "Profit & Loss",
+          description: "Financial reporting, revenue analysis, and expense tracking.",
+          badge: "Admin"
+        },
+        void 0,
+        false,
+        {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 124,
+          columnNumber: 9
+        },
+        this
+      ),
+      /* @__PURE__ */ jsxDEV(
+        InlineAlert,
+        {
+          variant: "warning",
+          title: "Failed to Load Periods",
+          message: periodsError
+        },
+        void 0,
+        false,
+        {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 129,
+          columnNumber: 9
+        },
+        this
+      )
+    ] }, void 0, true, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+      lineNumber: 123,
+      columnNumber: 7
+    }, this);
+  }
+  if (periods.length === 0) {
+    return /* @__PURE__ */ jsxDEV("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxDEV(
+        SectionHeader,
+        {
+          title: "Profit & Loss",
+          description: "Financial reporting, revenue analysis, and expense tracking.",
+          badge: "Admin"
+        },
+        void 0,
+        false,
+        {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 145,
+          columnNumber: 9
+        },
+        this
+      ),
+      /* @__PURE__ */ jsxDEV(
+        InlineAlert,
+        {
+          variant: "info",
+          title: "No Data Available",
+          message: "Upload your first P&L Excel file to get started."
+        },
+        void 0,
+        false,
+        {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 151,
+          columnNumber: 9
+        },
+        this
+      ),
+      canUpload && /* @__PURE__ */ jsxDEV(ExcelUploadForm, { onUploadSuccess: handleUploadSuccess }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 157,
+        columnNumber: 23
+      }, this),
+      !canUpload && /* @__PURE__ */ jsxDEV(Card, { children: /* @__PURE__ */ jsxDEV(CardContent, { className: "p-6", children: /* @__PURE__ */ jsxDEV("p", { className: "text-center text-sm text-muted-foreground", children: "Contact an admin to upload P&L data." }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 162,
+        columnNumber: 15
+      }, this) }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 161,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 160,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+      lineNumber: 144,
+      columnNumber: 7
+    }, this);
+  }
+  const summary = profitLossData?.summary;
+  return /* @__PURE__ */ jsxDEV("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsxDEV(
+      SectionHeader,
+      {
+        title: "Profit & Loss",
+        description: "Financial reporting, revenue analysis, and expense tracking.",
+        badge: "Admin"
+      },
+      void 0,
+      false,
+      {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 181,
+        columnNumber: 7
+      },
+      this
+    ),
+    canUpload && /* @__PURE__ */ jsxDEV("div", { className: "space-y-4", children: /* @__PURE__ */ jsxDEV(ExcelUploadForm, { onUploadSuccess: handleUploadSuccess }, void 0, false, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+      lineNumber: 190,
+      columnNumber: 11
+    }, this) }, void 0, false, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+      lineNumber: 189,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV(Card, { children: [
+      /* @__PURE__ */ jsxDEV(CardHeader, { children: [
+        /* @__PURE__ */ jsxDEV(CardTitle, { children: "Reporting Period" }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 197,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV(CardDescription, { children: "Select a period and optional comparison mode to view financial data." }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 198,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 196,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV("div", { className: "flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-6", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "flex-1", children: [
+          /* @__PURE__ */ jsxDEV("label", { className: "mb-2 block text-sm font-medium", children: "Period" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 206,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            PeriodSelector,
+            {
+              periods,
+              selectedPeriodId,
+              onPeriodChange: setSelectedPeriodId
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 207,
+              columnNumber: 15
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 205,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "flex-1", children: /* @__PURE__ */ jsxDEV(
+          ComparisonToggle,
+          {
+            value: comparisonMode,
+            onChange: setComparisonMode,
+            disabled: !selectedPeriodId
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 216,
+            columnNumber: 15
+          },
+          this
+        ) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 215,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 203,
+        columnNumber: 11
+      }, this) }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 202,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+      lineNumber: 195,
+      columnNumber: 7
+    }, this),
+    loadingData && /* @__PURE__ */ jsxDEV(Card, { children: /* @__PURE__ */ jsxDEV(CardContent, { className: "p-6", children: /* @__PURE__ */ jsxDEV("div", { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxDEV(Skeleton, { className: "h-8 w-full" }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 231,
+        columnNumber: 15
+      }, this),
+      /* @__PURE__ */ jsxDEV(Skeleton, { className: "h-8 w-full" }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 232,
+        columnNumber: 15
+      }, this),
+      /* @__PURE__ */ jsxDEV(Skeleton, { className: "h-8 w-full" }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 233,
+        columnNumber: 15
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+      lineNumber: 230,
+      columnNumber: 13
+    }, this) }, void 0, false, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+      lineNumber: 229,
+      columnNumber: 11
+    }, this) }, void 0, false, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+      lineNumber: 228,
+      columnNumber: 7
+    }, this),
+    dataError && !loadingData && /* @__PURE__ */ jsxDEV(
+      InlineAlert,
+      {
+        variant: "warning",
+        title: "Failed to Load P&L Data",
+        message: dataError
+      },
+      void 0,
+      false,
+      {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 241,
+        columnNumber: 7
+      },
+      this
+    ),
+    !loadingData && !dataError && profitLossData && /* @__PURE__ */ jsxDEV(Fragment, { children: [
+      summary && /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4", children: [
+        /* @__PURE__ */ jsxDEV(Card, { children: /* @__PURE__ */ jsxDEV(CardContent, { className: "p-4", children: /* @__PURE__ */ jsxDEV("div", { className: "flex items-center justify-between", children: [
+          /* @__PURE__ */ jsxDEV("div", { children: [
+            /* @__PURE__ */ jsxDEV("p", { className: "text-xs font-medium uppercase tracking-wide text-muted-foreground", children: "Net Sales" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 259,
+              columnNumber: 23
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { className: "mt-1 text-2xl font-bold", children: formatCurrency(summary.net_sales) }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 262,
+              columnNumber: 23
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 258,
+            columnNumber: 21
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "rounded-full bg-primary/10 p-3", children: /* @__PURE__ */ jsxDEV(DollarSign, { className: "h-6 w-6 text-primary" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 267,
+            columnNumber: 23
+          }, this) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 266,
+            columnNumber: 21
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 257,
+          columnNumber: 19
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 256,
+          columnNumber: 17
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 255,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV(Card, { children: /* @__PURE__ */ jsxDEV(CardContent, { className: "p-4", children: /* @__PURE__ */ jsxDEV("div", { className: "flex items-center justify-between", children: [
+          /* @__PURE__ */ jsxDEV("div", { children: [
+            /* @__PURE__ */ jsxDEV("p", { className: "text-xs font-medium uppercase tracking-wide text-muted-foreground", children: "Gross Profit" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 278,
+              columnNumber: 23
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { className: "mt-1 text-2xl font-bold", children: formatCurrency(summary.gross_profit) }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 281,
+              columnNumber: 23
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { className: "mt-0.5 text-xs text-muted-foreground", children: [
+              formatPercent(summary.gross_margin_percent),
+              " margin"
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 284,
+              columnNumber: 23
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 277,
+            columnNumber: 21
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "rounded-full bg-green-500/10 p-3", children: /* @__PURE__ */ jsxDEV(TrendingUp, { className: "h-6 w-6 text-green-600 dark:text-green-400" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 289,
+            columnNumber: 23
+          }, this) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 288,
+            columnNumber: 21
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 276,
+          columnNumber: 19
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 275,
+          columnNumber: 17
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 274,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV(Card, { children: /* @__PURE__ */ jsxDEV(CardContent, { className: "p-4", children: /* @__PURE__ */ jsxDEV("div", { className: "flex items-center justify-between", children: [
+          /* @__PURE__ */ jsxDEV("div", { children: [
+            /* @__PURE__ */ jsxDEV("p", { className: "text-xs font-medium uppercase tracking-wide text-muted-foreground", children: "Operating Income" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 300,
+              columnNumber: 23
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { className: "mt-1 text-2xl font-bold", children: formatCurrency(summary.operating_income) }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 303,
+              columnNumber: 23
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { className: "mt-0.5 text-xs text-muted-foreground", children: [
+              formatPercent(summary.operating_margin_percent),
+              " margin"
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 306,
+              columnNumber: 23
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 299,
+            columnNumber: 21
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "rounded-full bg-blue-500/10 p-3", children: /* @__PURE__ */ jsxDEV(Percent, { className: "h-6 w-6 text-blue-600 dark:text-blue-400" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 311,
+            columnNumber: 23
+          }, this) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 310,
+            columnNumber: 21
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 298,
+          columnNumber: 19
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 297,
+          columnNumber: 17
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 296,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV(Card, { children: /* @__PURE__ */ jsxDEV(CardContent, { className: "p-4", children: /* @__PURE__ */ jsxDEV("div", { className: "flex items-center justify-between", children: [
+          /* @__PURE__ */ jsxDEV("div", { children: [
+            /* @__PURE__ */ jsxDEV("p", { className: "text-xs font-medium uppercase tracking-wide text-muted-foreground", children: "Net Income" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 322,
+              columnNumber: 23
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { className: "mt-1 text-2xl font-bold", children: formatCurrency(summary.net_income) }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 325,
+              columnNumber: 23
+            }, this),
+            /* @__PURE__ */ jsxDEV("p", { className: "mt-0.5 text-xs text-muted-foreground", children: [
+              formatPercent(summary.net_margin_percent),
+              " margin"
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 328,
+              columnNumber: 23
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 321,
+            columnNumber: 21
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            "div",
+            {
+              className: `rounded-full p-3 ${summary.net_income >= 0 ? "bg-green-500/10" : "bg-red-500/10"}`,
+              children: summary.net_income >= 0 ? /* @__PURE__ */ jsxDEV(TrendingUp, { className: "h-6 w-6 text-green-600 dark:text-green-400" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+                lineNumber: 340,
+                columnNumber: 19
+              }, this) : /* @__PURE__ */ jsxDEV(TrendingDown, { className: "h-6 w-6 text-red-600 dark:text-red-400" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+                lineNumber: 342,
+                columnNumber: 19
+              }, this)
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+              lineNumber: 332,
+              columnNumber: 21
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 320,
+          columnNumber: 19
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 319,
+          columnNumber: 17
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 318,
+          columnNumber: 15
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 253,
+        columnNumber: 9
+      }, this),
+      comparisonMode !== "none" && /* @__PURE__ */ jsxDEV(Fragment, { children: [
+        loadingComparison && /* @__PURE__ */ jsxDEV(Card, { children: /* @__PURE__ */ jsxDEV(CardContent, { className: "p-6", children: /* @__PURE__ */ jsxDEV(Skeleton, { className: "h-32 w-full" }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 357,
+          columnNumber: 21
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 356,
+          columnNumber: 19
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 355,
+          columnNumber: 11
+        }, this),
+        comparisonError && !loadingComparison && /* @__PURE__ */ jsxDEV(
+          InlineAlert,
+          {
+            variant: "warning",
+            title: "Comparison Not Available",
+            message: comparisonError
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 363,
+            columnNumber: 11
+          },
+          this
+        ),
+        !loadingComparison && !comparisonError && comparisonData && /* @__PURE__ */ jsxDEV(ComparisonSummary, { comparisonData }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 371,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 353,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsxDEV("h2", { className: "text-lg font-semibold", children: "Financial Statement" }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 378,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          ProfitLossStatement,
+          {
+            data: profitLossData,
+            comparisonData,
+            onExportCSV: handleExportCSV,
+            onExportExcel: handleExportExcel
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 379,
+            columnNumber: 13
+          },
+          this
+        )
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 377,
+        columnNumber: 11
+      }, this),
+      selectedPeriodId && auth.session?.access_token && /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsxDEV("h2", { className: "text-lg font-semibold", children: "Trends & Analysis" }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+          lineNumber: 390,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          ProfitLossCharts,
+          {
+            periodId: selectedPeriodId,
+            comparisonMode,
+            token: auth.session.access_token
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+            lineNumber: 391,
+            columnNumber: 15
+          },
+          this
+        )
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+        lineNumber: 389,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+      lineNumber: 250,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx",
+    lineNumber: 179,
+    columnNumber: 5
+  }, this);
+}
+_s(ProfitLossPage, "q1uVjkrGLkebrwrXM7q5cSyGX5Q=", false, function() {
+  return [useAuth, useProfitLoss];
+});
+_c = ProfitLossPage;
+var _c;
+$RefreshReg$(_c, "ProfitLossPage");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Projects/Source 4 Industries/src/pages/admin/profit-loss/page.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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QTtBQUFBLFNBNk5BO0FBRUo7QUFBQzlCLEdBblZlRCxnQkFBYztBQUFBLFVBQ2ZmLFNBa0NUUSxhQUFhO0FBQUE7QUFBQXVDLEtBbkNIaEM7QUFBYyxJQUFBZ0M7QUFBQUMsYUFBQUQsSUFBQSIsIm5hbWVzIjpbIlNlY3Rpb25IZWFkZXIiLCJDYXJkIiwiQ2FyZENvbnRlbnQiLCJDYXJkRGVzY3JpcHRpb24iLCJDYXJkSGVhZGVyIiwiQ2FyZFRpdGxlIiwiSW5saW5lQWxlcnQiLCJTa2VsZXRvbiIsInVzZUF1dGgiLCJyb2xlTWVldHNNaW5pbXVtIiwiRXhjZWxVcGxvYWRGb3JtIiwiUGVyaW9kU2VsZWN0b3IiLCJDb21wYXJpc29uVG9nZ2xlIiwiQ29tcGFyaXNvblN1bW1hcnkiLCJQcm9maXRMb3NzU3RhdGVtZW50IiwiUHJvZml0TG9zc0NoYXJ0cyIsInVzZVByb2ZpdExvc3MiLCJmb3JtYXRDdXJyZW5jeSIsImZvcm1hdFBlcmNlbnQiLCJUcmVuZGluZ1VwIiwiVHJlbmRpbmdEb3duIiwiRG9sbGFyU2lnbiIsIlBlcmNlbnQiLCJQcm9maXRMb3NzUGFnZSIsIl9zIiwiYXV0aCIsImNhblVwbG9hZCIsInJvbGUiLCJwZXJpb2RzIiwic2VsZWN0ZWRQZXJpb2RJZCIsInNldFNlbGVjdGVkUGVyaW9kSWQiLCJwcm9maXRMb3NzRGF0YSIsImNvbXBhcmlzb25EYXRhIiwiY29tcGFyaXNvbk1vZGUiLCJzZXRDb21wYXJpc29uTW9kZSIsImxvYWRpbmdQZXJpb2RzIiwibG9hZGluZ0RhdGEiLCJsb2FkaW5nQ29tcGFyaXNvbiIsInBlcmlvZHNFcnJvciIsImRhdGFFcnJvciIsImNvbXBhcmlzb25FcnJvciIsImhhbmRsZUV4cG9ydENTViIsImhhbmRsZUV4cG9ydEV4Y2VsIiwiaGFuZGxlVXBsb2FkU3VjY2VzcyIsImxlbmd0aCIsInN1bW1hcnkiLCJuZXRfc2FsZXMiLCJncm9zc19wcm9maXQiLCJncm9zc19tYXJnaW5fcGVyY2VudCIsIm9wZXJhdGluZ19pbmNvbWUiLCJvcGVyYXRpbmdfbWFyZ2luX3BlcmNlbnQiLCJuZXRfaW5jb21lIiwibmV0X21hcmdpbl9wZXJjZW50Iiwic2Vzc2lvbiIsImFjY2Vzc190b2tlbiIsIl9jIiwiJFJlZnJlc2hSZWckIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbInBhZ2UudHN4Il0sInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogUHJvZml0ICYgTG9zcyBQYWdlXG4gKlxuICogQ29tcGxldGUgZmluYW5jaWFsIHJlcG9ydGluZyBkYXNoYm9hcmQgd2l0aCBQJkwgc3RhdGVtZW50cywgcGVyaW9kIGNvbXBhcmlzb24sXG4gKiB0cmVuZCBhbmFseXNpcywgYW5kIEV4Y2VsIHVwbG9hZCBmdW5jdGlvbmFsaXR5LlxuICpcbiAqIEZlYXR1cmVzOlxuICogLSBVcGxvYWQgUCZMIGRhdGEgZnJvbSBFeGNlbCBmaWxlcyAoYWRtaW4vb3duZXIgb25seSlcbiAqIC0gU2VsZWN0IHJlcG9ydGluZyBwZXJpb2RzIChtb250aGx5LCBxdWFydGVybHksIGFubnVhbClcbiAqIC0gQ29tcGFyZSBwZXJpb2RzIChNb00sIFlvWSlcbiAqIC0gVmlldyBkZXRhaWxlZCBQJkwgc3RhdGVtZW50cyB3aXRoIGxpbmUgaXRlbXNcbiAqIC0gVmlzdWFsaXplIHRyZW5kcyB3aXRoIGludGVyYWN0aXZlIGNoYXJ0c1xuICogLSBFeHBvcnQgdG8gQ1NWL0V4Y2VsXG4gKlxuICogVXNlciBGbG93OlxuICogMS4gQWRtaW4vT3duZXIgdXBsb2FkcyBQJkwgRXhjZWwgZmlsZSB3aXRoIHBlcmlvZCBpbmZvXG4gKiAyLiBTeXN0ZW0gcGFyc2VzIGFuZCBzdG9yZXMgbGluZSBpdGVtcyArIGNhbGN1bGF0ZXMgc3VtbWFyeSBtZXRyaWNzXG4gKiAzLiBVc2VyIHNlbGVjdHMgcGVyaW9kIGZyb20gZHJvcGRvd25cbiAqIDQuIFVzZXIgb3B0aW9uYWxseSBlbmFibGVzIGNvbXBhcmlzb24gbW9kZSAoTW9NL1lvWSlcbiAqIDUuIFZpZXcgUCZMIHN0YXRlbWVudCwga2V5IG1ldHJpY3MsIGFuZCB0cmVuZCBjaGFydHNcbiAqIDYuIEV4cG9ydCBkYXRhIGFzIG5lZWRlZFxuICovXG5cbmltcG9ydCB7IFNlY3Rpb25IZWFkZXIgfSBmcm9tIFwiQC9jb21wb25lbnRzL3NlY3Rpb24taGVhZGVyXCI7XG5pbXBvcnQgeyBDYXJkLCBDYXJkQ29udGVudCwgQ2FyZERlc2NyaXB0aW9uLCBDYXJkSGVhZGVyLCBDYXJkVGl0bGUgfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL2NhcmRcIjtcbmltcG9ydCB7IElubGluZUFsZXJ0IH0gZnJvbSBcIkAvY29tcG9uZW50cy91aS9pbmxpbmUtYWxlcnRcIjtcbmltcG9ydCB7IFNrZWxldG9uIH0gZnJvbSBcIkAvY29tcG9uZW50cy91aS9za2VsZXRvblwiO1xuaW1wb3J0IHsgdXNlQXV0aCB9IGZyb20gXCJAL3ZpdGUvYXV0aC9hdXRoLXByb3ZpZGVyXCI7XG5pbXBvcnQgeyByb2xlTWVldHNNaW5pbXVtIH0gZnJvbSBcIkAvbGliL2F1dGgvcm9sZXNcIjtcblxuLy8gUCZMIENvbXBvbmVudHNcbmltcG9ydCB7IEV4Y2VsVXBsb2FkRm9ybSB9IGZyb20gXCJAL2NvbXBvbmVudHMvcHJvZml0LWxvc3MvZXhjZWwtdXBsb2FkLWZvcm1cIjtcbmltcG9ydCB7IFBlcmlvZFNlbGVjdG9yIH0gZnJvbSBcIkAvY29tcG9uZW50cy9wcm9maXQtbG9zcy9wZXJpb2Qtc2VsZWN0b3JcIjtcbmltcG9ydCB7IENvbXBhcmlzb25Ub2dnbGUgfSBmcm9tIFwiQC9jb21wb25lbnRzL3Byb2ZpdC1sb3NzL2NvbXBhcmlzb24tdG9nZ2xlXCI7XG5pbXBvcnQgeyBDb21wYXJpc29uU3VtbWFyeSB9IGZyb20gXCJAL2NvbXBvbmVudHMvcHJvZml0LWxvc3MvY29tcGFyaXNvbi1zdW1tYXJ5XCI7XG5pbXBvcnQgeyBQcm9maXRMb3NzU3RhdGVtZW50IH0gZnJvbSBcIkAvY29tcG9uZW50cy9wcm9maXQtbG9zcy9wcm9maXQtbG9zcy1zdGF0ZW1lbnRcIjtcbmltcG9ydCB7IFByb2ZpdExvc3NDaGFydHMgfSBmcm9tIFwiQC9jb21wb25lbnRzL3Byb2ZpdC1sb3NzL2NoYXJ0c1wiO1xuXG4vLyBDdXN0b20gSG9va1xuaW1wb3J0IHsgdXNlUHJvZml0TG9zcyB9IGZyb20gXCJAL2hvb2tzL3VzZS1wcm9maXQtbG9zc1wiO1xuaW1wb3J0IHsgZm9ybWF0Q3VycmVuY3ksIGZvcm1hdFBlcmNlbnQgfSBmcm9tIFwiQC9saWIvZGF0YS9wcm9maXQtbG9zc1wiO1xuaW1wb3J0IHsgVHJlbmRpbmdVcCwgVHJlbmRpbmdEb3duLCBEb2xsYXJTaWduLCBQZXJjZW50IH0gZnJvbSBcImx1Y2lkZS1yZWFjdFwiO1xuXG5leHBvcnQgZnVuY3Rpb24gUHJvZml0TG9zc1BhZ2UoKSB7XG4gIGNvbnN0IGF1dGggPSB1c2VBdXRoKCk7XG5cbiAgLy8gQ2hlY2sgaWYgdXNlciBjYW4gdXBsb2FkIChhZG1pbiBvciBvd25lcilcbiAgY29uc3QgY2FuVXBsb2FkID0gcm9sZU1lZXRzTWluaW11bShhdXRoLnJvbGUsIFwiYWRtaW5cIik7XG5cbiAgLy8gVXNlIGN1c3RvbSBob29rIGZvciBhbGwgUCZMIGRhdGEgbWFuYWdlbWVudFxuICBjb25zdCB7XG4gICAgLy8gUGVyaW9kc1xuICAgIHBlcmlvZHMsXG4gICAgc2VsZWN0ZWRQZXJpb2RJZCxcbiAgICBzZXRTZWxlY3RlZFBlcmlvZElkLFxuXG4gICAgLy8gUCZMIERhdGFcbiAgICBwcm9maXRMb3NzRGF0YSxcbiAgICBjb21wYXJpc29uRGF0YSxcblxuICAgIC8vIENvbXBhcmlzb24gTW9kZVxuICAgIGNvbXBhcmlzb25Nb2RlLFxuICAgIHNldENvbXBhcmlzb25Nb2RlLFxuXG4gICAgLy8gTG9hZGluZyBTdGF0ZXNcbiAgICBsb2FkaW5nUGVyaW9kcyxcbiAgICBsb2FkaW5nRGF0YSxcbiAgICBsb2FkaW5nQ29tcGFyaXNvbixcblxuICAgIC8vIEVycm9yIFN0YXRlc1xuICAgIHBlcmlvZHNFcnJvcixcbiAgICBkYXRhRXJyb3IsXG4gICAgY29tcGFyaXNvbkVycm9yLFxuXG4gICAgLy8gQWN0aW9uc1xuICAgIGhhbmRsZUV4cG9ydENTVixcbiAgICBoYW5kbGVFeHBvcnRFeGNlbCxcbiAgICBoYW5kbGVVcGxvYWRTdWNjZXNzLFxuICB9ID0gdXNlUHJvZml0TG9zcygpO1xuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIFJlbmRlcjogTG9hZGluZyBTdGF0ZVxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIGlmIChsb2FkaW5nUGVyaW9kcyAmJiAhcGVyaW9kc0Vycm9yKSB7XG4gICAgcmV0dXJuIChcbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS02XCI+XG4gICAgICAgIDxTZWN0aW9uSGVhZGVyXG4gICAgICAgICAgdGl0bGU9XCJQcm9maXQgJiBMb3NzXCJcbiAgICAgICAgICBkZXNjcmlwdGlvbj1cIkZpbmFuY2lhbCByZXBvcnRpbmcsIHJldmVudWUgYW5hbHlzaXMsIGFuZCBleHBlbnNlIHRyYWNraW5nLlwiXG4gICAgICAgICAgYmFkZ2U9XCJBZG1pblwiXG4gICAgICAgIC8+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGV4dC1zbSB0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5Mb2FkaW5nIFAmTCBkYXRhLi4uPC9kaXY+XG4gICAgICA8L2Rpdj5cbiAgICApO1xuICB9XG5cbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cbiAgLy8gUmVuZGVyOiBFcnJvciBTdGF0ZSAoUGVyaW9kcylcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICBpZiAocGVyaW9kc0Vycm9yKSB7XG4gICAgcmV0dXJuIChcbiAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS02XCI+XG4gICAgICAgIDxTZWN0aW9uSGVhZGVyXG4gICAgICAgICAgdGl0bGU9XCJQcm9maXQgJiBMb3NzXCJcbiAgICAgICAgICBkZXNjcmlwdGlvbj1cIkZpbmFuY2lhbCByZXBvcnRpbmcsIHJldmVudWUgYW5hbHlzaXMsIGFuZCBleHBlbnNlIHRyYWNraW5nLlwiXG4gICAgICAgICAgYmFkZ2U9XCJBZG1pblwiXG4gICAgICAgIC8+XG4gICAgICAgIDxJbmxpbmVBbGVydFxuICAgICAgICAgIHZhcmlhbnQ9XCJ3YXJuaW5nXCJcbiAgICAgICAgICB0aXRsZT1cIkZhaWxlZCB0byBMb2FkIFBlcmlvZHNcIlxuICAgICAgICAgIG1lc3NhZ2U9e3BlcmlvZHNFcnJvcn1cbiAgICAgICAgLz5cbiAgICAgIDwvZGl2PlxuICAgICk7XG4gIH1cblxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuICAvLyBSZW5kZXI6IEVtcHR5IFN0YXRlIChObyBQZXJpb2RzKVxuICAvLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PVxuXG4gIGlmIChwZXJpb2RzLmxlbmd0aCA9PT0gMCkge1xuICAgIHJldHVybiAoXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktNlwiPlxuICAgICAgICA8U2VjdGlvbkhlYWRlclxuICAgICAgICAgIHRpdGxlPVwiUHJvZml0ICYgTG9zc1wiXG4gICAgICAgICAgZGVzY3JpcHRpb249XCJGaW5hbmNpYWwgcmVwb3J0aW5nLCByZXZlbnVlIGFuYWx5c2lzLCBhbmQgZXhwZW5zZSB0cmFja2luZy5cIlxuICAgICAgICAgIGJhZGdlPVwiQWRtaW5cIlxuICAgICAgICAvPlxuXG4gICAgICAgIDxJbmxpbmVBbGVydFxuICAgICAgICAgIHZhcmlhbnQ9XCJpbmZvXCJcbiAgICAgICAgICB0aXRsZT1cIk5vIERhdGEgQXZhaWxhYmxlXCJcbiAgICAgICAgICBtZXNzYWdlPVwiVXBsb2FkIHlvdXIgZmlyc3QgUCZMIEV4Y2VsIGZpbGUgdG8gZ2V0IHN0YXJ0ZWQuXCJcbiAgICAgICAgLz5cblxuICAgICAgICB7Y2FuVXBsb2FkICYmIDxFeGNlbFVwbG9hZEZvcm0gb25VcGxvYWRTdWNjZXNzPXtoYW5kbGVVcGxvYWRTdWNjZXNzfSAvPn1cblxuICAgICAgICB7IWNhblVwbG9hZCAmJiAoXG4gICAgICAgICAgPENhcmQ+XG4gICAgICAgICAgICA8Q2FyZENvbnRlbnQgY2xhc3NOYW1lPVwicC02XCI+XG4gICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQtY2VudGVyIHRleHQtc20gdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+XG4gICAgICAgICAgICAgICAgQ29udGFjdCBhbiBhZG1pbiB0byB1cGxvYWQgUCZMIGRhdGEuXG4gICAgICAgICAgICAgIDwvcD5cbiAgICAgICAgICAgIDwvQ2FyZENvbnRlbnQ+XG4gICAgICAgICAgPC9DYXJkPlxuICAgICAgICApfVxuICAgICAgPC9kaXY+XG4gICAgKTtcbiAgfVxuXG4gIC8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09XG4gIC8vIFJlbmRlcjogTWFpbiBEYXNoYm9hcmRcbiAgLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT1cblxuICBjb25zdCBzdW1tYXJ5ID0gcHJvZml0TG9zc0RhdGE/LnN1bW1hcnk7XG5cbiAgcmV0dXJuIChcbiAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktNlwiPlxuICAgICAgey8qIEhlYWRlciAqL31cbiAgICAgIDxTZWN0aW9uSGVhZGVyXG4gICAgICAgIHRpdGxlPVwiUHJvZml0ICYgTG9zc1wiXG4gICAgICAgIGRlc2NyaXB0aW9uPVwiRmluYW5jaWFsIHJlcG9ydGluZywgcmV2ZW51ZSBhbmFseXNpcywgYW5kIGV4cGVuc2UgdHJhY2tpbmcuXCJcbiAgICAgICAgYmFkZ2U9XCJBZG1pblwiXG4gICAgICAvPlxuXG4gICAgICB7LyogVXBsb2FkIFNlY3Rpb24gKEFkbWluL093bmVyIE9ubHkpICovfVxuICAgICAge2NhblVwbG9hZCAmJiAoXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS00XCI+XG4gICAgICAgICAgPEV4Y2VsVXBsb2FkRm9ybSBvblVwbG9hZFN1Y2Nlc3M9e2hhbmRsZVVwbG9hZFN1Y2Nlc3N9IC8+XG4gICAgICAgIDwvZGl2PlxuICAgICAgKX1cblxuICAgICAgey8qIFBlcmlvZCBTZWxlY3Rpb24gJiBDb21wYXJpc29uIENvbnRyb2xzICovfVxuICAgICAgPENhcmQ+XG4gICAgICAgIDxDYXJkSGVhZGVyPlxuICAgICAgICAgIDxDYXJkVGl0bGU+UmVwb3J0aW5nIFBlcmlvZDwvQ2FyZFRpdGxlPlxuICAgICAgICAgIDxDYXJkRGVzY3JpcHRpb24+XG4gICAgICAgICAgICBTZWxlY3QgYSBwZXJpb2QgYW5kIG9wdGlvbmFsIGNvbXBhcmlzb24gbW9kZSB0byB2aWV3IGZpbmFuY2lhbCBkYXRhLlxuICAgICAgICAgIDwvQ2FyZERlc2NyaXB0aW9uPlxuICAgICAgICA8L0NhcmRIZWFkZXI+XG4gICAgICAgIDxDYXJkQ29udGVudD5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggZmxleC1jb2wgZ2FwLTQgbGc6ZmxleC1yb3cgbGc6aXRlbXMtZW5kIGxnOmdhcC02XCI+XG4gICAgICAgICAgICB7LyogUGVyaW9kIFNlbGVjdG9yICovfVxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4LTFcIj5cbiAgICAgICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT1cIm1iLTIgYmxvY2sgdGV4dC1zbSBmb250LW1lZGl1bVwiPlBlcmlvZDwvbGFiZWw+XG4gICAgICAgICAgICAgIDxQZXJpb2RTZWxlY3RvclxuICAgICAgICAgICAgICAgIHBlcmlvZHM9e3BlcmlvZHN9XG4gICAgICAgICAgICAgICAgc2VsZWN0ZWRQZXJpb2RJZD17c2VsZWN0ZWRQZXJpb2RJZH1cbiAgICAgICAgICAgICAgICBvblBlcmlvZENoYW5nZT17c2V0U2VsZWN0ZWRQZXJpb2RJZH1cbiAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICB7LyogQ29tcGFyaXNvbiBUb2dnbGUgKi99XG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXgtMVwiPlxuICAgICAgICAgICAgICA8Q29tcGFyaXNvblRvZ2dsZVxuICAgICAgICAgICAgICAgIHZhbHVlPXtjb21wYXJpc29uTW9kZX1cbiAgICAgICAgICAgICAgICBvbkNoYW5nZT17c2V0Q29tcGFyaXNvbk1vZGV9XG4gICAgICAgICAgICAgICAgZGlzYWJsZWQ9eyFzZWxlY3RlZFBlcmlvZElkfVxuICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgPC9kaXY+XG4gICAgICAgIDwvQ2FyZENvbnRlbnQ+XG4gICAgICA8L0NhcmQ+XG5cbiAgICAgIHsvKiBMb2FkaW5nIFN0YXRlIGZvciBEYXRhICovfVxuICAgICAge2xvYWRpbmdEYXRhICYmIChcbiAgICAgICAgPENhcmQ+XG4gICAgICAgICAgPENhcmRDb250ZW50IGNsYXNzTmFtZT1cInAtNlwiPlxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJzcGFjZS15LTRcIj5cbiAgICAgICAgICAgICAgPFNrZWxldG9uIGNsYXNzTmFtZT1cImgtOCB3LWZ1bGxcIiAvPlxuICAgICAgICAgICAgICA8U2tlbGV0b24gY2xhc3NOYW1lPVwiaC04IHctZnVsbFwiIC8+XG4gICAgICAgICAgICAgIDxTa2VsZXRvbiBjbGFzc05hbWU9XCJoLTggdy1mdWxsXCIgLz5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDwvQ2FyZENvbnRlbnQ+XG4gICAgICAgIDwvQ2FyZD5cbiAgICAgICl9XG5cbiAgICAgIHsvKiBFcnJvciBTdGF0ZSBmb3IgRGF0YSAqL31cbiAgICAgIHtkYXRhRXJyb3IgJiYgIWxvYWRpbmdEYXRhICYmIChcbiAgICAgICAgPElubGluZUFsZXJ0XG4gICAgICAgICAgdmFyaWFudD1cIndhcm5pbmdcIlxuICAgICAgICAgIHRpdGxlPVwiRmFpbGVkIHRvIExvYWQgUCZMIERhdGFcIlxuICAgICAgICAgIG1lc3NhZ2U9e2RhdGFFcnJvcn1cbiAgICAgICAgLz5cbiAgICAgICl9XG5cbiAgICAgIHsvKiBNYWluIERhc2hib2FyZCAod2hlbiBkYXRhIGlzIGxvYWRlZCkgKi99XG4gICAgICB7IWxvYWRpbmdEYXRhICYmICFkYXRhRXJyb3IgJiYgcHJvZml0TG9zc0RhdGEgJiYgKFxuICAgICAgICA8PlxuICAgICAgICAgIHsvKiBLZXkgTWV0cmljcyBDYXJkcyAqL31cbiAgICAgICAgICB7c3VtbWFyeSAmJiAoXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ3JpZC1jb2xzLTEgZ2FwLTQgbWQ6Z3JpZC1jb2xzLTIgbGc6Z3JpZC1jb2xzLTRcIj5cbiAgICAgICAgICAgICAgey8qIE5ldCBTYWxlcyAqL31cbiAgICAgICAgICAgICAgPENhcmQ+XG4gICAgICAgICAgICAgICAgPENhcmRDb250ZW50IGNsYXNzTmFtZT1cInAtNFwiPlxuICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW5cIj5cbiAgICAgICAgICAgICAgICAgICAgPGRpdj5cbiAgICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LXhzIGZvbnQtbWVkaXVtIHVwcGVyY2FzZSB0cmFja2luZy13aWRlIHRleHQtbXV0ZWQtZm9yZWdyb3VuZFwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgTmV0IFNhbGVzXG4gICAgICAgICAgICAgICAgICAgICAgPC9wPlxuICAgICAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cIm10LTEgdGV4dC0yeGwgZm9udC1ib2xkXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICB7Zm9ybWF0Q3VycmVuY3koc3VtbWFyeS5uZXRfc2FsZXMpfVxuICAgICAgICAgICAgICAgICAgICAgIDwvcD5cbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicm91bmRlZC1mdWxsIGJnLXByaW1hcnkvMTAgcC0zXCI+XG4gICAgICAgICAgICAgICAgICAgICAgPERvbGxhclNpZ24gY2xhc3NOYW1lPVwiaC02IHctNiB0ZXh0LXByaW1hcnlcIiAvPlxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgIDwvQ2FyZENvbnRlbnQ+XG4gICAgICAgICAgICAgIDwvQ2FyZD5cblxuICAgICAgICAgICAgICB7LyogR3Jvc3MgUHJvZml0ICovfVxuICAgICAgICAgICAgICA8Q2FyZD5cbiAgICAgICAgICAgICAgICA8Q2FyZENvbnRlbnQgY2xhc3NOYW1lPVwicC00XCI+XG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIGp1c3RpZnktYmV0d2VlblwiPlxuICAgICAgICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQteHMgZm9udC1tZWRpdW0gdXBwZXJjYXNlIHRyYWNraW5nLXdpZGUgdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICBHcm9zcyBQcm9maXRcbiAgICAgICAgICAgICAgICAgICAgICA8L3A+XG4gICAgICAgICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwibXQtMSB0ZXh0LTJ4bCBmb250LWJvbGRcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgIHtmb3JtYXRDdXJyZW5jeShzdW1tYXJ5Lmdyb3NzX3Byb2ZpdCl9XG4gICAgICAgICAgICAgICAgICAgICAgPC9wPlxuICAgICAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cIm10LTAuNSB0ZXh0LXhzIHRleHQtbXV0ZWQtZm9yZWdyb3VuZFwiPlxuICAgICAgICAgICAgICAgICAgICAgICAge2Zvcm1hdFBlcmNlbnQoc3VtbWFyeS5ncm9zc19tYXJnaW5fcGVyY2VudCl9IG1hcmdpblxuICAgICAgICAgICAgICAgICAgICAgIDwvcD5cbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicm91bmRlZC1mdWxsIGJnLWdyZWVuLTUwMC8xMCBwLTNcIj5cbiAgICAgICAgICAgICAgICAgICAgICA8VHJlbmRpbmdVcCBjbGFzc05hbWU9XCJoLTYgdy02IHRleHQtZ3JlZW4tNjAwIGRhcms6dGV4dC1ncmVlbi00MDBcIiAvPlxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgIDwvQ2FyZENvbnRlbnQ+XG4gICAgICAgICAgICAgIDwvQ2FyZD5cblxuICAgICAgICAgICAgICB7LyogT3BlcmF0aW5nIEluY29tZSAqL31cbiAgICAgICAgICAgICAgPENhcmQ+XG4gICAgICAgICAgICAgICAgPENhcmRDb250ZW50IGNsYXNzTmFtZT1cInAtNFwiPlxuICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW5cIj5cbiAgICAgICAgICAgICAgICAgICAgPGRpdj5cbiAgICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LXhzIGZvbnQtbWVkaXVtIHVwcGVyY2FzZSB0cmFja2luZy13aWRlIHRleHQtbXV0ZWQtZm9yZWdyb3VuZFwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgT3BlcmF0aW5nIEluY29tZVxuICAgICAgICAgICAgICAgICAgICAgIDwvcD5cbiAgICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJtdC0xIHRleHQtMnhsIGZvbnQtYm9sZFwiPlxuICAgICAgICAgICAgICAgICAgICAgICAge2Zvcm1hdEN1cnJlbmN5KHN1bW1hcnkub3BlcmF0aW5nX2luY29tZSl9XG4gICAgICAgICAgICAgICAgICAgICAgPC9wPlxuICAgICAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cIm10LTAuNSB0ZXh0LXhzIHRleHQtbXV0ZWQtZm9yZWdyb3VuZFwiPlxuICAgICAgICAgICAgICAgICAgICAgICAge2Zvcm1hdFBlcmNlbnQoc3VtbWFyeS5vcGVyYXRpbmdfbWFyZ2luX3BlcmNlbnQpfSBtYXJnaW5cbiAgICAgICAgICAgICAgICAgICAgICA8L3A+XG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJvdW5kZWQtZnVsbCBiZy1ibHVlLTUwMC8xMCBwLTNcIj5cbiAgICAgICAgICAgICAgICAgICAgICA8UGVyY2VudCBjbGFzc05hbWU9XCJoLTYgdy02IHRleHQtYmx1ZS02MDAgZGFyazp0ZXh0LWJsdWUtNDAwXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICA8L0NhcmRDb250ZW50PlxuICAgICAgICAgICAgICA8L0NhcmQ+XG5cbiAgICAgICAgICAgICAgey8qIE5ldCBJbmNvbWUgKi99XG4gICAgICAgICAgICAgIDxDYXJkPlxuICAgICAgICAgICAgICAgIDxDYXJkQ29udGVudCBjbGFzc05hbWU9XCJwLTRcIj5cbiAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBpdGVtcy1jZW50ZXIganVzdGlmeS1iZXR3ZWVuXCI+XG4gICAgICAgICAgICAgICAgICAgIDxkaXY+XG4gICAgICAgICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwidGV4dC14cyBmb250LW1lZGl1bSB1cHBlcmNhc2UgdHJhY2tpbmctd2lkZSB0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgIE5ldCBJbmNvbWVcbiAgICAgICAgICAgICAgICAgICAgICA8L3A+XG4gICAgICAgICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwibXQtMSB0ZXh0LTJ4bCBmb250LWJvbGRcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgIHtmb3JtYXRDdXJyZW5jeShzdW1tYXJ5Lm5ldF9pbmNvbWUpfVxuICAgICAgICAgICAgICAgICAgICAgIDwvcD5cbiAgICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJtdC0wLjUgdGV4dC14cyB0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgIHtmb3JtYXRQZXJjZW50KHN1bW1hcnkubmV0X21hcmdpbl9wZXJjZW50KX0gbWFyZ2luXG4gICAgICAgICAgICAgICAgICAgICAgPC9wPlxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgPGRpdlxuICAgICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17YHJvdW5kZWQtZnVsbCBwLTMgJHtcbiAgICAgICAgICAgICAgICAgICAgICAgIHN1bW1hcnkubmV0X2luY29tZSA+PSAwXG4gICAgICAgICAgICAgICAgICAgICAgICAgID8gXCJiZy1ncmVlbi01MDAvMTBcIlxuICAgICAgICAgICAgICAgICAgICAgICAgICA6IFwiYmctcmVkLTUwMC8xMFwiXG4gICAgICAgICAgICAgICAgICAgICAgfWB9XG4gICAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgICB7c3VtbWFyeS5uZXRfaW5jb21lID49IDAgPyAoXG4gICAgICAgICAgICAgICAgICAgICAgICA8VHJlbmRpbmdVcCBjbGFzc05hbWU9XCJoLTYgdy02IHRleHQtZ3JlZW4tNjAwIGRhcms6dGV4dC1ncmVlbi00MDBcIiAvPlxuICAgICAgICAgICAgICAgICAgICAgICkgOiAoXG4gICAgICAgICAgICAgICAgICAgICAgICA8VHJlbmRpbmdEb3duIGNsYXNzTmFtZT1cImgtNiB3LTYgdGV4dC1yZWQtNjAwIGRhcms6dGV4dC1yZWQtNDAwXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgIDwvQ2FyZENvbnRlbnQ+XG4gICAgICAgICAgICAgIDwvQ2FyZD5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICl9XG5cbiAgICAgICAgICB7LyogQ29tcGFyaXNvbiBTdW1tYXJ5IChpZiBjb21wYXJpc29uIG1vZGUgaXMgYWN0aXZlKSAqL31cbiAgICAgICAgICB7Y29tcGFyaXNvbk1vZGUgIT09IFwibm9uZVwiICYmIChcbiAgICAgICAgICAgIDw+XG4gICAgICAgICAgICAgIHtsb2FkaW5nQ29tcGFyaXNvbiAmJiAoXG4gICAgICAgICAgICAgICAgPENhcmQ+XG4gICAgICAgICAgICAgICAgICA8Q2FyZENvbnRlbnQgY2xhc3NOYW1lPVwicC02XCI+XG4gICAgICAgICAgICAgICAgICAgIDxTa2VsZXRvbiBjbGFzc05hbWU9XCJoLTMyIHctZnVsbFwiIC8+XG4gICAgICAgICAgICAgICAgICA8L0NhcmRDb250ZW50PlxuICAgICAgICAgICAgICAgIDwvQ2FyZD5cbiAgICAgICAgICAgICAgKX1cblxuICAgICAgICAgICAgICB7Y29tcGFyaXNvbkVycm9yICYmICFsb2FkaW5nQ29tcGFyaXNvbiAmJiAoXG4gICAgICAgICAgICAgICAgPElubGluZUFsZXJ0XG4gICAgICAgICAgICAgICAgICB2YXJpYW50PVwid2FybmluZ1wiXG4gICAgICAgICAgICAgICAgICB0aXRsZT1cIkNvbXBhcmlzb24gTm90IEF2YWlsYWJsZVwiXG4gICAgICAgICAgICAgICAgICBtZXNzYWdlPXtjb21wYXJpc29uRXJyb3J9XG4gICAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgICAgKX1cblxuICAgICAgICAgICAgICB7IWxvYWRpbmdDb21wYXJpc29uICYmICFjb21wYXJpc29uRXJyb3IgJiYgY29tcGFyaXNvbkRhdGEgJiYgKFxuICAgICAgICAgICAgICAgIDxDb21wYXJpc29uU3VtbWFyeSBjb21wYXJpc29uRGF0YT17Y29tcGFyaXNvbkRhdGF9IC8+XG4gICAgICAgICAgICAgICl9XG4gICAgICAgICAgICA8Lz5cbiAgICAgICAgICApfVxuXG4gICAgICAgICAgey8qIFAmTCBTdGF0ZW1lbnQgKi99XG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJzcGFjZS15LTJcIj5cbiAgICAgICAgICAgIDxoMiBjbGFzc05hbWU9XCJ0ZXh0LWxnIGZvbnQtc2VtaWJvbGRcIj5GaW5hbmNpYWwgU3RhdGVtZW50PC9oMj5cbiAgICAgICAgICAgIDxQcm9maXRMb3NzU3RhdGVtZW50XG4gICAgICAgICAgICAgIGRhdGE9e3Byb2ZpdExvc3NEYXRhfVxuICAgICAgICAgICAgICBjb21wYXJpc29uRGF0YT17Y29tcGFyaXNvbkRhdGF9XG4gICAgICAgICAgICAgIG9uRXhwb3J0Q1NWPXtoYW5kbGVFeHBvcnRDU1Z9XG4gICAgICAgICAgICAgIG9uRXhwb3J0RXhjZWw9e2hhbmRsZUV4cG9ydEV4Y2VsfVxuICAgICAgICAgICAgLz5cbiAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgIHsvKiBDaGFydHMgU2VjdGlvbiAqL31cbiAgICAgICAgICB7c2VsZWN0ZWRQZXJpb2RJZCAmJiBhdXRoLnNlc3Npb24/LmFjY2Vzc190b2tlbiAmJiAoXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktMlwiPlxuICAgICAgICAgICAgICA8aDIgY2xhc3NOYW1lPVwidGV4dC1sZyBmb250LXNlbWlib2xkXCI+VHJlbmRzICYgQW5hbHlzaXM8L2gyPlxuICAgICAgICAgICAgICA8UHJvZml0TG9zc0NoYXJ0c1xuICAgICAgICAgICAgICAgIHBlcmlvZElkPXtzZWxlY3RlZFBlcmlvZElkfVxuICAgICAgICAgICAgICAgIGNvbXBhcmlzb25Nb2RlPXtjb21wYXJpc29uTW9kZX1cbiAgICAgICAgICAgICAgICB0b2tlbj17YXV0aC5zZXNzaW9uLmFjY2Vzc190b2tlbn1cbiAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICl9XG4gICAgICAgIDwvPlxuICAgICAgKX1cbiAgICA8L2Rpdj5cbiAgKTtcbn1cbiJdLCJmaWxlIjoiQzovUHJvamVjdHMvU291cmNlIDQgSW5kdXN0cmllcy9zcmMvcGFnZXMvYWRtaW4vcHJvZml0LWxvc3MvcGFnZS50c3gifQ==

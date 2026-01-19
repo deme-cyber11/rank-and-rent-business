@@ -1,0 +1,627 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/sales/follow-ups/create-follow-up-dialog.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=dadb5dea"; const Fragment = __vite__cjsImport0_react_jsxDevRuntime["Fragment"]; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=dadb5dea"; const useState = __vite__cjsImport3_react["useState"];
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "/src/components/ui/dialog.tsx";
+import { Button } from "/src/components/ui/button.tsx";
+import { Input } from "/src/components/ui/input.tsx";
+import { Textarea } from "/src/components/ui/textarea.tsx";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "/src/components/ui/select.tsx";
+import { Loader2 } from "/node_modules/.vite/deps/lucide-react.js?v=dadb5dea";
+import { useAuth } from "/src/vite/auth/auth-provider.tsx?t=1768429265440";
+export function CreateFollowUpDialog({ open, onOpenChange }) {
+  _s();
+  const auth = useAuth();
+  const [creating, setCreating] = useState(false);
+  const [formData, setFormData] = useState({
+    customerName: "",
+    companyName: "",
+    contactEmail: "",
+    contactPhone: "",
+    type: "sales",
+    priority: "medium",
+    reason: "",
+    notes: "",
+    dueDate: ""
+  });
+  const [errors, setErrors] = useState({});
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.customerName.trim()) {
+      newErrors.customerName = "Customer name is required";
+    }
+    if (!formData.reason.trim()) {
+      newErrors.reason = "Reason is required";
+    }
+    if (!formData.dueDate) {
+      newErrors.dueDate = "Due date is required";
+    }
+    if (formData.contactEmail && !formData.contactEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      newErrors.contactEmail = "Invalid email format";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+    setCreating(true);
+    try {
+      const token = auth.session?.access_token;
+      if (!token) {
+        throw new Error("Not authenticated");
+      }
+      const res = await fetch("/api/sales/follow-ups", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          customerName: formData.customerName,
+          companyName: formData.companyName || void 0,
+          contactEmail: formData.contactEmail || void 0,
+          contactPhone: formData.contactPhone || void 0,
+          type: formData.type,
+          priority: formData.priority,
+          reason: formData.reason,
+          notes: formData.notes || void 0,
+          dueDate: formData.dueDate
+        })
+      });
+      const jsonBody = await res.json();
+      if (!res.ok || !jsonBody.success) {
+        throw new Error(jsonBody.error || "Failed to create follow-up");
+      }
+      setFormData({
+        customerName: "",
+        companyName: "",
+        contactEmail: "",
+        contactPhone: "",
+        type: "sales",
+        priority: "medium",
+        reason: "",
+        notes: "",
+        dueDate: ""
+      });
+      onOpenChange(false);
+      window.location.reload();
+    } catch (err) {
+      console.error("Error creating follow-up:", err);
+      alert(err instanceof Error ? err.message : "Failed to create follow-up");
+    } finally {
+      setCreating(false);
+    }
+  };
+  const handleCancel = () => {
+    setFormData({
+      customerName: "",
+      companyName: "",
+      contactEmail: "",
+      contactPhone: "",
+      type: "sales",
+      priority: "medium",
+      reason: "",
+      notes: "",
+      dueDate: ""
+    });
+    setErrors({});
+    onOpenChange(false);
+  };
+  const tomorrow = /* @__PURE__ */ new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowString = tomorrow.toISOString().split("T")[0];
+  return /* @__PURE__ */ jsxDEV(Dialog, { open, onOpenChange, children: /* @__PURE__ */ jsxDEV(DialogContent, { className: "max-w-2xl max-h-[90vh] overflow-y-auto", children: [
+    /* @__PURE__ */ jsxDEV(DialogHeader, { children: [
+      /* @__PURE__ */ jsxDEV(DialogTitle, { children: "Create New Follow-Up" }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+        lineNumber: 174,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV(DialogDescription, { children: "Add a new follow-up task for sales, service, or operations." }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+        lineNumber: 175,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+      lineNumber: 173,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ jsxDEV("form", { onSubmit: handleSubmit, className: "mt-6 space-y-4", children: [
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("label", { className: "text-sm font-medium mb-1.5 block", children: [
+          "Customer Name ",
+          /* @__PURE__ */ jsxDEV("span", { className: "text-danger", children: "*" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 184,
+            columnNumber: 29
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 183,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          Input,
+          {
+            type: "text",
+            placeholder: "Enter customer name",
+            value: formData.customerName,
+            onChange: (e) => handleChange("customerName", e.target.value),
+            disabled: creating
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 186,
+            columnNumber: 13
+          },
+          this
+        ),
+        errors.customerName && /* @__PURE__ */ jsxDEV("p", { className: "text-xs text-danger mt-1", children: errors.customerName }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 194,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+        lineNumber: 182,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("label", { className: "text-sm font-medium mb-1.5 block", children: "Company Name" }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 200,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          Input,
+          {
+            type: "text",
+            placeholder: "Enter company name (optional)",
+            value: formData.companyName,
+            onChange: (e) => handleChange("companyName", e.target.value),
+            disabled: creating
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 201,
+            columnNumber: 13
+          },
+          this
+        )
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+        lineNumber: 199,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-2 gap-4", children: [
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("label", { className: "text-sm font-medium mb-1.5 block", children: "Contact Email" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 213,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            Input,
+            {
+              type: "email",
+              placeholder: "email@example.com",
+              value: formData.contactEmail,
+              onChange: (e) => handleChange("contactEmail", e.target.value),
+              disabled: creating
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+              lineNumber: 214,
+              columnNumber: 15
+            },
+            this
+          ),
+          errors.contactEmail && /* @__PURE__ */ jsxDEV("p", { className: "text-xs text-danger mt-1", children: errors.contactEmail }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 222,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 212,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("label", { className: "text-sm font-medium mb-1.5 block", children: "Contact Phone" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 226,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            Input,
+            {
+              type: "tel",
+              placeholder: "(555) 123-4567",
+              value: formData.contactPhone,
+              onChange: (e) => handleChange("contactPhone", e.target.value),
+              disabled: creating
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+              lineNumber: 227,
+              columnNumber: 15
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 225,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+        lineNumber: 211,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-2 gap-4", children: [
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("label", { className: "text-sm font-medium mb-1.5 block", children: [
+            "Type ",
+            /* @__PURE__ */ jsxDEV("span", { className: "text-danger", children: "*" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+              lineNumber: 241,
+              columnNumber: 22
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 240,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            Select,
+            {
+              value: formData.type,
+              onValueChange: (value) => handleChange("type", value),
+              disabled: creating,
+              children: [
+                /* @__PURE__ */ jsxDEV(SelectTrigger, { children: /* @__PURE__ */ jsxDEV(SelectValue, {}, void 0, false, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                  lineNumber: 249,
+                  columnNumber: 19
+                }, this) }, void 0, false, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                  lineNumber: 248,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV(SelectContent, { children: [
+                  /* @__PURE__ */ jsxDEV(SelectItem, { value: "sales", children: "Sales" }, void 0, false, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                    lineNumber: 252,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV(SelectItem, { value: "service", children: "Service" }, void 0, false, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                    lineNumber: 253,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV(SelectItem, { value: "operations", children: "Operations" }, void 0, false, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                    lineNumber: 254,
+                    columnNumber: 19
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                  lineNumber: 251,
+                  columnNumber: 17
+                }, this)
+              ]
+            },
+            void 0,
+            true,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+              lineNumber: 243,
+              columnNumber: 15
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 239,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("label", { className: "text-sm font-medium mb-1.5 block", children: [
+            "Priority ",
+            /* @__PURE__ */ jsxDEV("span", { className: "text-danger", children: "*" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+              lineNumber: 260,
+              columnNumber: 26
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 259,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            Select,
+            {
+              value: formData.priority,
+              onValueChange: (value) => handleChange("priority", value),
+              disabled: creating,
+              children: [
+                /* @__PURE__ */ jsxDEV(SelectTrigger, { children: /* @__PURE__ */ jsxDEV(SelectValue, {}, void 0, false, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                  lineNumber: 268,
+                  columnNumber: 19
+                }, this) }, void 0, false, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                  lineNumber: 267,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV(SelectContent, { children: [
+                  /* @__PURE__ */ jsxDEV(SelectItem, { value: "low", children: "Low" }, void 0, false, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                    lineNumber: 271,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV(SelectItem, { value: "medium", children: "Medium" }, void 0, false, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                    lineNumber: 272,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV(SelectItem, { value: "high", children: "High" }, void 0, false, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                    lineNumber: 273,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV(SelectItem, { value: "urgent", children: "Urgent" }, void 0, false, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                    lineNumber: 274,
+                    columnNumber: 19
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+                  lineNumber: 270,
+                  columnNumber: 17
+                }, this)
+              ]
+            },
+            void 0,
+            true,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+              lineNumber: 262,
+              columnNumber: 15
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 258,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+        lineNumber: 238,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("label", { className: "text-sm font-medium mb-1.5 block", children: [
+          "Due Date ",
+          /* @__PURE__ */ jsxDEV("span", { className: "text-danger", children: "*" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 283,
+            columnNumber: 24
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 282,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          Input,
+          {
+            type: "date",
+            value: formData.dueDate,
+            onChange: (e) => handleChange("dueDate", e.target.value),
+            disabled: creating,
+            min: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 285,
+            columnNumber: 13
+          },
+          this
+        ),
+        errors.dueDate && /* @__PURE__ */ jsxDEV("p", { className: "text-xs text-danger mt-1", children: errors.dueDate }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 293,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+        lineNumber: 281,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("label", { className: "text-sm font-medium mb-1.5 block", children: [
+          "Reason for Follow-Up ",
+          /* @__PURE__ */ jsxDEV("span", { className: "text-danger", children: "*" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 300,
+            columnNumber: 36
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 299,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          Input,
+          {
+            type: "text",
+            placeholder: "e.g., Quote follow-up, Order check-in, Support ticket",
+            value: formData.reason,
+            onChange: (e) => handleChange("reason", e.target.value),
+            disabled: creating
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 302,
+            columnNumber: 13
+          },
+          this
+        ),
+        errors.reason && /* @__PURE__ */ jsxDEV("p", { className: "text-xs text-danger mt-1", children: errors.reason }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 310,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+        lineNumber: 298,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("label", { className: "text-sm font-medium mb-1.5 block", children: "Additional Notes" }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 316,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          Textarea,
+          {
+            placeholder: "Enter any additional context or notes...",
+            value: formData.notes,
+            onChange: (e) => handleChange("notes", e.target.value),
+            disabled: creating,
+            rows: 4
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 317,
+            columnNumber: 13
+          },
+          this
+        )
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+        lineNumber: 315,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "flex justify-end gap-3 pt-4 border-t", children: [
+        /* @__PURE__ */ jsxDEV(
+          Button,
+          {
+            type: "button",
+            variant: "outline",
+            onClick: handleCancel,
+            disabled: creating,
+            children: "Cancel"
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 328,
+            columnNumber: 13
+          },
+          this
+        ),
+        /* @__PURE__ */ jsxDEV(Button, { type: "submit", disabled: creating, children: creating ? /* @__PURE__ */ jsxDEV(Fragment, { children: [
+          /* @__PURE__ */ jsxDEV(Loader2, { className: "h-4 w-4 mr-2 animate-spin" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+            lineNumber: 339,
+            columnNumber: 19
+          }, this),
+          "Creating..."
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 338,
+          columnNumber: 15
+        }, this) : "Create Follow-Up" }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+          lineNumber: 336,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+        lineNumber: 327,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+      lineNumber: 180,
+      columnNumber: 9
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+    lineNumber: 172,
+    columnNumber: 7
+  }, this) }, void 0, false, {
+    fileName: "C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx",
+    lineNumber: 171,
+    columnNumber: 5
+  }, this);
+}
+_s(CreateFollowUpDialog, "R1oRRDQeycZczx4jTcyuyUucWFg=", false, function() {
+  return [useAuth];
+});
+_c = CreateFollowUpDialog;
+var _c;
+$RefreshReg$(_c, "CreateFollowUpDialog");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Projects/Source 4 Industries/src/pages/sales/follow-ups/create-follow-up-dialog.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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U0F0S0Y7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQXVLQTtBQUFBLE9BL0tGO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0FnTEEsS0FqTEY7QUFBQTtBQUFBO0FBQUE7QUFBQSxTQWtMQTtBQUVKO0FBQUNGLEdBN1RlSCxzQkFBb0I7QUFBQSxVQUNyQkQsT0FBTztBQUFBO0FBQUFvRSxLQURObkU7QUFBb0IsSUFBQW1FO0FBQUFDLGFBQUFELElBQUEiLCJuYW1lcyI6WyJ1c2VTdGF0ZSIsIkRpYWxvZyIsIkRpYWxvZ0NvbnRlbnQiLCJEaWFsb2dIZWFkZXIiLCJEaWFsb2dUaXRsZSIsIkRpYWxvZ0Rlc2NyaXB0aW9uIiwiQnV0dG9uIiwiSW5wdXQiLCJUZXh0YXJlYSIsIlNlbGVjdCIsIlNlbGVjdENvbnRlbnQiLCJTZWxlY3RJdGVtIiwiU2VsZWN0VHJpZ2dlciIsIlNlbGVjdFZhbHVlIiwiTG9hZGVyMiIsInVzZUF1dGgiLCJDcmVhdGVGb2xsb3dVcERpYWxvZyIsIm9wZW4iLCJvbk9wZW5DaGFuZ2UiLCJfcyIsImF1dGgiLCJjcmVhdGluZyIsInNldENyZWF0aW5nIiwiZm9ybURhdGEiLCJzZXRGb3JtRGF0YSIsImN1c3RvbWVyTmFtZSIsImNvbXBhbnlOYW1lIiwiY29udGFjdEVtYWlsIiwiY29udGFjdFBob25lIiwidHlwZSIsInByaW9yaXR5IiwicmVhc29uIiwibm90ZXMiLCJkdWVEYXRlIiwiZXJyb3JzIiwic2V0RXJyb3JzIiwiaGFuZGxlQ2hhbmdlIiwiZmllbGQiLCJ2YWx1ZSIsInByZXYiLCJuZXdFcnJvcnMiLCJ2YWxpZGF0ZUZvcm0iLCJ0cmltIiwibWF0Y2giLCJPYmplY3QiLCJrZXlzIiwibGVuZ3RoIiwiaGFuZGxlU3VibWl0IiwiZSIsInByZXZlbnREZWZhdWx0IiwidG9rZW4iLCJzZXNzaW9uIiwiYWNjZXNzX3Rva2VuIiwiRXJyb3IiLCJyZXMiLCJmZXRjaCIsIm1ldGhvZCIsImhlYWRlcnMiLCJib2R5IiwiSlNPTiIsInN0cmluZ2lmeSIsInVuZGVmaW5lZCIsImpzb25Cb2R5IiwianNvbiIsIm9rIiwic3VjY2VzcyIsImVycm9yIiwid2luZG93IiwibG9jYXRpb24iLCJyZWxvYWQiLCJlcnIiLCJjb25zb2xlIiwiYWxlcnQiLCJtZXNzYWdlIiwiaGFuZGxlQ2FuY2VsIiwidG9tb3Jyb3ciLCJEYXRlIiwic2V0RGF0ZSIsImdldERhdGUiLCJ0b21vcnJvd1N0cmluZyIsInRvSVNPU3RyaW5nIiwic3BsaXQiLCJ0YXJnZXQiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJjcmVhdGUtZm9sbG93LXVwLWRpYWxvZy50c3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgdXNlU3RhdGUgfSBmcm9tIFwicmVhY3RcIjtcbmltcG9ydCB7IERpYWxvZywgRGlhbG9nQ29udGVudCwgRGlhbG9nSGVhZGVyLCBEaWFsb2dUaXRsZSwgRGlhbG9nRGVzY3JpcHRpb24gfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL2RpYWxvZ1wiO1xuaW1wb3J0IHsgQnV0dG9uIH0gZnJvbSBcIkAvY29tcG9uZW50cy91aS9idXR0b25cIjtcbmltcG9ydCB7IElucHV0IH0gZnJvbSBcIkAvY29tcG9uZW50cy91aS9pbnB1dFwiO1xuaW1wb3J0IHsgVGV4dGFyZWEgfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL3RleHRhcmVhXCI7XG5pbXBvcnQgeyBTZWxlY3QsIFNlbGVjdENvbnRlbnQsIFNlbGVjdEl0ZW0sIFNlbGVjdFRyaWdnZXIsIFNlbGVjdFZhbHVlIH0gZnJvbSBcIkAvY29tcG9uZW50cy91aS9zZWxlY3RcIjtcbmltcG9ydCB7IExvYWRlcjIgfSBmcm9tIFwibHVjaWRlLXJlYWN0XCI7XG5pbXBvcnQgeyB1c2VBdXRoIH0gZnJvbSBcIkAvdml0ZS9hdXRoL2F1dGgtcHJvdmlkZXJcIjtcblxudHlwZSBDcmVhdGVGb2xsb3dVcERpYWxvZ1Byb3BzID0ge1xuICBvcGVuOiBib29sZWFuO1xuICBvbk9wZW5DaGFuZ2U6IChvcGVuOiBib29sZWFuKSA9PiB2b2lkO1xufTtcblxuZXhwb3J0IGZ1bmN0aW9uIENyZWF0ZUZvbGxvd1VwRGlhbG9nKHsgb3Blbiwgb25PcGVuQ2hhbmdlIH06IENyZWF0ZUZvbGxvd1VwRGlhbG9nUHJvcHMpIHtcbiAgY29uc3QgYXV0aCA9IHVzZUF1dGgoKTtcbiAgY29uc3QgW2NyZWF0aW5nLCBzZXRDcmVhdGluZ10gPSB1c2VTdGF0ZShmYWxzZSk7XG4gIGNvbnN0IFtmb3JtRGF0YSwgc2V0Rm9ybURhdGFdID0gdXNlU3RhdGUoe1xuICAgIGN1c3RvbWVyTmFtZTogXCJcIixcbiAgICBjb21wYW55TmFtZTogXCJcIixcbiAgICBjb250YWN0RW1haWw6IFwiXCIsXG4gICAgY29udGFjdFBob25lOiBcIlwiLFxuICAgIHR5cGU6IFwic2FsZXNcIiBhcyBcInNhbGVzXCIgfCBcInNlcnZpY2VcIiB8IFwib3BlcmF0aW9uc1wiLFxuICAgIHByaW9yaXR5OiBcIm1lZGl1bVwiIGFzIFwibG93XCIgfCBcIm1lZGl1bVwiIHwgXCJoaWdoXCIgfCBcInVyZ2VudFwiLFxuICAgIHJlYXNvbjogXCJcIixcbiAgICBub3RlczogXCJcIixcbiAgICBkdWVEYXRlOiBcIlwiLFxuICB9KTtcblxuICBjb25zdCBbZXJyb3JzLCBzZXRFcnJvcnNdID0gdXNlU3RhdGU8UmVjb3JkPHN0cmluZywgc3RyaW5nPj4oe30pO1xuXG4gIGNvbnN0IGhhbmRsZUNoYW5nZSA9IChmaWVsZDogc3RyaW5nLCB2YWx1ZTogc3RyaW5nKSA9PiB7XG4gICAgc2V0Rm9ybURhdGEocHJldiA9PiAoeyAuLi5wcmV2LCBbZmllbGRdOiB2YWx1ZSB9KSk7XG4gICAgLy8gQ2xlYXIgZXJyb3IgZm9yIHRoaXMgZmllbGRcbiAgICBpZiAoZXJyb3JzW2ZpZWxkXSkge1xuICAgICAgc2V0RXJyb3JzKHByZXYgPT4ge1xuICAgICAgICBjb25zdCBuZXdFcnJvcnMgPSB7IC4uLnByZXYgfTtcbiAgICAgICAgZGVsZXRlIG5ld0Vycm9yc1tmaWVsZF07XG4gICAgICAgIHJldHVybiBuZXdFcnJvcnM7XG4gICAgICB9KTtcbiAgICB9XG4gIH07XG5cbiAgY29uc3QgdmFsaWRhdGVGb3JtID0gKCkgPT4ge1xuICAgIGNvbnN0IG5ld0Vycm9yczogUmVjb3JkPHN0cmluZywgc3RyaW5nPiA9IHt9O1xuXG4gICAgaWYgKCFmb3JtRGF0YS5jdXN0b21lck5hbWUudHJpbSgpKSB7XG4gICAgICBuZXdFcnJvcnMuY3VzdG9tZXJOYW1lID0gXCJDdXN0b21lciBuYW1lIGlzIHJlcXVpcmVkXCI7XG4gICAgfVxuXG4gICAgaWYgKCFmb3JtRGF0YS5yZWFzb24udHJpbSgpKSB7XG4gICAgICBuZXdFcnJvcnMucmVhc29uID0gXCJSZWFzb24gaXMgcmVxdWlyZWRcIjtcbiAgICB9XG5cbiAgICBpZiAoIWZvcm1EYXRhLmR1ZURhdGUpIHtcbiAgICAgIG5ld0Vycm9ycy5kdWVEYXRlID0gXCJEdWUgZGF0ZSBpcyByZXF1aXJlZFwiO1xuICAgIH1cblxuICAgIGlmIChmb3JtRGF0YS5jb250YWN0RW1haWwgJiYgIWZvcm1EYXRhLmNvbnRhY3RFbWFpbC5tYXRjaCgvXlteXFxzQF0rQFteXFxzQF0rXFwuW15cXHNAXSskLykpIHtcbiAgICAgIG5ld0Vycm9ycy5jb250YWN0RW1haWwgPSBcIkludmFsaWQgZW1haWwgZm9ybWF0XCI7XG4gICAgfVxuXG4gICAgc2V0RXJyb3JzKG5ld0Vycm9ycyk7XG4gICAgcmV0dXJuIE9iamVjdC5rZXlzKG5ld0Vycm9ycykubGVuZ3RoID09PSAwO1xuICB9O1xuXG4gIGNvbnN0IGhhbmRsZVN1Ym1pdCA9IGFzeW5jIChlOiBSZWFjdC5Gb3JtRXZlbnQpID0+IHtcbiAgICBlLnByZXZlbnREZWZhdWx0KCk7XG5cbiAgICBpZiAoIXZhbGlkYXRlRm9ybSgpKSB7XG4gICAgICByZXR1cm47XG4gICAgfVxuXG4gICAgc2V0Q3JlYXRpbmcodHJ1ZSk7XG4gICAgdHJ5IHtcbiAgICAgIGNvbnN0IHRva2VuID0gYXV0aC5zZXNzaW9uPy5hY2Nlc3NfdG9rZW47XG4gICAgICBpZiAoIXRva2VuKSB7XG4gICAgICAgIHRocm93IG5ldyBFcnJvcihcIk5vdCBhdXRoZW50aWNhdGVkXCIpO1xuICAgICAgfVxuXG4gICAgICBjb25zdCByZXMgPSBhd2FpdCBmZXRjaChcIi9hcGkvc2FsZXMvZm9sbG93LXVwc1wiLCB7XG4gICAgICAgIG1ldGhvZDogXCJQT1NUXCIsXG4gICAgICAgIGhlYWRlcnM6IHtcbiAgICAgICAgICBcIkF1dGhvcml6YXRpb25cIjogYEJlYXJlciAke3Rva2VufWAsXG4gICAgICAgICAgXCJDb250ZW50LVR5cGVcIjogXCJhcHBsaWNhdGlvbi9qc29uXCIsXG4gICAgICAgIH0sXG4gICAgICAgIGJvZHk6IEpTT04uc3RyaW5naWZ5KHtcbiAgICAgICAgICBjdXN0b21lck5hbWU6IGZvcm1EYXRhLmN1c3RvbWVyTmFtZSxcbiAgICAgICAgICBjb21wYW55TmFtZTogZm9ybURhdGEuY29tcGFueU5hbWUgfHwgdW5kZWZpbmVkLFxuICAgICAgICAgIGNvbnRhY3RFbWFpbDogZm9ybURhdGEuY29udGFjdEVtYWlsIHx8IHVuZGVmaW5lZCxcbiAgICAgICAgICBjb250YWN0UGhvbmU6IGZvcm1EYXRhLmNvbnRhY3RQaG9uZSB8fCB1bmRlZmluZWQsXG4gICAgICAgICAgdHlwZTogZm9ybURhdGEudHlwZSxcbiAgICAgICAgICBwcmlvcml0eTogZm9ybURhdGEucHJpb3JpdHksXG4gICAgICAgICAgcmVhc29uOiBmb3JtRGF0YS5yZWFzb24sXG4gICAgICAgICAgbm90ZXM6IGZvcm1EYXRhLm5vdGVzIHx8IHVuZGVmaW5lZCxcbiAgICAgICAgICBkdWVEYXRlOiBmb3JtRGF0YS5kdWVEYXRlLFxuICAgICAgICB9KSxcbiAgICAgIH0pO1xuXG4gICAgICBjb25zdCBqc29uQm9keSA9IGF3YWl0IHJlcy5qc29uKCk7XG5cbiAgICAgIGlmICghcmVzLm9rIHx8ICFqc29uQm9keS5zdWNjZXNzKSB7XG4gICAgICAgIHRocm93IG5ldyBFcnJvcihqc29uQm9keS5lcnJvciB8fCBcIkZhaWxlZCB0byBjcmVhdGUgZm9sbG93LXVwXCIpO1xuICAgICAgfVxuXG4gICAgICAvLyBTdWNjZXNzISBSZXNldCBmb3JtIGFuZCBjbG9zZSBkaWFsb2dcbiAgICAgIHNldEZvcm1EYXRhKHtcbiAgICAgICAgY3VzdG9tZXJOYW1lOiBcIlwiLFxuICAgICAgICBjb21wYW55TmFtZTogXCJcIixcbiAgICAgICAgY29udGFjdEVtYWlsOiBcIlwiLFxuICAgICAgICBjb250YWN0UGhvbmU6IFwiXCIsXG4gICAgICAgIHR5cGU6IFwic2FsZXNcIixcbiAgICAgICAgcHJpb3JpdHk6IFwibWVkaXVtXCIsXG4gICAgICAgIHJlYXNvbjogXCJcIixcbiAgICAgICAgbm90ZXM6IFwiXCIsXG4gICAgICAgIGR1ZURhdGU6IFwiXCIsXG4gICAgICB9KTtcbiAgICAgIG9uT3BlbkNoYW5nZShmYWxzZSk7XG5cbiAgICAgIC8vIFJlbG9hZCB0aGUgcGFnZSB0byBzaG93IHRoZSBuZXcgZm9sbG93LXVwXG4gICAgICB3aW5kb3cubG9jYXRpb24ucmVsb2FkKCk7XG4gICAgfSBjYXRjaCAoZXJyKSB7XG4gICAgICBjb25zb2xlLmVycm9yKFwiRXJyb3IgY3JlYXRpbmcgZm9sbG93LXVwOlwiLCBlcnIpO1xuICAgICAgYWxlcnQoZXJyIGluc3RhbmNlb2YgRXJyb3IgPyBlcnIubWVzc2FnZSA6IFwiRmFpbGVkIHRvIGNyZWF0ZSBmb2xsb3ctdXBcIik7XG4gICAgfSBmaW5hbGx5IHtcbiAgICAgIHNldENyZWF0aW5nKGZhbHNlKTtcbiAgICB9XG4gIH07XG5cbiAgY29uc3QgaGFuZGxlQ2FuY2VsID0gKCkgPT4ge1xuICAgIHNldEZvcm1EYXRhKHtcbiAgICAgIGN1c3RvbWVyTmFtZTogXCJcIixcbiAgICAgIGNvbXBhbnlOYW1lOiBcIlwiLFxuICAgICAgY29udGFjdEVtYWlsOiBcIlwiLFxuICAgICAgY29udGFjdFBob25lOiBcIlwiLFxuICAgICAgdHlwZTogXCJzYWxlc1wiLFxuICAgICAgcHJpb3JpdHk6IFwibWVkaXVtXCIsXG4gICAgICByZWFzb246IFwiXCIsXG4gICAgICBub3RlczogXCJcIixcbiAgICAgIGR1ZURhdGU6IFwiXCIsXG4gICAgfSk7XG4gICAgc2V0RXJyb3JzKHt9KTtcbiAgICBvbk9wZW5DaGFuZ2UoZmFsc2UpO1xuICB9O1xuXG4gIC8vIEdldCB0b21vcnJvdydzIGRhdGUgYXMgZGVmYXVsdFxuICBjb25zdCB0b21vcnJvdyA9IG5ldyBEYXRlKCk7XG4gIHRvbW9ycm93LnNldERhdGUodG9tb3Jyb3cuZ2V0RGF0ZSgpICsgMSk7XG4gIGNvbnN0IHRvbW9ycm93U3RyaW5nID0gdG9tb3Jyb3cudG9JU09TdHJpbmcoKS5zcGxpdChcIlRcIilbMF07XG5cbiAgcmV0dXJuIChcbiAgICA8RGlhbG9nIG9wZW49e29wZW59IG9uT3BlbkNoYW5nZT17b25PcGVuQ2hhbmdlfT5cbiAgICAgIDxEaWFsb2dDb250ZW50IGNsYXNzTmFtZT1cIm1heC13LTJ4bCBtYXgtaC1bOTB2aF0gb3ZlcmZsb3cteS1hdXRvXCI+XG4gICAgICAgIDxEaWFsb2dIZWFkZXI+XG4gICAgICAgICAgPERpYWxvZ1RpdGxlPkNyZWF0ZSBOZXcgRm9sbG93LVVwPC9EaWFsb2dUaXRsZT5cbiAgICAgICAgICA8RGlhbG9nRGVzY3JpcHRpb24+XG4gICAgICAgICAgICBBZGQgYSBuZXcgZm9sbG93LXVwIHRhc2sgZm9yIHNhbGVzLCBzZXJ2aWNlLCBvciBvcGVyYXRpb25zLlxuICAgICAgICAgIDwvRGlhbG9nRGVzY3JpcHRpb24+XG4gICAgICAgIDwvRGlhbG9nSGVhZGVyPlxuXG4gICAgICAgIDxmb3JtIG9uU3VibWl0PXtoYW5kbGVTdWJtaXR9IGNsYXNzTmFtZT1cIm10LTYgc3BhY2UteS00XCI+XG4gICAgICAgICAgey8qIEN1c3RvbWVyIE5hbWUgKi99XG4gICAgICAgICAgPGRpdj5cbiAgICAgICAgICAgIDxsYWJlbCBjbGFzc05hbWU9XCJ0ZXh0LXNtIGZvbnQtbWVkaXVtIG1iLTEuNSBibG9ja1wiPlxuICAgICAgICAgICAgICBDdXN0b21lciBOYW1lIDxzcGFuIGNsYXNzTmFtZT1cInRleHQtZGFuZ2VyXCI+Kjwvc3Bhbj5cbiAgICAgICAgICAgIDwvbGFiZWw+XG4gICAgICAgICAgICA8SW5wdXRcbiAgICAgICAgICAgICAgdHlwZT1cInRleHRcIlxuICAgICAgICAgICAgICBwbGFjZWhvbGRlcj1cIkVudGVyIGN1c3RvbWVyIG5hbWVcIlxuICAgICAgICAgICAgICB2YWx1ZT17Zm9ybURhdGEuY3VzdG9tZXJOYW1lfVxuICAgICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IGhhbmRsZUNoYW5nZShcImN1c3RvbWVyTmFtZVwiLCBlLnRhcmdldC52YWx1ZSl9XG4gICAgICAgICAgICAgIGRpc2FibGVkPXtjcmVhdGluZ31cbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgICB7ZXJyb3JzLmN1c3RvbWVyTmFtZSAmJiAoXG4gICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQteHMgdGV4dC1kYW5nZXIgbXQtMVwiPntlcnJvcnMuY3VzdG9tZXJOYW1lfTwvcD5cbiAgICAgICAgICAgICl9XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICB7LyogQ29tcGFueSBOYW1lICovfVxuICAgICAgICAgIDxkaXY+XG4gICAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPVwidGV4dC1zbSBmb250LW1lZGl1bSBtYi0xLjUgYmxvY2tcIj5Db21wYW55IE5hbWU8L2xhYmVsPlxuICAgICAgICAgICAgPElucHV0XG4gICAgICAgICAgICAgIHR5cGU9XCJ0ZXh0XCJcbiAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCJFbnRlciBjb21wYW55IG5hbWUgKG9wdGlvbmFsKVwiXG4gICAgICAgICAgICAgIHZhbHVlPXtmb3JtRGF0YS5jb21wYW55TmFtZX1cbiAgICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBoYW5kbGVDaGFuZ2UoXCJjb21wYW55TmFtZVwiLCBlLnRhcmdldC52YWx1ZSl9XG4gICAgICAgICAgICAgIGRpc2FibGVkPXtjcmVhdGluZ31cbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICB7LyogQ29udGFjdCBJbmZvIC0gRW1haWwgYW5kIFBob25lICovfVxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZ3JpZCBncmlkLWNvbHMtMiBnYXAtNFwiPlxuICAgICAgICAgICAgPGRpdj5cbiAgICAgICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT1cInRleHQtc20gZm9udC1tZWRpdW0gbWItMS41IGJsb2NrXCI+Q29udGFjdCBFbWFpbDwvbGFiZWw+XG4gICAgICAgICAgICAgIDxJbnB1dFxuICAgICAgICAgICAgICAgIHR5cGU9XCJlbWFpbFwiXG4gICAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCJlbWFpbEBleGFtcGxlLmNvbVwiXG4gICAgICAgICAgICAgICAgdmFsdWU9e2Zvcm1EYXRhLmNvbnRhY3RFbWFpbH1cbiAgICAgICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IGhhbmRsZUNoYW5nZShcImNvbnRhY3RFbWFpbFwiLCBlLnRhcmdldC52YWx1ZSl9XG4gICAgICAgICAgICAgICAgZGlzYWJsZWQ9e2NyZWF0aW5nfVxuICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICB7ZXJyb3JzLmNvbnRhY3RFbWFpbCAmJiAoXG4gICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwidGV4dC14cyB0ZXh0LWRhbmdlciBtdC0xXCI+e2Vycm9ycy5jb250YWN0RW1haWx9PC9wPlxuICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPVwidGV4dC1zbSBmb250LW1lZGl1bSBtYi0xLjUgYmxvY2tcIj5Db250YWN0IFBob25lPC9sYWJlbD5cbiAgICAgICAgICAgICAgPElucHV0XG4gICAgICAgICAgICAgICAgdHlwZT1cInRlbFwiXG4gICAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCIoNTU1KSAxMjMtNDU2N1wiXG4gICAgICAgICAgICAgICAgdmFsdWU9e2Zvcm1EYXRhLmNvbnRhY3RQaG9uZX1cbiAgICAgICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IGhhbmRsZUNoYW5nZShcImNvbnRhY3RQaG9uZVwiLCBlLnRhcmdldC52YWx1ZSl9XG4gICAgICAgICAgICAgICAgZGlzYWJsZWQ9e2NyZWF0aW5nfVxuICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICB7LyogVHlwZSBhbmQgUHJpb3JpdHkgKi99XG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdyaWQtY29scy0yIGdhcC00XCI+XG4gICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPVwidGV4dC1zbSBmb250LW1lZGl1bSBtYi0xLjUgYmxvY2tcIj5cbiAgICAgICAgICAgICAgICBUeXBlIDxzcGFuIGNsYXNzTmFtZT1cInRleHQtZGFuZ2VyXCI+Kjwvc3Bhbj5cbiAgICAgICAgICAgICAgPC9sYWJlbD5cbiAgICAgICAgICAgICAgPFNlbGVjdFxuICAgICAgICAgICAgICAgIHZhbHVlPXtmb3JtRGF0YS50eXBlfVxuICAgICAgICAgICAgICAgIG9uVmFsdWVDaGFuZ2U9eyh2YWx1ZSkgPT4gaGFuZGxlQ2hhbmdlKFwidHlwZVwiLCB2YWx1ZSl9XG4gICAgICAgICAgICAgICAgZGlzYWJsZWQ9e2NyZWF0aW5nfVxuICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgPFNlbGVjdFRyaWdnZXI+XG4gICAgICAgICAgICAgICAgICA8U2VsZWN0VmFsdWUgLz5cbiAgICAgICAgICAgICAgICA8L1NlbGVjdFRyaWdnZXI+XG4gICAgICAgICAgICAgICAgPFNlbGVjdENvbnRlbnQ+XG4gICAgICAgICAgICAgICAgICA8U2VsZWN0SXRlbSB2YWx1ZT1cInNhbGVzXCI+U2FsZXM8L1NlbGVjdEl0ZW0+XG4gICAgICAgICAgICAgICAgICA8U2VsZWN0SXRlbSB2YWx1ZT1cInNlcnZpY2VcIj5TZXJ2aWNlPC9TZWxlY3RJdGVtPlxuICAgICAgICAgICAgICAgICAgPFNlbGVjdEl0ZW0gdmFsdWU9XCJvcGVyYXRpb25zXCI+T3BlcmF0aW9uczwvU2VsZWN0SXRlbT5cbiAgICAgICAgICAgICAgICA8L1NlbGVjdENvbnRlbnQ+XG4gICAgICAgICAgICAgIDwvU2VsZWN0PlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPVwidGV4dC1zbSBmb250LW1lZGl1bSBtYi0xLjUgYmxvY2tcIj5cbiAgICAgICAgICAgICAgICBQcmlvcml0eSA8c3BhbiBjbGFzc05hbWU9XCJ0ZXh0LWRhbmdlclwiPio8L3NwYW4+XG4gICAgICAgICAgICAgIDwvbGFiZWw+XG4gICAgICAgICAgICAgIDxTZWxlY3RcbiAgICAgICAgICAgICAgICB2YWx1ZT17Zm9ybURhdGEucHJpb3JpdHl9XG4gICAgICAgICAgICAgICAgb25WYWx1ZUNoYW5nZT17KHZhbHVlKSA9PiBoYW5kbGVDaGFuZ2UoXCJwcmlvcml0eVwiLCB2YWx1ZSl9XG4gICAgICAgICAgICAgICAgZGlzYWJsZWQ9e2NyZWF0aW5nfVxuICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgPFNlbGVjdFRyaWdnZXI+XG4gICAgICAgICAgICAgICAgICA8U2VsZWN0VmFsdWUgLz5cbiAgICAgICAgICAgICAgICA8L1NlbGVjdFRyaWdnZXI+XG4gICAgICAgICAgICAgICAgPFNlbGVjdENvbnRlbnQ+XG4gICAgICAgICAgICAgICAgICA8U2VsZWN0SXRlbSB2YWx1ZT1cImxvd1wiPkxvdzwvU2VsZWN0SXRlbT5cbiAgICAgICAgICAgICAgICAgIDxTZWxlY3RJdGVtIHZhbHVlPVwibWVkaXVtXCI+TWVkaXVtPC9TZWxlY3RJdGVtPlxuICAgICAgICAgICAgICAgICAgPFNlbGVjdEl0ZW0gdmFsdWU9XCJoaWdoXCI+SGlnaDwvU2VsZWN0SXRlbT5cbiAgICAgICAgICAgICAgICAgIDxTZWxlY3RJdGVtIHZhbHVlPVwidXJnZW50XCI+VXJnZW50PC9TZWxlY3RJdGVtPlxuICAgICAgICAgICAgICAgIDwvU2VsZWN0Q29udGVudD5cbiAgICAgICAgICAgICAgPC9TZWxlY3Q+XG4gICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgIHsvKiBEdWUgRGF0ZSAqL31cbiAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgPGxhYmVsIGNsYXNzTmFtZT1cInRleHQtc20gZm9udC1tZWRpdW0gbWItMS41IGJsb2NrXCI+XG4gICAgICAgICAgICAgIER1ZSBEYXRlIDxzcGFuIGNsYXNzTmFtZT1cInRleHQtZGFuZ2VyXCI+Kjwvc3Bhbj5cbiAgICAgICAgICAgIDwvbGFiZWw+XG4gICAgICAgICAgICA8SW5wdXRcbiAgICAgICAgICAgICAgdHlwZT1cImRhdGVcIlxuICAgICAgICAgICAgICB2YWx1ZT17Zm9ybURhdGEuZHVlRGF0ZX1cbiAgICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBoYW5kbGVDaGFuZ2UoXCJkdWVEYXRlXCIsIGUudGFyZ2V0LnZhbHVlKX1cbiAgICAgICAgICAgICAgZGlzYWJsZWQ9e2NyZWF0aW5nfVxuICAgICAgICAgICAgICBtaW49e25ldyBEYXRlKCkudG9JU09TdHJpbmcoKS5zcGxpdChcIlRcIilbMF19XG4gICAgICAgICAgICAvPlxuICAgICAgICAgICAge2Vycm9ycy5kdWVEYXRlICYmIChcbiAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwidGV4dC14cyB0ZXh0LWRhbmdlciBtdC0xXCI+e2Vycm9ycy5kdWVEYXRlfTwvcD5cbiAgICAgICAgICAgICl9XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICB7LyogUmVhc29uICovfVxuICAgICAgICAgIDxkaXY+XG4gICAgICAgICAgICA8bGFiZWwgY2xhc3NOYW1lPVwidGV4dC1zbSBmb250LW1lZGl1bSBtYi0xLjUgYmxvY2tcIj5cbiAgICAgICAgICAgICAgUmVhc29uIGZvciBGb2xsb3ctVXAgPHNwYW4gY2xhc3NOYW1lPVwidGV4dC1kYW5nZXJcIj4qPC9zcGFuPlxuICAgICAgICAgICAgPC9sYWJlbD5cbiAgICAgICAgICAgIDxJbnB1dFxuICAgICAgICAgICAgICB0eXBlPVwidGV4dFwiXG4gICAgICAgICAgICAgIHBsYWNlaG9sZGVyPVwiZS5nLiwgUXVvdGUgZm9sbG93LXVwLCBPcmRlciBjaGVjay1pbiwgU3VwcG9ydCB0aWNrZXRcIlxuICAgICAgICAgICAgICB2YWx1ZT17Zm9ybURhdGEucmVhc29ufVxuICAgICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IGhhbmRsZUNoYW5nZShcInJlYXNvblwiLCBlLnRhcmdldC52YWx1ZSl9XG4gICAgICAgICAgICAgIGRpc2FibGVkPXtjcmVhdGluZ31cbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgICB7ZXJyb3JzLnJlYXNvbiAmJiAoXG4gICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQteHMgdGV4dC1kYW5nZXIgbXQtMVwiPntlcnJvcnMucmVhc29ufTwvcD5cbiAgICAgICAgICAgICl9XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICB7LyogTm90ZXMgKi99XG4gICAgICAgICAgPGRpdj5cbiAgICAgICAgICAgIDxsYWJlbCBjbGFzc05hbWU9XCJ0ZXh0LXNtIGZvbnQtbWVkaXVtIG1iLTEuNSBibG9ja1wiPkFkZGl0aW9uYWwgTm90ZXM8L2xhYmVsPlxuICAgICAgICAgICAgPFRleHRhcmVhXG4gICAgICAgICAgICAgIHBsYWNlaG9sZGVyPVwiRW50ZXIgYW55IGFkZGl0aW9uYWwgY29udGV4dCBvciBub3Rlcy4uLlwiXG4gICAgICAgICAgICAgIHZhbHVlPXtmb3JtRGF0YS5ub3Rlc31cbiAgICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBoYW5kbGVDaGFuZ2UoXCJub3Rlc1wiLCBlLnRhcmdldC52YWx1ZSl9XG4gICAgICAgICAgICAgIGRpc2FibGVkPXtjcmVhdGluZ31cbiAgICAgICAgICAgICAgcm93cz17NH1cbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICB7LyogQWN0aW9uIEJ1dHRvbnMgKi99XG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGp1c3RpZnktZW5kIGdhcC0zIHB0LTQgYm9yZGVyLXRcIj5cbiAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgdHlwZT1cImJ1dHRvblwiXG4gICAgICAgICAgICAgIHZhcmlhbnQ9XCJvdXRsaW5lXCJcbiAgICAgICAgICAgICAgb25DbGljaz17aGFuZGxlQ2FuY2VsfVxuICAgICAgICAgICAgICBkaXNhYmxlZD17Y3JlYXRpbmd9XG4gICAgICAgICAgICA+XG4gICAgICAgICAgICAgIENhbmNlbFxuICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICA8QnV0dG9uIHR5cGU9XCJzdWJtaXRcIiBkaXNhYmxlZD17Y3JlYXRpbmd9PlxuICAgICAgICAgICAgICB7Y3JlYXRpbmcgPyAoXG4gICAgICAgICAgICAgICAgPD5cbiAgICAgICAgICAgICAgICAgIDxMb2FkZXIyIGNsYXNzTmFtZT1cImgtNCB3LTQgbXItMiBhbmltYXRlLXNwaW5cIiAvPlxuICAgICAgICAgICAgICAgICAgQ3JlYXRpbmcuLi5cbiAgICAgICAgICAgICAgICA8Lz5cbiAgICAgICAgICAgICAgKSA6IChcbiAgICAgICAgICAgICAgICBcIkNyZWF0ZSBGb2xsb3ctVXBcIlxuICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgPC9kaXY+XG4gICAgICAgIDwvZm9ybT5cbiAgICAgIDwvRGlhbG9nQ29udGVudD5cbiAgICA8L0RpYWxvZz5cbiAgKTtcbn1cbiJdLCJmaWxlIjoiQzovUHJvamVjdHMvU291cmNlIDQgSW5kdXN0cmllcy9zcmMvcGFnZXMvc2FsZXMvZm9sbG93LXVwcy9jcmVhdGUtZm9sbG93LXVwLWRpYWxvZy50c3gifQ==

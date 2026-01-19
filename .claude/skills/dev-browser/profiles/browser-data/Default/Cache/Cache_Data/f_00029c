@@ -1,0 +1,1826 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/marketing/image-creator/image-creator-client.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=dadb5dea"; const Fragment = __vite__cjsImport0_react_jsxDevRuntime["Fragment"]; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=dadb5dea"; const useState = __vite__cjsImport3_react["useState"]; const useMemo = __vite__cjsImport3_react["useMemo"];
+import { Sparkles, Wand2, LayoutTemplate, Image, Download, Upload, Loader2, Search, Trash2, X, Calendar, FileImage, Maximize2, ExternalLink } from "/node_modules/.vite/deps/lucide-react.js?v=dadb5dea";
+import { SectionHeader } from "/src/components/section-header.tsx";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
+import { InlineAlert } from "/src/components/ui/inline-alert.tsx";
+import { Textarea } from "/src/components/ui/textarea.tsx";
+import { Label } from "/src/components/ui/label.tsx";
+import { Button } from "/src/components/ui/button.tsx";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "/src/components/ui/select.tsx";
+import { Input } from "/src/components/ui/input.tsx";
+import { Badge } from "/src/components/ui/badge.tsx";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "/src/components/ui/dialog.tsx";
+import { Checkbox } from "/src/components/ui/checkbox.tsx";
+import { useAuth } from "/src/vite/auth/auth-provider.tsx?t=1768429265440";
+const TABS = [
+  { id: "generate", label: "Generate", icon: /* @__PURE__ */ jsxDEV(Sparkles, { className: "h-4 w-4" }, void 0, false, {
+    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+    lineNumber: 70,
+    columnNumber: 44
+  }, this) },
+  { id: "enhance", label: "Enhance", icon: /* @__PURE__ */ jsxDEV(Wand2, { className: "h-4 w-4" }, void 0, false, {
+    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+    lineNumber: 71,
+    columnNumber: 42
+  }, this) },
+  { id: "templates", label: "Templates", icon: /* @__PURE__ */ jsxDEV(LayoutTemplate, { className: "h-4 w-4" }, void 0, false, {
+    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+    lineNumber: 72,
+    columnNumber: 46
+  }, this) },
+  { id: "library", label: "Library", icon: /* @__PURE__ */ jsxDEV(Image, { className: "h-4 w-4" }, void 0, false, {
+    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+    lineNumber: 73,
+    columnNumber: 42
+  }, this) }
+];
+const STYLES = [
+  { value: "photorealistic", label: "Photorealistic" },
+  { value: "illustration", label: "Illustration" },
+  { value: "minimalist", label: "Minimalist" },
+  { value: "sketch", label: "Sketch" },
+  { value: "3d-render", label: "3D Render" },
+  { value: "watercolor", label: "Watercolor" }
+];
+const ASPECT_RATIOS = [
+  { value: "1:1", label: "1:1 (Square)", dims: "1024x1024" },
+  { value: "16:9", label: "16:9 (Landscape)", dims: "1920x1080" },
+  { value: "9:16", label: "9:16 (Portrait)", dims: "1080x1920" },
+  { value: "4:3", label: "4:3 (Standard)", dims: "1600x1200" }
+];
+export function ImageCreatorClient({ images, templates, usage }) {
+  _s();
+  const auth = useAuth();
+  const [activeTab, setActiveTab] = useState("generate");
+  const [prompt, setPrompt] = useState("");
+  const [style, setStyle] = useState("photorealistic");
+  const [aspectRatio, setAspectRatio] = useState("1:1");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedImages, setGeneratedImages] = useState([]);
+  const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sourceTypeFilter, setSourceTypeFilter] = useState("all");
+  const [selectedImages, setSelectedImages] = useState(/* @__PURE__ */ new Set());
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const filteredImages = useMemo(() => {
+    if (!images.data) return [];
+    let filtered = images.data;
+    if (sourceTypeFilter !== "all") {
+      filtered = filtered.filter((img) => img.source_type === sourceTypeFilter);
+    }
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((img) => {
+        const promptMatch = img.prompt?.toLowerCase().includes(query);
+        const idMatch = img.id.toLowerCase().includes(query);
+        return promptMatch || idMatch;
+      });
+    }
+    return filtered;
+  }, [images.data, sourceTypeFilter, searchQuery]);
+  const formatFileSize = (bytes) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  };
+  const getSourceTypeLabel = (sourceType) => {
+    const labels = {
+      ai_generated: "AI Generated",
+      enhanced: "Enhanced",
+      uploaded: "Uploaded",
+      template: "Template"
+    };
+    return labels[sourceType];
+  };
+  const getSourceTypeBadgeVariant = (sourceType) => {
+    const variants = {
+      ai_generated: "default",
+      enhanced: "secondary",
+      uploaded: "outline",
+      template: "outline"
+    };
+    return variants[sourceType];
+  };
+  const handleDeleteImage = async (imageId) => {
+    if (!confirm("Are you sure you want to delete this image? This action cannot be undone.")) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/image-generation/${imageId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${auth.session?.access_token}`
+        }
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Failed to delete image");
+      }
+      if (selectedImage?.id === imageId) {
+        setSelectedImage(null);
+      }
+      window.location.reload();
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert(err instanceof Error ? err.message : "Failed to delete image");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+  const handleBulkDelete = async () => {
+    if (selectedImages.size === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedImages.size} image(s)? This action cannot be undone.`)) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      const deletePromises = Array.from(selectedImages).map(
+        (imageId) => fetch(`/api/image-generation/${imageId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${auth.session?.access_token}`
+          }
+        })
+      );
+      await Promise.all(deletePromises);
+      setSelectedImages(/* @__PURE__ */ new Set());
+      window.location.reload();
+    } catch (err) {
+      console.error("Bulk delete error:", err);
+      alert("Failed to delete some images");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+  const handleDownloadImage = (imageUrl, imageId) => {
+    const link = document.createElement("a");
+    link.href = imageUrl;
+    link.download = `image-${imageId}.png`;
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  const toggleImageSelection = (imageId) => {
+    const newSelection = new Set(selectedImages);
+    if (newSelection.has(imageId)) {
+      newSelection.delete(imageId);
+    } else {
+      newSelection.add(imageId);
+    }
+    setSelectedImages(newSelection);
+  };
+  return /* @__PURE__ */ jsxDEV("div", { className: "flex flex-col gap-8 p-6", children: [
+    /* @__PURE__ */ jsxDEV(
+      SectionHeader,
+      {
+        title: "Image Creator",
+        description: "Generate marketing images and product visuals using AI-powered tools"
+      },
+      void 0,
+      false,
+      {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+        lineNumber: 267,
+        columnNumber: 7
+      },
+      this
+    ),
+    /* @__PURE__ */ jsxDEV("div", { className: "border-b border-border", children: /* @__PURE__ */ jsxDEV("div", { className: "flex gap-2", children: TABS.map(
+      (tab) => /* @__PURE__ */ jsxDEV(
+        "button",
+        {
+          onClick: () => setActiveTab(tab.id),
+          className: `
+                flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors
+                border-b-2 -mb-px
+                ${activeTab === tab.id ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"}
+              `,
+          children: [
+            tab.icon,
+            tab.label
+          ]
+        },
+        tab.id,
+        true,
+        {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 276,
+          columnNumber: 11
+        },
+        this
+      )
+    ) }, void 0, false, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+      lineNumber: 274,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+      lineNumber: 273,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "space-y-6", children: [
+      activeTab === "generate" && /* @__PURE__ */ jsxDEV("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxDEV(Card, { children: [
+          /* @__PURE__ */ jsxDEV(CardHeader, { children: [
+            /* @__PURE__ */ jsxDEV(CardTitle, { children: "AI Image Generation" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 302,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV(CardDescription, { children: "Create unique marketing images and product visuals from text descriptions" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 303,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 301,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV(
+            "form",
+            {
+              onSubmit: async (e) => {
+                e.preventDefault();
+                if (!prompt.trim() || isGenerating) return;
+                setIsGenerating(true);
+                setError(null);
+                try {
+                  const response = await fetch("/api/marketing/image-generation/generate", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                      prompt: prompt.trim(),
+                      style,
+                      aspectRatio,
+                      numberOfImages: 1
+                    })
+                  });
+                  const result = await response.json();
+                  if (!response.ok || !result.success) {
+                    throw new Error(result.error || "Failed to generate image");
+                  }
+                  setGeneratedImages(result.data.images || []);
+                  setPrompt("");
+                } catch (err) {
+                  console.error("Image generation error:", err);
+                  setError(err instanceof Error ? err.message : "Failed to generate image");
+                } finally {
+                  setIsGenerating(false);
+                }
+              },
+              className: "space-y-6",
+              children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+                  /* @__PURE__ */ jsxDEV(Label, { htmlFor: "prompt", children: "Image Description" }, void 0, false, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 349,
+                    columnNumber: 21
+                  }, this),
+                  /* @__PURE__ */ jsxDEV(
+                    Textarea,
+                    {
+                      id: "prompt",
+                      placeholder: "Describe the image you want to generate... (e.g., 'Professional product photo of a blue safety bollard on white background with dramatic lighting')",
+                      value: prompt,
+                      onChange: (e) => setPrompt(e.target.value),
+                      className: "min-h-[120px] resize-none",
+                      disabled: isGenerating
+                    },
+                    void 0,
+                    false,
+                    {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 350,
+                      columnNumber: 21
+                    },
+                    this
+                  ),
+                  /* @__PURE__ */ jsxDEV("p", { className: "text-xs text-muted-foreground", children: "Be specific about colors, lighting, composition, and mood for best results" }, void 0, false, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 358,
+                    columnNumber: 21
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 348,
+                  columnNumber: 19
+                }, this),
+                /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
+                  /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+                    /* @__PURE__ */ jsxDEV(Label, { htmlFor: "style", children: "Style" }, void 0, false, {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 366,
+                      columnNumber: 23
+                    }, this),
+                    /* @__PURE__ */ jsxDEV(Select, { value: style, onValueChange: setStyle, disabled: isGenerating, children: [
+                      /* @__PURE__ */ jsxDEV(SelectTrigger, { id: "style", children: /* @__PURE__ */ jsxDEV(SelectValue, { placeholder: "Select style" }, void 0, false, {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 369,
+                        columnNumber: 27
+                      }, this) }, void 0, false, {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 368,
+                        columnNumber: 25
+                      }, this),
+                      /* @__PURE__ */ jsxDEV(SelectContent, { children: STYLES.map(
+                        (s) => /* @__PURE__ */ jsxDEV(SelectItem, { value: s.value, children: s.label }, s.value, false, {
+                          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                          lineNumber: 373,
+                          columnNumber: 25
+                        }, this)
+                      ) }, void 0, false, {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 371,
+                        columnNumber: 25
+                      }, this)
+                    ] }, void 0, true, {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 367,
+                      columnNumber: 23
+                    }, this)
+                  ] }, void 0, true, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 365,
+                    columnNumber: 21
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+                    /* @__PURE__ */ jsxDEV(Label, { htmlFor: "aspectRatio", children: "Aspect Ratio" }, void 0, false, {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 382,
+                      columnNumber: 23
+                    }, this),
+                    /* @__PURE__ */ jsxDEV(Select, { value: aspectRatio, onValueChange: setAspectRatio, disabled: isGenerating, children: [
+                      /* @__PURE__ */ jsxDEV(SelectTrigger, { id: "aspectRatio", children: /* @__PURE__ */ jsxDEV(SelectValue, { placeholder: "Select aspect ratio" }, void 0, false, {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 385,
+                        columnNumber: 27
+                      }, this) }, void 0, false, {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 384,
+                        columnNumber: 25
+                      }, this),
+                      /* @__PURE__ */ jsxDEV(SelectContent, { children: ASPECT_RATIOS.map(
+                        (ar) => /* @__PURE__ */ jsxDEV(SelectItem, { value: ar.value, children: [
+                          ar.label,
+                          " ",
+                          /* @__PURE__ */ jsxDEV("span", { className: "text-muted-foreground", children: [
+                            "(",
+                            ar.dims,
+                            ")"
+                          ] }, void 0, true, {
+                            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                            lineNumber: 390,
+                            columnNumber: 42
+                          }, this)
+                        ] }, ar.value, true, {
+                          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                          lineNumber: 389,
+                          columnNumber: 25
+                        }, this)
+                      ) }, void 0, false, {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 387,
+                        columnNumber: 25
+                      }, this)
+                    ] }, void 0, true, {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 383,
+                      columnNumber: 23
+                    }, this)
+                  ] }, void 0, true, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 381,
+                    columnNumber: 21
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 364,
+                  columnNumber: 19
+                }, this),
+                error && /* @__PURE__ */ jsxDEV(InlineAlert, { variant: "error", title: "Generation Failed", message: error }, void 0, false, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 400,
+                  columnNumber: 17
+                }, this),
+                /* @__PURE__ */ jsxDEV(
+                  Button,
+                  {
+                    type: "submit",
+                    size: "lg",
+                    disabled: !prompt.trim() || isGenerating,
+                    className: "w-full",
+                    children: isGenerating ? /* @__PURE__ */ jsxDEV(Fragment, { children: [
+                      /* @__PURE__ */ jsxDEV(Loader2, { className: "h-4 w-4 animate-spin" }, void 0, false, {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 412,
+                        columnNumber: 25
+                      }, this),
+                      "Generating Image..."
+                    ] }, void 0, true, {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 411,
+                      columnNumber: 19
+                    }, this) : /* @__PURE__ */ jsxDEV(Fragment, { children: [
+                      /* @__PURE__ */ jsxDEV(Sparkles, { className: "h-4 w-4" }, void 0, false, {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 417,
+                        columnNumber: 25
+                      }, this),
+                      "Generate Image"
+                    ] }, void 0, true, {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 416,
+                      columnNumber: 19
+                    }, this)
+                  },
+                  void 0,
+                  false,
+                  {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 404,
+                    columnNumber: 19
+                  },
+                  this
+                )
+              ]
+            },
+            void 0,
+            true,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 308,
+              columnNumber: 17
+            },
+            this
+          ) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 307,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 300,
+          columnNumber: 13
+        }, this),
+        generatedImages.length > 0 && /* @__PURE__ */ jsxDEV(Card, { children: [
+          /* @__PURE__ */ jsxDEV(CardHeader, { children: [
+            /* @__PURE__ */ jsxDEV(CardTitle, { children: "Generated Images" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 430,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV(CardDescription, { children: "Your AI-generated images are ready. Download or save them to your library." }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 431,
+              columnNumber: 19
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 429,
+            columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4", children: generatedImages.map(
+            (img) => /* @__PURE__ */ jsxDEV("div", { className: "group relative", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "aspect-square rounded-lg overflow-hidden border border-border bg-muted", children: /* @__PURE__ */ jsxDEV(
+                "img",
+                {
+                  src: img.imageUrl,
+                  alt: "Generated image",
+                  className: "w-full h-full object-cover"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 440,
+                  columnNumber: 27
+                },
+                this
+              ) }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 439,
+                columnNumber: 25
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "mt-3 flex gap-2", children: [
+                /* @__PURE__ */ jsxDEV(
+                  Button,
+                  {
+                    variant: "outline",
+                    size: "sm",
+                    className: "flex-1",
+                    onClick: () => {
+                      window.open(img.imageUrl, "_blank");
+                    },
+                    children: [
+                      /* @__PURE__ */ jsxDEV(Download, { className: "h-3 w-3" }, void 0, false, {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 457,
+                        columnNumber: 29
+                      }, this),
+                      "Download"
+                    ]
+                  },
+                  void 0,
+                  true,
+                  {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 449,
+                    columnNumber: 27
+                  },
+                  this
+                ),
+                /* @__PURE__ */ jsxDEV(
+                  Button,
+                  {
+                    variant: "outline",
+                    size: "sm",
+                    className: "flex-1",
+                    onClick: () => {
+                      alert("Save to library feature coming soon!");
+                    },
+                    children: [
+                      /* @__PURE__ */ jsxDEV(Image, { className: "h-3 w-3" }, void 0, false, {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 469,
+                        columnNumber: 29
+                      }, this),
+                      "Save to Library"
+                    ]
+                  },
+                  void 0,
+                  true,
+                  {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 460,
+                    columnNumber: 27
+                  },
+                  this
+                ),
+                /* @__PURE__ */ jsxDEV(
+                  Button,
+                  {
+                    variant: "outline",
+                    size: "sm",
+                    className: "flex-1",
+                    onClick: () => {
+                      alert("Push to Shopify feature coming soon!");
+                    },
+                    children: [
+                      /* @__PURE__ */ jsxDEV(Upload, { className: "h-3 w-3" }, void 0, false, {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 481,
+                        columnNumber: 29
+                      }, this),
+                      "Push to Shopify"
+                    ]
+                  },
+                  void 0,
+                  true,
+                  {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 472,
+                    columnNumber: 27
+                  },
+                  this
+                )
+              ] }, void 0, true, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 448,
+                columnNumber: 25
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "mt-2 text-xs text-muted-foreground", children: [
+                img.width,
+                " × ",
+                img.height,
+                "px"
+              ] }, void 0, true, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 486,
+                columnNumber: 25
+              }, this)
+            ] }, img.id, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 438,
+              columnNumber: 17
+            }, this)
+          ) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 436,
+            columnNumber: 19
+          }, this) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 435,
+            columnNumber: 17
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 428,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV(Card, { children: [
+          /* @__PURE__ */ jsxDEV(CardHeader, { children: [
+            /* @__PURE__ */ jsxDEV(CardTitle, { children: "Tips for Better Results" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 499,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV(CardDescription, { children: "How to write effective prompts" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 500,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 498,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV("ul", { className: "space-y-2 text-sm text-muted-foreground", children: [
+            /* @__PURE__ */ jsxDEV("li", { children: "• Be specific about colors, materials, and textures" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 504,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: '• Describe the lighting and mood (e.g., "dramatic lighting", "soft natural light")' }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 505,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: '• Include composition details (e.g., "centered", "close-up", "wide angle")' }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 506,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: "• Mention the background and environment" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 507,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: "• Specify camera angle or perspective if needed" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 508,
+              columnNumber: 19
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 503,
+            columnNumber: 17
+          }, this) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 502,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 497,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+        lineNumber: 299,
+        columnNumber: 9
+      }, this),
+      activeTab === "enhance" && /* @__PURE__ */ jsxDEV("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxDEV(Card, { children: [
+          /* @__PURE__ */ jsxDEV(CardHeader, { children: [
+            /* @__PURE__ */ jsxDEV(CardTitle, { children: "Image Enhancement" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 519,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV(CardDescription, { children: "Edit and improve existing images with AI-powered tools" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 520,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 518,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV(
+            InlineAlert,
+            {
+              variant: "info",
+              title: "Phase 1 MVP",
+              message: "Image enhancement tools will be implemented in the next phase. This section will include background removal, upscaling, and editing capabilities."
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 525,
+              columnNumber: 17
+            },
+            this
+          ) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 524,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 517,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(Card, { children: [
+          /* @__PURE__ */ jsxDEV(CardHeader, { children: [
+            /* @__PURE__ */ jsxDEV(CardTitle, { children: "Available Enhancements" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 535,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV(CardDescription, { children: "Planned enhancement features" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 536,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 534,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV("ul", { className: "space-y-2 text-sm text-muted-foreground", children: [
+            /* @__PURE__ */ jsxDEV("li", { children: "• Background removal and replacement" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 540,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: "• Image upscaling and quality improvement" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 541,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: "• Object removal and inpainting" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 542,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: "• Color correction and adjustments" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 543,
+              columnNumber: 19
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 539,
+            columnNumber: 17
+          }, this) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 538,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 533,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+        lineNumber: 516,
+        columnNumber: 9
+      }, this),
+      activeTab === "templates" && /* @__PURE__ */ jsxDEV("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxDEV(Card, { children: [
+          /* @__PURE__ */ jsxDEV(CardHeader, { children: [
+            /* @__PURE__ */ jsxDEV(CardTitle, { children: "Marketing Templates" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 554,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV(CardDescription, { children: "Pre-designed templates for social media, ads, and promotional materials" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 555,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 553,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV(
+            InlineAlert,
+            {
+              variant: "info",
+              title: "Phase 1 MVP",
+              message: "Template library will be implemented in the next phase. This section will include social media posts, ad banners, and promotional graphics."
+            },
+            void 0,
+            false,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 560,
+              columnNumber: 17
+            },
+            this
+          ) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 559,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 552,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(Card, { children: [
+          /* @__PURE__ */ jsxDEV(CardHeader, { children: [
+            /* @__PURE__ */ jsxDEV(CardTitle, { children: "Template Categories" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 570,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV(CardDescription, { children: "Planned template types" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 571,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 569,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV("ul", { className: "space-y-2 text-sm text-muted-foreground", children: [
+            /* @__PURE__ */ jsxDEV("li", { children: "• Social media posts (Instagram, Facebook, LinkedIn)" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 575,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: "• Display ads (Google Ads, banner ads)" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 576,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: "• Email marketing headers and graphics" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 577,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("li", { children: "• Product catalog and e-commerce images" }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 578,
+              columnNumber: 19
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 574,
+            columnNumber: 17
+          }, this) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 573,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 568,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+        lineNumber: 551,
+        columnNumber: 9
+      }, this),
+      activeTab === "library" && /* @__PURE__ */ jsxDEV("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxDEV(Card, { children: /* @__PURE__ */ jsxDEV(CardContent, { className: "pt-6", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "flex flex-col md:flex-row gap-4", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "flex-1", children: /* @__PURE__ */ jsxDEV("div", { className: "relative", children: [
+              /* @__PURE__ */ jsxDEV(Search, { className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 594,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV(
+                Input,
+                {
+                  placeholder: "Search by prompt or ID...",
+                  value: searchQuery,
+                  onChange: (e) => setSearchQuery(e.target.value),
+                  className: "pl-10"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 595,
+                  columnNumber: 23
+                },
+                this
+              ),
+              searchQuery && /* @__PURE__ */ jsxDEV(
+                "button",
+                {
+                  onClick: () => setSearchQuery(""),
+                  className: "absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground",
+                  children: /* @__PURE__ */ jsxDEV(X, { className: "h-4 w-4" }, void 0, false, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 606,
+                    columnNumber: 27
+                  }, this)
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 602,
+                  columnNumber: 21
+                },
+                this
+              )
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 593,
+              columnNumber: 21
+            }, this) }, void 0, false, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 592,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "flex gap-2 flex-wrap", children: [
+              /* @__PURE__ */ jsxDEV(
+                Button,
+                {
+                  variant: sourceTypeFilter === "all" ? "default" : "outline",
+                  size: "sm",
+                  onClick: () => setSourceTypeFilter("all"),
+                  children: "All"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 614,
+                  columnNumber: 21
+                },
+                this
+              ),
+              /* @__PURE__ */ jsxDEV(
+                Button,
+                {
+                  variant: sourceTypeFilter === "ai_generated" ? "default" : "outline",
+                  size: "sm",
+                  onClick: () => setSourceTypeFilter("ai_generated"),
+                  children: "AI Generated"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 621,
+                  columnNumber: 21
+                },
+                this
+              ),
+              /* @__PURE__ */ jsxDEV(
+                Button,
+                {
+                  variant: sourceTypeFilter === "enhanced" ? "default" : "outline",
+                  size: "sm",
+                  onClick: () => setSourceTypeFilter("enhanced"),
+                  children: "Enhanced"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 628,
+                  columnNumber: 21
+                },
+                this
+              ),
+              /* @__PURE__ */ jsxDEV(
+                Button,
+                {
+                  variant: sourceTypeFilter === "uploaded" ? "default" : "outline",
+                  size: "sm",
+                  onClick: () => setSourceTypeFilter("uploaded"),
+                  children: "Uploaded"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 635,
+                  columnNumber: 21
+                },
+                this
+              ),
+              /* @__PURE__ */ jsxDEV(
+                Button,
+                {
+                  variant: sourceTypeFilter === "template" ? "default" : "outline",
+                  size: "sm",
+                  onClick: () => setSourceTypeFilter("template"),
+                  children: "Template"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 642,
+                  columnNumber: 21
+                },
+                this
+              )
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 613,
+              columnNumber: 19
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 590,
+            columnNumber: 17
+          }, this),
+          selectedImages.size > 0 && /* @__PURE__ */ jsxDEV("div", { className: "mt-4 flex items-center gap-4 p-3 bg-muted rounded-lg", children: [
+            /* @__PURE__ */ jsxDEV("span", { className: "text-sm font-medium", children: [
+              selectedImages.size,
+              " image(s) selected"
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 655,
+              columnNumber: 21
+            }, this),
+            /* @__PURE__ */ jsxDEV(
+              Button,
+              {
+                variant: "destructive",
+                size: "sm",
+                onClick: handleBulkDelete,
+                disabled: isDeleting,
+                children: [
+                  /* @__PURE__ */ jsxDEV(Trash2, { className: "h-4 w-4" }, void 0, false, {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 664,
+                    columnNumber: 23
+                  }, this),
+                  "Delete Selected"
+                ]
+              },
+              void 0,
+              true,
+              {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 658,
+                columnNumber: 21
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV(
+              Button,
+              {
+                variant: "outline",
+                size: "sm",
+                onClick: () => setSelectedImages(/* @__PURE__ */ new Set()),
+                children: "Clear Selection"
+              },
+              void 0,
+              false,
+              {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 667,
+                columnNumber: 21
+              },
+              this
+            )
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 654,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 589,
+          columnNumber: 15
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 588,
+          columnNumber: 13
+        }, this),
+        images.data && /* @__PURE__ */ jsxDEV("div", { className: "text-sm text-muted-foreground", children: [
+          "Showing ",
+          filteredImages.length,
+          " of ",
+          images.data.length,
+          " images",
+          images.source === "sample" && /* @__PURE__ */ jsxDEV("span", { className: "ml-2 text-amber-600", children: "(Sample Data)" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 684,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 681,
+          columnNumber: 11
+        }, this),
+        filteredImages.length > 0 ? /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4", children: filteredImages.map(
+          (img) => /* @__PURE__ */ jsxDEV(Card, { className: "group overflow-hidden hover:shadow-lg transition-shadow", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "relative", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "absolute top-2 left-2 z-10", children: /* @__PURE__ */ jsxDEV(
+                Checkbox,
+                {
+                  checked: selectedImages.has(img.id),
+                  onCheckedChange: () => toggleImageSelection(img.id),
+                  className: "bg-white shadow-md"
+                },
+                void 0,
+                false,
+                {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 697,
+                  columnNumber: 25
+                },
+                this
+              ) }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 696,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV(
+                "button",
+                {
+                  onClick: () => setSelectedImage(img),
+                  className: "w-full aspect-square overflow-hidden bg-muted relative",
+                  children: [
+                    /* @__PURE__ */ jsxDEV(
+                      "img",
+                      {
+                        src: img.thumbnail_url || img.image_url,
+                        alt: img.prompt || "Generated image",
+                        className: "w-full h-full object-cover transition-transform group-hover:scale-105"
+                      },
+                      void 0,
+                      false,
+                      {
+                        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                        lineNumber: 709,
+                        columnNumber: 25
+                      },
+                      this
+                    ),
+                    /* @__PURE__ */ jsxDEV("div", { className: "absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center", children: /* @__PURE__ */ jsxDEV(Maximize2, { className: "h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" }, void 0, false, {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 715,
+                      columnNumber: 27
+                    }, this) }, void 0, false, {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 714,
+                      columnNumber: 25
+                    }, this)
+                  ]
+                },
+                void 0,
+                true,
+                {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 705,
+                  columnNumber: 23
+                },
+                this
+              ),
+              img.is_pushed_to_shopify && /* @__PURE__ */ jsxDEV("div", { className: "absolute top-2 right-2", children: /* @__PURE__ */ jsxDEV(Badge, { variant: "secondary", className: "text-xs", children: "Shopify" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 722,
+                columnNumber: 27
+              }, this) }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 721,
+                columnNumber: 17
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 694,
+              columnNumber: 21
+            }, this),
+            /* @__PURE__ */ jsxDEV(CardContent, { className: "p-3 space-y-2", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "flex items-center justify-between", children: [
+                /* @__PURE__ */ jsxDEV(Badge, { variant: getSourceTypeBadgeVariant(img.source_type), children: getSourceTypeLabel(img.source_type) }, void 0, false, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 732,
+                  columnNumber: 25
+                }, this),
+                /* @__PURE__ */ jsxDEV("span", { className: "text-xs text-muted-foreground", children: [
+                  img.width,
+                  " × ",
+                  img.height
+                ] }, void 0, true, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 735,
+                  columnNumber: 25
+                }, this)
+              ] }, void 0, true, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 731,
+                columnNumber: 23
+              }, this),
+              img.prompt && /* @__PURE__ */ jsxDEV("p", { className: "text-xs text-muted-foreground line-clamp-2", children: img.prompt }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 742,
+                columnNumber: 17
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "flex items-center gap-2 text-xs text-muted-foreground", children: [
+                /* @__PURE__ */ jsxDEV(Calendar, { className: "h-3 w-3" }, void 0, false, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 749,
+                  columnNumber: 25
+                }, this),
+                formatDate(img.created_at)
+              ] }, void 0, true, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 748,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "flex gap-2 pt-2", children: [
+                /* @__PURE__ */ jsxDEV(
+                  Button,
+                  {
+                    variant: "outline",
+                    size: "sm",
+                    className: "flex-1",
+                    onClick: () => handleDownloadImage(img.image_url, img.id),
+                    children: /* @__PURE__ */ jsxDEV(Download, { className: "h-3 w-3" }, void 0, false, {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 761,
+                      columnNumber: 27
+                    }, this)
+                  },
+                  void 0,
+                  false,
+                  {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 755,
+                    columnNumber: 25
+                  },
+                  this
+                ),
+                /* @__PURE__ */ jsxDEV(
+                  Button,
+                  {
+                    variant: "outline",
+                    size: "sm",
+                    className: "flex-1",
+                    onClick: () => setSelectedImage(img),
+                    children: /* @__PURE__ */ jsxDEV(FileImage, { className: "h-3 w-3" }, void 0, false, {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 769,
+                      columnNumber: 27
+                    }, this)
+                  },
+                  void 0,
+                  false,
+                  {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 763,
+                    columnNumber: 25
+                  },
+                  this
+                ),
+                /* @__PURE__ */ jsxDEV(
+                  Button,
+                  {
+                    variant: "outline",
+                    size: "sm",
+                    onClick: () => handleDeleteImage(img.id),
+                    disabled: isDeleting,
+                    children: /* @__PURE__ */ jsxDEV(Trash2, { className: "h-3 w-3" }, void 0, false, {
+                      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                      lineNumber: 777,
+                      columnNumber: 27
+                    }, this)
+                  },
+                  void 0,
+                  false,
+                  {
+                    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                    lineNumber: 771,
+                    columnNumber: 25
+                  },
+                  this
+                )
+              ] }, void 0, true, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 754,
+                columnNumber: 23
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 729,
+              columnNumber: 21
+            }, this)
+          ] }, img.id, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 693,
+            columnNumber: 13
+          }, this)
+        ) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 691,
+          columnNumber: 11
+        }, this) : /* @__PURE__ */ jsxDEV(Card, { children: /* @__PURE__ */ jsxDEV(CardContent, { className: "py-12 text-center", children: [
+          /* @__PURE__ */ jsxDEV(FileImage, { className: "h-12 w-12 mx-auto mb-4 text-muted-foreground" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 787,
+            columnNumber: 19
+          }, this),
+          /* @__PURE__ */ jsxDEV("h3", { className: "text-lg font-medium mb-2", children: "No images found" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 788,
+            columnNumber: 19
+          }, this),
+          /* @__PURE__ */ jsxDEV("p", { className: "text-sm text-muted-foreground", children: searchQuery || sourceTypeFilter !== "all" ? "Try adjusting your search or filters" : "Start generating images to build your library" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 789,
+            columnNumber: 19
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 786,
+          columnNumber: 17
+        }, this) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 785,
+          columnNumber: 11
+        }, this),
+        images.warning && /* @__PURE__ */ jsxDEV(InlineAlert, { variant: "info", message: images.warning }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 800,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+        lineNumber: 586,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+      lineNumber: 297,
+      columnNumber: 7
+    }, this),
+    usage.data && /* @__PURE__ */ jsxDEV(Card, { children: [
+      /* @__PURE__ */ jsxDEV(CardHeader, { children: [
+        /* @__PURE__ */ jsxDEV(CardTitle, { children: "Usage Statistics" }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 810,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV(CardDescription, { children: "Your image generation usage and limits" }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 811,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+        lineNumber: 809,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "text-2xl font-bold", children: usage.data.totalImages ?? 0 }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 816,
+            columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "text-sm text-muted-foreground", children: "Total Images" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 817,
+            columnNumber: 17
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 815,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "text-2xl font-bold", children: usage.data.imagesThisMonth ?? 0 }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 820,
+            columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "text-sm text-muted-foreground", children: "This Month" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 821,
+            columnNumber: 17
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 819,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "text-2xl font-bold", children: usage.data.pushedToShopify ?? 0 }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 824,
+            columnNumber: 17
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "text-sm text-muted-foreground", children: "Pushed to Shopify" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 825,
+            columnNumber: 17
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 823,
+          columnNumber: 15
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+        lineNumber: 814,
+        columnNumber: 13
+      }, this) }, void 0, false, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+        lineNumber: 813,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+      lineNumber: 808,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV(Dialog, { open: selectedImage !== null, onOpenChange: (open) => !open && setSelectedImage(null), children: /* @__PURE__ */ jsxDEV(DialogContent, { className: "max-w-4xl max-h-[90vh] overflow-y-auto", children: selectedImage && /* @__PURE__ */ jsxDEV(Fragment, { children: [
+      /* @__PURE__ */ jsxDEV(DialogHeader, { children: [
+        /* @__PURE__ */ jsxDEV(DialogTitle, { children: "Image Details" }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 838,
+          columnNumber: 17
+        }, this),
+        /* @__PURE__ */ jsxDEV(DialogDescription, { children: "View full image and metadata" }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 839,
+          columnNumber: 17
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+        lineNumber: 837,
+        columnNumber: 15
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "relative w-full bg-muted rounded-lg overflow-hidden", children: /* @__PURE__ */ jsxDEV(
+          "img",
+          {
+            src: selectedImage.image_url,
+            alt: selectedImage.prompt || "Generated image",
+            className: "w-full h-auto"
+          },
+          void 0,
+          false,
+          {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 847,
+            columnNumber: 19
+          },
+          this
+        ) }, void 0, false, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 846,
+          columnNumber: 17
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm font-medium text-muted-foreground", children: "Source Type" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 858,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV(Badge, { variant: getSourceTypeBadgeVariant(selectedImage.source_type), className: "mt-1", children: getSourceTypeLabel(selectedImage.source_type) }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 859,
+                columnNumber: 23
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 857,
+              columnNumber: 21
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm font-medium text-muted-foreground", children: "Dimensions" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 865,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm font-mono", children: [
+                selectedImage.width,
+                " × ",
+                selectedImage.height,
+                " px"
+              ] }, void 0, true, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 866,
+                columnNumber: 23
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 864,
+              columnNumber: 21
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm font-medium text-muted-foreground", children: "File Size" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 872,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm", children: formatFileSize(selectedImage.file_size_bytes) }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 873,
+                columnNumber: 23
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 871,
+              columnNumber: 21
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm font-medium text-muted-foreground", children: "Format" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 877,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm uppercase", children: selectedImage.format }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 878,
+                columnNumber: 23
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 876,
+              columnNumber: 21
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 856,
+            columnNumber: 19
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm font-medium text-muted-foreground", children: "Created" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 884,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm", children: formatDate(selectedImage.created_at) }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 885,
+                columnNumber: 23
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 883,
+              columnNumber: 21
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm font-medium text-muted-foreground", children: "Updated" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 889,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm", children: formatDate(selectedImage.updated_at) }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 890,
+                columnNumber: 23
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 888,
+              columnNumber: 21
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm font-medium text-muted-foreground", children: "Image ID" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 894,
+                columnNumber: 23
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "text-xs font-mono break-all", children: selectedImage.id }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 895,
+                columnNumber: 23
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 893,
+              columnNumber: 21
+            }, this),
+            selectedImage.is_pushed_to_shopify && /* @__PURE__ */ jsxDEV("div", { children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "text-sm font-medium text-muted-foreground", children: "Shopify Status" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 900,
+                columnNumber: 25
+              }, this),
+              /* @__PURE__ */ jsxDEV(Badge, { variant: "secondary", className: "mt-1", children: "Pushed to Shopify" }, void 0, false, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 901,
+                columnNumber: 25
+              }, this),
+              selectedImage.shopify_product_id && /* @__PURE__ */ jsxDEV("div", { className: "text-xs text-muted-foreground mt-1", children: [
+                "Product: ",
+                selectedImage.shopify_product_id
+              ] }, void 0, true, {
+                fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                lineNumber: 903,
+                columnNumber: 21
+              }, this)
+            ] }, void 0, true, {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 899,
+              columnNumber: 19
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 882,
+            columnNumber: 19
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 855,
+          columnNumber: 17
+        }, this),
+        selectedImage.prompt && /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "text-sm font-medium text-muted-foreground mb-2", children: "Prompt" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 915,
+            columnNumber: 21
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "text-sm bg-muted p-3 rounded-lg", children: selectedImage.prompt }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 916,
+            columnNumber: 21
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 914,
+          columnNumber: 15
+        }, this),
+        selectedImage.settings && Object.keys(selectedImage.settings).length > 0 && /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "text-sm font-medium text-muted-foreground mb-2", children: "Settings" }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 925,
+            columnNumber: 21
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "text-xs bg-muted p-3 rounded-lg font-mono", children: /* @__PURE__ */ jsxDEV("pre", { children: JSON.stringify(selectedImage.settings, null, 2) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 927,
+            columnNumber: 23
+          }, this) }, void 0, false, {
+            fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+            lineNumber: 926,
+            columnNumber: 21
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 924,
+          columnNumber: 15
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "flex gap-3 pt-4 border-t", children: [
+          /* @__PURE__ */ jsxDEV(
+            Button,
+            {
+              variant: "default",
+              onClick: () => handleDownloadImage(selectedImage.image_url, selectedImage.id),
+              className: "flex-1",
+              children: [
+                /* @__PURE__ */ jsxDEV(Download, { className: "h-4 w-4" }, void 0, false, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 939,
+                  columnNumber: 21
+                }, this),
+                "Download"
+              ]
+            },
+            void 0,
+            true,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 934,
+              columnNumber: 19
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV(
+            Button,
+            {
+              variant: "outline",
+              onClick: () => window.open(selectedImage.image_url, "_blank"),
+              className: "flex-1",
+              children: [
+                /* @__PURE__ */ jsxDEV(ExternalLink, { className: "h-4 w-4" }, void 0, false, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 947,
+                  columnNumber: 21
+                }, this),
+                "Open in New Tab"
+              ]
+            },
+            void 0,
+            true,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 942,
+              columnNumber: 19
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV(
+            Button,
+            {
+              variant: "destructive",
+              onClick: () => handleDeleteImage(selectedImage.id),
+              disabled: isDeleting,
+              children: [
+                /* @__PURE__ */ jsxDEV(Trash2, { className: "h-4 w-4" }, void 0, false, {
+                  fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+                  lineNumber: 955,
+                  columnNumber: 21
+                }, this),
+                "Delete"
+              ]
+            },
+            void 0,
+            true,
+            {
+              fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+              lineNumber: 950,
+              columnNumber: 19
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+          lineNumber: 933,
+          columnNumber: 17
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+        lineNumber: 844,
+        columnNumber: 15
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+      lineNumber: 836,
+      columnNumber: 11
+    }, this) }, void 0, false, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+      lineNumber: 834,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+      lineNumber: 833,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx",
+    lineNumber: 266,
+    columnNumber: 5
+  }, this);
+}
+_s(ImageCreatorClient, "Ik5ERdg5HXg0wUzgGvjaBmuDve0=", false, function() {
+  return [useAuth];
+});
+_c = ImageCreatorClient;
+var _c;
+$RefreshReg$(_c, "ImageCreatorClient");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/Projects/Source 4 Industries/src/pages/marketing/image-creator/image-creator-client.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBa0Q2QyxTQXFWdkIsVUFyVnVCOzs7Ozs7Ozs7Ozs7Ozs7OztBQWxEN0MsU0FBU0EsVUFBVUMsZUFBZTtBQUNsQyxTQUFTQyxVQUFVQyxPQUFPQyxnQkFBZ0JDLE9BQU9DLFVBQVVDLFFBQVFDLFNBQVNDLFFBQVFDLFFBQVFDLEdBQUdDLFVBQVVDLFdBQVdDLFdBQVdDLG9CQUFvQjtBQUVuSixTQUFTQyxxQkFBcUI7QUFDOUIsU0FBU0MsTUFBTUMsYUFBYUMsaUJBQWlCQyxZQUFZQyxpQkFBaUI7QUFDMUUsU0FBU0MsbUJBQW1CO0FBQzVCLFNBQVNDLGdCQUFnQjtBQUN6QixTQUFTQyxhQUFhO0FBQ3RCLFNBQVNDLGNBQWM7QUFDdkIsU0FBU0MsUUFBUUMsZUFBZUMsWUFBWUMsZUFBZUMsbUJBQW1CO0FBQzlFLFNBQVNDLGFBQWE7QUFDdEIsU0FBU0MsYUFBYTtBQUN0QixTQUFTQyxRQUFRQyxlQUFlQyxjQUFjQyxhQUFhQyx5QkFBeUI7QUFDcEYsU0FBU0MsZ0JBQWdCO0FBQ3pCLFNBQVNDLGVBQWU7QUFtQ3hCLE1BQU1DLE9BQThEO0FBQUEsRUFDbEUsRUFBRUMsSUFBSSxZQUFZQyxPQUFPLFlBQVlDLE1BQU0sdUJBQUMsWUFBUyxXQUFVLGFBQXBCO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0FBNkIsRUFBSTtBQUFBLEVBQzVFLEVBQUVGLElBQUksV0FBV0MsT0FBTyxXQUFXQyxNQUFNLHVCQUFDLFNBQU0sV0FBVSxhQUFqQjtBQUFBO0FBQUE7QUFBQTtBQUFBLFNBQTBCLEVBQUk7QUFBQSxFQUN2RSxFQUFFRixJQUFJLGFBQWFDLE9BQU8sYUFBYUMsTUFBTSx1QkFBQyxrQkFBZSxXQUFVLGFBQTFCO0FBQUE7QUFBQTtBQUFBO0FBQUEsU0FBbUMsRUFBSTtBQUFBLEVBQ3BGLEVBQUVGLElBQUksV0FBV0MsT0FBTyxXQUFXQyxNQUFNLHVCQUFDLFNBQU0sV0FBVSxhQUFqQjtBQUFBO0FBQUE7QUFBQTtBQUFBLFNBQTBCLEVBQUk7QUFBQztBQUcxRSxNQUFNQyxTQUFTO0FBQUEsRUFDYixFQUFFQyxPQUFPLGtCQUFrQkgsT0FBTyxpQkFBaUI7QUFBQSxFQUNuRCxFQUFFRyxPQUFPLGdCQUFnQkgsT0FBTyxlQUFlO0FBQUEsRUFDL0MsRUFBRUcsT0FBTyxjQUFjSCxPQUFPLGFBQWE7QUFBQSxFQUMzQyxFQUFFRyxPQUFPLFVBQVVILE9BQU8sU0FBUztBQUFBLEVBQ25DLEVBQUVHLE9BQU8sYUFBYUgsT0FBTyxZQUFZO0FBQUEsRUFDekMsRUFBRUcsT0FBTyxjQUFjSCxPQUFPLGFBQWE7QUFBQztBQUc5QyxNQUFNSSxnQkFBZ0I7QUFBQSxFQUNwQixFQUFFRCxPQUFPLE9BQU9ILE9BQU8sZ0JBQWdCSyxNQUFNLFlBQVk7QUFBQSxFQUN6RCxFQUFFRixPQUFPLFFBQVFILE9BQU8sb0JBQW9CSyxNQUFNLFlBQVk7QUFBQSxFQUM5RCxFQUFFRixPQUFPLFFBQVFILE9BQU8sbUJBQW1CSyxNQUFNLFlBQVk7QUFBQSxFQUM3RCxFQUFFRixPQUFPLE9BQU9ILE9BQU8sa0JBQWtCSyxNQUFNLFlBQVk7QUFBQztBQVd2RCxnQkFBU0MsbUJBQW1CLEVBQUVDLFFBQVFDLFdBQVdDLE1BQStCLEdBQUc7QUFBQUMsS0FBQTtBQUN4RixRQUFNQyxPQUFPZCxRQUFRO0FBQ3JCLFFBQU0sQ0FBQ2UsV0FBV0MsWUFBWSxJQUFJdkQsU0FBZ0IsVUFBVTtBQUc1RCxRQUFNLENBQUN3RCxRQUFRQyxTQUFTLElBQUl6RCxTQUFTLEVBQUU7QUFDdkMsUUFBTSxDQUFDMEQsT0FBT0MsUUFBUSxJQUFJM0QsU0FBUyxnQkFBZ0I7QUFDbkQsUUFBTSxDQUFDNEQsYUFBYUMsY0FBYyxJQUFJN0QsU0FBUyxLQUFLO0FBQ3BELFFBQU0sQ0FBQzhELGNBQWNDLGVBQWUsSUFBSS9ELFNBQVMsS0FBSztBQUN0RCxRQUFNLENBQUNnRSxpQkFBaUJDLGtCQUFrQixJQUFJakUsU0FBMkIsRUFBRTtBQUMzRSxRQUFNLENBQUNrRSxPQUFPQyxRQUFRLElBQUluRSxTQUF3QixJQUFJO0FBR3RELFFBQU0sQ0FBQ29FLGFBQWFDLGNBQWMsSUFBSXJFLFNBQVMsRUFBRTtBQUNqRCxRQUFNLENBQUNzRSxrQkFBa0JDLG1CQUFtQixJQUFJdkUsU0FBNkIsS0FBSztBQUNsRixRQUFNLENBQUN3RSxnQkFBZ0JDLGlCQUFpQixJQUFJekUsU0FBc0Isb0JBQUkwRSxJQUFJLENBQUM7QUFDM0UsUUFBTSxDQUFDQyxlQUFlQyxnQkFBZ0IsSUFBSTVFLFNBQW9DLElBQUk7QUFDbEYsUUFBTSxDQUFDNkUsWUFBWUMsYUFBYSxJQUFJOUUsU0FBUyxLQUFLO0FBR2xELFFBQU0rRSxpQkFBaUI5RSxRQUFRLE1BQU07QUFDbkMsUUFBSSxDQUFDZ0QsT0FBTytCLEtBQU0sUUFBTztBQUV6QixRQUFJQyxXQUFXaEMsT0FBTytCO0FBR3RCLFFBQUlWLHFCQUFxQixPQUFPO0FBQzlCVyxpQkFBV0EsU0FBU0MsT0FBTyxDQUFDQyxRQUFRQSxJQUFJQyxnQkFBZ0JkLGdCQUFnQjtBQUFBLElBQzFFO0FBR0EsUUFBSUYsWUFBWWlCLEtBQUssR0FBRztBQUN0QixZQUFNQyxRQUFRbEIsWUFBWW1CLFlBQVk7QUFDdENOLGlCQUFXQSxTQUFTQyxPQUFPLENBQUNDLFFBQVE7QUFDbEMsY0FBTUssY0FBY0wsSUFBSTNCLFFBQVErQixZQUFZLEVBQUVFLFNBQVNILEtBQUs7QUFDNUQsY0FBTUksVUFBVVAsSUFBSTFDLEdBQUc4QyxZQUFZLEVBQUVFLFNBQVNILEtBQUs7QUFDbkQsZUFBT0UsZUFBZUU7QUFBQUEsTUFDeEIsQ0FBQztBQUFBLElBQ0g7QUFFQSxXQUFPVDtBQUFBQSxFQUNULEdBQUcsQ0FBQ2hDLE9BQU8rQixNQUFNVixrQkFBa0JGLFdBQVcsQ0FBQztBQUcvQyxRQUFNdUIsaUJBQWlCQSxDQUFDQyxVQUEwQjtBQUNoRCxRQUFJQSxRQUFRLEtBQU0sUUFBTyxHQUFHQSxLQUFLO0FBQ2pDLFFBQUlBLFFBQVEsT0FBTyxLQUFNLFFBQU8sSUFBSUEsUUFBUSxNQUFNQyxRQUFRLENBQUMsQ0FBQztBQUM1RCxXQUFPLElBQUlELFNBQVMsT0FBTyxPQUFPQyxRQUFRLENBQUMsQ0FBQztBQUFBLEVBQzlDO0FBRUEsUUFBTUMsYUFBYUEsQ0FBQ0MsZUFBK0I7QUFDakQsVUFBTUMsT0FBTyxJQUFJQyxLQUFLRixVQUFVO0FBQ2hDLFdBQU9DLEtBQUtFLG1CQUFtQixTQUFTO0FBQUEsTUFDdENDLE9BQU87QUFBQSxNQUNQQyxLQUFLO0FBQUEsTUFDTEMsTUFBTTtBQUFBLE1BQ05DLE1BQU07QUFBQSxNQUNOQyxRQUFRO0FBQUEsSUFDVixDQUFDO0FBQUEsRUFDSDtBQUVBLFFBQU1DLHFCQUFxQkEsQ0FBQ0MsZUFBbUM7QUFDN0QsVUFBTUMsU0FBcUM7QUFBQSxNQUN6Q0MsY0FBYztBQUFBLE1BQ2RDLFVBQVU7QUFBQSxNQUNWQyxVQUFVO0FBQUEsTUFDVkMsVUFBVTtBQUFBLElBQ1o7QUFDQSxXQUFPSixPQUFPRCxVQUFVO0FBQUEsRUFDMUI7QUFFQSxRQUFNTSw0QkFBNEJBLENBQUNOLGVBQWdFO0FBQ2pHLFVBQU1PLFdBQW9FO0FBQUEsTUFDeEVMLGNBQWM7QUFBQSxNQUNkQyxVQUFVO0FBQUEsTUFDVkMsVUFBVTtBQUFBLE1BQ1ZDLFVBQVU7QUFBQSxJQUNaO0FBQ0EsV0FBT0UsU0FBU1AsVUFBVTtBQUFBLEVBQzVCO0FBRUEsUUFBTVEsb0JBQW9CLE9BQU9DLFlBQW9CO0FBQ25ELFFBQUksQ0FBQ0MsUUFBUSwyRUFBMkUsR0FBRztBQUN6RjtBQUFBLElBQ0Y7QUFFQXJDLGtCQUFjLElBQUk7QUFDbEIsUUFBSTtBQUNGLFlBQU1zQyxXQUFXLE1BQU1DLE1BQU0seUJBQXlCSCxPQUFPLElBQUk7QUFBQSxRQUMvREksUUFBUTtBQUFBLFFBQ1JDLFNBQVM7QUFBQSxVQUNQQyxlQUFlLFVBQVVuRSxLQUFLb0UsU0FBU0MsWUFBWTtBQUFBLFFBQ3JEO0FBQUEsTUFDRixDQUFDO0FBRUQsWUFBTUMsU0FBUyxNQUFNUCxTQUFTUSxLQUFLO0FBRW5DLFVBQUksQ0FBQ1IsU0FBU1MsTUFBTSxDQUFDRixPQUFPRyxTQUFTO0FBQ25DLGNBQU0sSUFBSUMsTUFBTUosT0FBT3pELFNBQVMsd0JBQXdCO0FBQUEsTUFDMUQ7QUFHQSxVQUFJUyxlQUFlbEMsT0FBT3lFLFNBQVM7QUFDakN0Qyx5QkFBaUIsSUFBSTtBQUFBLE1BQ3ZCO0FBR0FvRCxhQUFPQyxTQUFTQyxPQUFPO0FBQUEsSUFDekIsU0FBU0MsS0FBSztBQUNaQyxjQUFRbEUsTUFBTSxpQkFBaUJpRSxHQUFHO0FBQ2xDRSxZQUFNRixlQUFlSixRQUFRSSxJQUFJRyxVQUFVLHdCQUF3QjtBQUFBLElBQ3JFLFVBQUM7QUFDQ3hELG9CQUFjLEtBQUs7QUFBQSxJQUNyQjtBQUFBLEVBQ0Y7QUFFQSxRQUFNeUQsbUJBQW1CLFlBQVk7QUFDbkMsUUFBSS9ELGVBQWVnRSxTQUFTLEVBQUc7QUFFL0IsUUFBSSxDQUFDckIsUUFBUSxtQ0FBbUMzQyxlQUFlZ0UsSUFBSSwwQ0FBMEMsR0FBRztBQUM5RztBQUFBLElBQ0Y7QUFFQTFELGtCQUFjLElBQUk7QUFDbEIsUUFBSTtBQUNGLFlBQU0yRCxpQkFBaUJDLE1BQU1DLEtBQUtuRSxjQUFjLEVBQUVvRTtBQUFBQSxRQUFJLENBQUMxQixZQUNyREcsTUFBTSx5QkFBeUJILE9BQU8sSUFBSTtBQUFBLFVBQ3hDSSxRQUFRO0FBQUEsVUFDUkMsU0FBUztBQUFBLFlBQ1BDLGVBQWUsVUFBVW5FLEtBQUtvRSxTQUFTQyxZQUFZO0FBQUEsVUFDckQ7QUFBQSxRQUNGLENBQUM7QUFBQSxNQUNIO0FBRUEsWUFBTW1CLFFBQVFDLElBQUlMLGNBQWM7QUFDaENoRSx3QkFBa0Isb0JBQUlDLElBQUksQ0FBQztBQUMzQnNELGFBQU9DLFNBQVNDLE9BQU87QUFBQSxJQUN6QixTQUFTQyxLQUFLO0FBQ1pDLGNBQVFsRSxNQUFNLHNCQUFzQmlFLEdBQUc7QUFDdkNFLFlBQU0sOEJBQThCO0FBQUEsSUFDdEMsVUFBQztBQUNDdkQsb0JBQWMsS0FBSztBQUFBLElBQ3JCO0FBQUEsRUFDRjtBQUVBLFFBQU1pRSxzQkFBc0JBLENBQUNDLFVBQWtCOUIsWUFBb0I7QUFDakUsVUFBTStCLE9BQU9DLFNBQVNDLGNBQWMsR0FBRztBQUN2Q0YsU0FBS0csT0FBT0o7QUFDWkMsU0FBS0ksV0FBVyxTQUFTbkMsT0FBTztBQUNoQytCLFNBQUtLLFNBQVM7QUFDZEosYUFBU0ssS0FBS0MsWUFBWVAsSUFBSTtBQUM5QkEsU0FBS1EsTUFBTTtBQUNYUCxhQUFTSyxLQUFLRyxZQUFZVCxJQUFJO0FBQUEsRUFDaEM7QUFFQSxRQUFNVSx1QkFBdUJBLENBQUN6QyxZQUFvQjtBQUNoRCxVQUFNMEMsZUFBZSxJQUFJbEYsSUFBSUYsY0FBYztBQUMzQyxRQUFJb0YsYUFBYUMsSUFBSTNDLE9BQU8sR0FBRztBQUM3QjBDLG1CQUFhRSxPQUFPNUMsT0FBTztBQUFBLElBQzdCLE9BQU87QUFDTDBDLG1CQUFhRyxJQUFJN0MsT0FBTztBQUFBLElBQzFCO0FBQ0F6QyxzQkFBa0JtRixZQUFZO0FBQUEsRUFDaEM7QUFFQSxTQUNFLHVCQUFDLFNBQUksV0FBVSwyQkFDYjtBQUFBO0FBQUEsTUFBQztBQUFBO0FBQUEsUUFDQyxPQUFNO0FBQUEsUUFDTixhQUFZO0FBQUE7QUFBQSxNQUZkO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxJQUVvRjtBQUFBLElBSXBGLHVCQUFDLFNBQUksV0FBVSwwQkFDYixpQ0FBQyxTQUFJLFdBQVUsY0FDWnBILGVBQUtvRztBQUFBQSxNQUFJLENBQUNvQixRQUNUO0FBQUEsUUFBQztBQUFBO0FBQUEsVUFFQyxTQUFTLE1BQU16RyxhQUFheUcsSUFBSXZILEVBQUU7QUFBQSxVQUNsQyxXQUFXO0FBQUE7QUFBQTtBQUFBLGtCQUlQYSxjQUFjMEcsSUFBSXZILEtBQ2QsZ0NBQ0EsbUZBQW1GO0FBQUE7QUFBQSxVQUkxRnVIO0FBQUFBLGdCQUFJckg7QUFBQUEsWUFDSnFILElBQUl0SDtBQUFBQTtBQUFBQTtBQUFBQSxRQWJBc0gsSUFBSXZIO0FBQUFBLFFBRFg7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxNQWVBO0FBQUEsSUFDRCxLQWxCSDtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBbUJBLEtBcEJGO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0FxQkE7QUFBQSxJQUdBLHVCQUFDLFNBQUksV0FBVSxhQUNaYTtBQUFBQSxvQkFBYyxjQUNiLHVCQUFDLFNBQUksV0FBVSxhQUNiO0FBQUEsK0JBQUMsUUFDQztBQUFBLGlDQUFDLGNBQ0M7QUFBQSxtQ0FBQyxhQUFVLG1DQUFYO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBQThCO0FBQUEsWUFDOUIsdUJBQUMsbUJBQWUseUZBQWhCO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBRUE7QUFBQSxlQUpGO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBS0E7QUFBQSxVQUNBLHVCQUFDLGVBQ0M7QUFBQSxZQUFDO0FBQUE7QUFBQSxjQUNDLFVBQVUsT0FBTzJHLE1BQU07QUFDckJBLGtCQUFFQyxlQUFlO0FBQ2pCLG9CQUFJLENBQUMxRyxPQUFPNkIsS0FBSyxLQUFLdkIsYUFBYztBQUVwQ0MsZ0NBQWdCLElBQUk7QUFDcEJJLHlCQUFTLElBQUk7QUFFYixvQkFBSTtBQUNGLHdCQUFNaUQsV0FBVyxNQUFNQyxNQUFNLDRDQUE0QztBQUFBLG9CQUN2RUMsUUFBUTtBQUFBLG9CQUNSQyxTQUFTO0FBQUEsc0JBQ1AsZ0JBQWdCO0FBQUEsb0JBQ2xCO0FBQUEsb0JBQ0FnQyxNQUFNWSxLQUFLQyxVQUFVO0FBQUEsc0JBQ25CNUcsUUFBUUEsT0FBTzZCLEtBQUs7QUFBQSxzQkFDcEIzQjtBQUFBQSxzQkFDQUU7QUFBQUEsc0JBQ0F5RyxnQkFBZ0I7QUFBQSxvQkFDbEIsQ0FBQztBQUFBLGtCQUNILENBQUM7QUFFRCx3QkFBTTFDLFNBQVMsTUFBTVAsU0FBU1EsS0FBSztBQUVuQyxzQkFBSSxDQUFDUixTQUFTUyxNQUFNLENBQUNGLE9BQU9HLFNBQVM7QUFDbkMsMEJBQU0sSUFBSUMsTUFBTUosT0FBT3pELFNBQVMsMEJBQTBCO0FBQUEsa0JBQzVEO0FBRUFELHFDQUFtQjBELE9BQU8zQyxLQUFLL0IsVUFBVSxFQUFFO0FBQzNDUSw0QkFBVSxFQUFFO0FBQUEsZ0JBQ2QsU0FBUzBFLEtBQUs7QUFDWkMsMEJBQVFsRSxNQUFNLDJCQUEyQmlFLEdBQUc7QUFDNUNoRSwyQkFBU2dFLGVBQWVKLFFBQVFJLElBQUlHLFVBQVUsMEJBQTBCO0FBQUEsZ0JBQzFFLFVBQUM7QUFDQ3ZFLGtDQUFnQixLQUFLO0FBQUEsZ0JBQ3ZCO0FBQUEsY0FDRjtBQUFBLGNBQ0EsV0FBVTtBQUFBLGNBR1Y7QUFBQSx1Q0FBQyxTQUFJLFdBQVUsYUFDYjtBQUFBLHlDQUFDLFNBQU0sU0FBUSxVQUFTLGlDQUF4QjtBQUFBO0FBQUE7QUFBQTtBQUFBLHlCQUF5QztBQUFBLGtCQUN6QztBQUFBLG9CQUFDO0FBQUE7QUFBQSxzQkFDQyxJQUFHO0FBQUEsc0JBQ0gsYUFBWTtBQUFBLHNCQUNaLE9BQU9QO0FBQUFBLHNCQUNQLFVBQVUsQ0FBQ3lHLE1BQU14RyxVQUFVd0csRUFBRVgsT0FBT3pHLEtBQUs7QUFBQSxzQkFDekMsV0FBVTtBQUFBLHNCQUNWLFVBQVVpQjtBQUFBQTtBQUFBQSxvQkFOWjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsa0JBTXlCO0FBQUEsa0JBRXpCLHVCQUFDLE9BQUUsV0FBVSxpQ0FBK0IsMEZBQTVDO0FBQUE7QUFBQTtBQUFBO0FBQUEseUJBRUE7QUFBQSxxQkFaRjtBQUFBO0FBQUE7QUFBQTtBQUFBLHVCQWFBO0FBQUEsZ0JBR0EsdUJBQUMsU0FBSSxXQUFVLHlDQUNiO0FBQUEseUNBQUMsU0FBSSxXQUFVLGFBQ2I7QUFBQSwyQ0FBQyxTQUFNLFNBQVEsU0FBUSxxQkFBdkI7QUFBQTtBQUFBO0FBQUE7QUFBQSwyQkFBNEI7QUFBQSxvQkFDNUIsdUJBQUMsVUFBTyxPQUFPSixPQUFPLGVBQWVDLFVBQVUsVUFBVUcsY0FDdkQ7QUFBQSw2Q0FBQyxpQkFBYyxJQUFHLFNBQ2hCLGlDQUFDLGVBQVksYUFBWSxrQkFBekI7QUFBQTtBQUFBO0FBQUE7QUFBQSw2QkFBdUMsS0FEekM7QUFBQTtBQUFBO0FBQUE7QUFBQSw2QkFFQTtBQUFBLHNCQUNBLHVCQUFDLGlCQUNFbEIsaUJBQU9nRztBQUFBQSx3QkFBSSxDQUFDMEIsTUFDWCx1QkFBQyxjQUF5QixPQUFPQSxFQUFFekgsT0FDaEN5SCxZQUFFNUgsU0FEWTRILEVBQUV6SCxPQUFuQjtBQUFBO0FBQUE7QUFBQTtBQUFBLCtCQUVBO0FBQUEsc0JBQ0QsS0FMSDtBQUFBO0FBQUE7QUFBQTtBQUFBLDZCQU1BO0FBQUEseUJBVkY7QUFBQTtBQUFBO0FBQUE7QUFBQSwyQkFXQTtBQUFBLHVCQWJGO0FBQUE7QUFBQTtBQUFBO0FBQUEseUJBY0E7QUFBQSxrQkFFQSx1QkFBQyxTQUFJLFdBQVUsYUFDYjtBQUFBLDJDQUFDLFNBQU0sU0FBUSxlQUFjLDRCQUE3QjtBQUFBO0FBQUE7QUFBQTtBQUFBLDJCQUF5QztBQUFBLG9CQUN6Qyx1QkFBQyxVQUFPLE9BQU9lLGFBQWEsZUFBZUMsZ0JBQWdCLFVBQVVDLGNBQ25FO0FBQUEsNkNBQUMsaUJBQWMsSUFBRyxlQUNoQixpQ0FBQyxlQUFZLGFBQVkseUJBQXpCO0FBQUE7QUFBQTtBQUFBO0FBQUEsNkJBQThDLEtBRGhEO0FBQUE7QUFBQTtBQUFBO0FBQUEsNkJBRUE7QUFBQSxzQkFDQSx1QkFBQyxpQkFDRWhCLHdCQUFjOEY7QUFBQUEsd0JBQUksQ0FBQzJCLE9BQ2xCLHVCQUFDLGNBQTBCLE9BQU9BLEdBQUcxSCxPQUNsQzBIO0FBQUFBLDZCQUFHN0g7QUFBQUEsMEJBQU07QUFBQSwwQkFBQyx1QkFBQyxVQUFLLFdBQVUseUJBQXdCO0FBQUE7QUFBQSw0QkFBRTZILEdBQUd4SDtBQUFBQSw0QkFBSztBQUFBLCtCQUFsRDtBQUFBO0FBQUE7QUFBQTtBQUFBLGlDQUFtRDtBQUFBLDZCQUQvQ3dILEdBQUcxSCxPQUFwQjtBQUFBO0FBQUE7QUFBQTtBQUFBLCtCQUVBO0FBQUEsc0JBQ0QsS0FMSDtBQUFBO0FBQUE7QUFBQTtBQUFBLDZCQU1BO0FBQUEseUJBVkY7QUFBQTtBQUFBO0FBQUE7QUFBQSwyQkFXQTtBQUFBLHVCQWJGO0FBQUE7QUFBQTtBQUFBO0FBQUEseUJBY0E7QUFBQSxxQkEvQkY7QUFBQTtBQUFBO0FBQUE7QUFBQSx1QkFnQ0E7QUFBQSxnQkFHQ3FCLFNBQ0MsdUJBQUMsZUFBWSxTQUFRLFNBQVEsT0FBTSxxQkFBb0IsU0FBU0EsU0FBaEU7QUFBQTtBQUFBO0FBQUE7QUFBQSx1QkFBc0U7QUFBQSxnQkFJeEU7QUFBQSxrQkFBQztBQUFBO0FBQUEsb0JBQ0MsTUFBSztBQUFBLG9CQUNMLE1BQUs7QUFBQSxvQkFDTCxVQUFVLENBQUNWLE9BQU82QixLQUFLLEtBQUt2QjtBQUFBQSxvQkFDNUIsV0FBVTtBQUFBLG9CQUVUQSx5QkFDQyxtQ0FDRTtBQUFBLDZDQUFDLFdBQVEsV0FBVSwwQkFBbkI7QUFBQTtBQUFBO0FBQUE7QUFBQSw2QkFBeUM7QUFBQTtBQUFBLHlCQUQzQztBQUFBO0FBQUE7QUFBQTtBQUFBLDJCQUdBLElBRUEsbUNBQ0U7QUFBQSw2Q0FBQyxZQUFTLFdBQVUsYUFBcEI7QUFBQTtBQUFBO0FBQUE7QUFBQSw2QkFBNkI7QUFBQTtBQUFBLHlCQUQvQjtBQUFBO0FBQUE7QUFBQTtBQUFBLDJCQUdBO0FBQUE7QUFBQSxrQkFmSjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsZ0JBaUJBO0FBQUE7QUFBQTtBQUFBLFlBakhGO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxVQWtIQSxLQW5IRjtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQW9IQTtBQUFBLGFBM0hGO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUE0SEE7QUFBQSxRQUdDRSxnQkFBZ0J3RyxTQUFTLEtBQ3hCLHVCQUFDLFFBQ0M7QUFBQSxpQ0FBQyxjQUNDO0FBQUEsbUNBQUMsYUFBVSxnQ0FBWDtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUEyQjtBQUFBLFlBQzNCLHVCQUFDLG1CQUFlLDBGQUFoQjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUVBO0FBQUEsZUFKRjtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUtBO0FBQUEsVUFDQSx1QkFBQyxlQUNDLGlDQUFDLFNBQUksV0FBVSx3REFDWnhHLDBCQUFnQjRFO0FBQUFBLFlBQUksQ0FBQ3pELFFBQ3BCLHVCQUFDLFNBQWlCLFdBQVUsa0JBQzFCO0FBQUEscUNBQUMsU0FBSSxXQUFVLDBFQUNiO0FBQUEsZ0JBQUM7QUFBQTtBQUFBLGtCQUNDLEtBQUtBLElBQUk2RDtBQUFBQSxrQkFDVCxLQUFJO0FBQUEsa0JBQ0osV0FBVTtBQUFBO0FBQUEsZ0JBSFo7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLGNBR3dDLEtBSjFDO0FBQUE7QUFBQTtBQUFBO0FBQUEscUJBTUE7QUFBQSxjQUdBLHVCQUFDLFNBQUksV0FBVSxtQkFDYjtBQUFBO0FBQUEsa0JBQUM7QUFBQTtBQUFBLG9CQUNDLFNBQVE7QUFBQSxvQkFDUixNQUFLO0FBQUEsb0JBQ0wsV0FBVTtBQUFBLG9CQUNWLFNBQVMsTUFBTTtBQUNiaEIsNkJBQU95QyxLQUFLdEYsSUFBSTZELFVBQVUsUUFBUTtBQUFBLG9CQUNwQztBQUFBLG9CQUVBO0FBQUEsNkNBQUMsWUFBUyxXQUFVLGFBQXBCO0FBQUE7QUFBQTtBQUFBO0FBQUEsNkJBQTZCO0FBQUE7QUFBQTtBQUFBO0FBQUEsa0JBUi9CO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxnQkFVQTtBQUFBLGdCQUNBO0FBQUEsa0JBQUM7QUFBQTtBQUFBLG9CQUNDLFNBQVE7QUFBQSxvQkFDUixNQUFLO0FBQUEsb0JBQ0wsV0FBVTtBQUFBLG9CQUNWLFNBQVMsTUFBTTtBQUViWCw0QkFBTSxzQ0FBc0M7QUFBQSxvQkFDOUM7QUFBQSxvQkFFQTtBQUFBLDZDQUFDLFNBQU0sV0FBVSxhQUFqQjtBQUFBO0FBQUE7QUFBQTtBQUFBLDZCQUEwQjtBQUFBO0FBQUE7QUFBQTtBQUFBLGtCQVQ1QjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsZ0JBV0E7QUFBQSxnQkFDQTtBQUFBLGtCQUFDO0FBQUE7QUFBQSxvQkFDQyxTQUFRO0FBQUEsb0JBQ1IsTUFBSztBQUFBLG9CQUNMLFdBQVU7QUFBQSxvQkFDVixTQUFTLE1BQU07QUFFYkEsNEJBQU0sc0NBQXNDO0FBQUEsb0JBQzlDO0FBQUEsb0JBRUE7QUFBQSw2Q0FBQyxVQUFPLFdBQVUsYUFBbEI7QUFBQTtBQUFBO0FBQUE7QUFBQSw2QkFBMkI7QUFBQTtBQUFBO0FBQUE7QUFBQSxrQkFUN0I7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLGdCQVdBO0FBQUEsbUJBbkNGO0FBQUE7QUFBQTtBQUFBO0FBQUEscUJBb0NBO0FBQUEsY0FFQSx1QkFBQyxTQUFJLFdBQVUsc0NBQ1psRDtBQUFBQSxvQkFBSXVGO0FBQUFBLGdCQUFNO0FBQUEsZ0JBQUl2RixJQUFJd0Y7QUFBQUEsZ0JBQU87QUFBQSxtQkFENUI7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFFQTtBQUFBLGlCQWxEUXhGLElBQUkxQyxJQUFkO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBbURBO0FBQUEsVUFDRCxLQXRESDtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQXVEQSxLQXhERjtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQXlEQTtBQUFBLGFBaEVGO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFpRUE7QUFBQSxRQUlGLHVCQUFDLFFBQ0M7QUFBQSxpQ0FBQyxjQUNDO0FBQUEsbUNBQUMsYUFBVSx1Q0FBWDtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUFrQztBQUFBLFlBQ2xDLHVCQUFDLG1CQUFnQiw4Q0FBakI7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBK0M7QUFBQSxlQUZqRDtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUdBO0FBQUEsVUFDQSx1QkFBQyxlQUNDLGlDQUFDLFFBQUcsV0FBVSwyQ0FDWjtBQUFBLG1DQUFDLFFBQUcsbUVBQUo7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBdUQ7QUFBQSxZQUN2RCx1QkFBQyxRQUFHLGtHQUFKO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBQXNGO0FBQUEsWUFDdEYsdUJBQUMsUUFBRywwRkFBSjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUE4RTtBQUFBLFlBQzlFLHVCQUFDLFFBQUcsd0RBQUo7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBNEM7QUFBQSxZQUM1Qyx1QkFBQyxRQUFHLCtEQUFKO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBQW1EO0FBQUEsZUFMckQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFNQSxLQVBGO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBUUE7QUFBQSxhQWJGO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFjQTtBQUFBLFdBcE5GO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFxTkE7QUFBQSxNQUdEYSxjQUFjLGFBQ2IsdUJBQUMsU0FBSSxXQUFVLGFBQ2I7QUFBQSwrQkFBQyxRQUNDO0FBQUEsaUNBQUMsY0FDQztBQUFBLG1DQUFDLGFBQVUsaUNBQVg7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBNEI7QUFBQSxZQUM1Qix1QkFBQyxtQkFBZSxzRUFBaEI7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFFQTtBQUFBLGVBSkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFLQTtBQUFBLFVBQ0EsdUJBQUMsZUFDQztBQUFBLFlBQUM7QUFBQTtBQUFBLGNBQ0MsU0FBUTtBQUFBLGNBQ1IsT0FBTTtBQUFBLGNBQ04sU0FBUTtBQUFBO0FBQUEsWUFIVjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsVUFHNkosS0FKL0o7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFNQTtBQUFBLGFBYkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQWNBO0FBQUEsUUFFQSx1QkFBQyxRQUNDO0FBQUEsaUNBQUMsY0FDQztBQUFBLG1DQUFDLGFBQVUsc0NBQVg7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBaUM7QUFBQSxZQUNqQyx1QkFBQyxtQkFBZ0IsNENBQWpCO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBQTZDO0FBQUEsZUFGL0M7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFHQTtBQUFBLFVBQ0EsdUJBQUMsZUFDQyxpQ0FBQyxRQUFHLFdBQVUsMkNBQ1o7QUFBQSxtQ0FBQyxRQUFHLG9EQUFKO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBQXdDO0FBQUEsWUFDeEMsdUJBQUMsUUFBRyx5REFBSjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUE2QztBQUFBLFlBQzdDLHVCQUFDLFFBQUcsK0NBQUo7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBbUM7QUFBQSxZQUNuQyx1QkFBQyxRQUFHLGtEQUFKO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBQXNDO0FBQUEsZUFKeEM7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFLQSxLQU5GO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBT0E7QUFBQSxhQVpGO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFhQTtBQUFBLFdBOUJGO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUErQkE7QUFBQSxNQUdEQSxjQUFjLGVBQ2IsdUJBQUMsU0FBSSxXQUFVLGFBQ2I7QUFBQSwrQkFBQyxRQUNDO0FBQUEsaUNBQUMsY0FDQztBQUFBLG1DQUFDLGFBQVUsbUNBQVg7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBOEI7QUFBQSxZQUM5Qix1QkFBQyxtQkFBZSx1RkFBaEI7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFFQTtBQUFBLGVBSkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFLQTtBQUFBLFVBQ0EsdUJBQUMsZUFDQztBQUFBLFlBQUM7QUFBQTtBQUFBLGNBQ0MsU0FBUTtBQUFBLGNBQ1IsT0FBTTtBQUFBLGNBQ04sU0FBUTtBQUFBO0FBQUEsWUFIVjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsVUFHdUosS0FKeko7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFNQTtBQUFBLGFBYkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQWNBO0FBQUEsUUFFQSx1QkFBQyxRQUNDO0FBQUEsaUNBQUMsY0FDQztBQUFBLG1DQUFDLGFBQVUsbUNBQVg7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBOEI7QUFBQSxZQUM5Qix1QkFBQyxtQkFBZ0Isc0NBQWpCO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBQXVDO0FBQUEsZUFGekM7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFHQTtBQUFBLFVBQ0EsdUJBQUMsZUFDQyxpQ0FBQyxRQUFHLFdBQVUsMkNBQ1o7QUFBQSxtQ0FBQyxRQUFHLG9FQUFKO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBQXdEO0FBQUEsWUFDeEQsdUJBQUMsUUFBRyxzREFBSjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUEwQztBQUFBLFlBQzFDLHVCQUFDLFFBQUcsc0RBQUo7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBMEM7QUFBQSxZQUMxQyx1QkFBQyxRQUFHLHVEQUFKO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBQTJDO0FBQUEsZUFKN0M7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFLQSxLQU5GO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBT0E7QUFBQSxhQVpGO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFhQTtBQUFBLFdBOUJGO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUErQkE7QUFBQSxNQUdEQSxjQUFjLGFBQ2IsdUJBQUMsU0FBSSxXQUFVLGFBRWI7QUFBQSwrQkFBQyxRQUNDLGlDQUFDLGVBQVksV0FBVSxRQUNyQjtBQUFBLGlDQUFDLFNBQUksV0FBVSxtQ0FFYjtBQUFBLG1DQUFDLFNBQUksV0FBVSxVQUNiLGlDQUFDLFNBQUksV0FBVSxZQUNiO0FBQUEscUNBQUMsVUFBTyxXQUFVLDRFQUFsQjtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQUEwRjtBQUFBLGNBQzFGO0FBQUEsZ0JBQUM7QUFBQTtBQUFBLGtCQUNDLGFBQVk7QUFBQSxrQkFDWixPQUFPYztBQUFBQSxrQkFDUCxVQUFVLENBQUM2RixNQUFNNUYsZUFBZTRGLEVBQUVYLE9BQU96RyxLQUFLO0FBQUEsa0JBQzlDLFdBQVU7QUFBQTtBQUFBLGdCQUpaO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxjQUltQjtBQUFBLGNBRWxCdUIsZUFDQztBQUFBLGdCQUFDO0FBQUE7QUFBQSxrQkFDQyxTQUFTLE1BQU1DLGVBQWUsRUFBRTtBQUFBLGtCQUNoQyxXQUFVO0FBQUEsa0JBRVYsaUNBQUMsS0FBRSxXQUFVLGFBQWI7QUFBQTtBQUFBO0FBQUE7QUFBQSx5QkFBc0I7QUFBQTtBQUFBLGdCQUp4QjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsY0FLQTtBQUFBLGlCQWRKO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBZ0JBLEtBakJGO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBa0JBO0FBQUEsWUFHQSx1QkFBQyxTQUFJLFdBQVUsd0JBQ2I7QUFBQTtBQUFBLGdCQUFDO0FBQUE7QUFBQSxrQkFDQyxTQUFTQyxxQkFBcUIsUUFBUSxZQUFZO0FBQUEsa0JBQ2xELE1BQUs7QUFBQSxrQkFDTCxTQUFTLE1BQU1DLG9CQUFvQixLQUFLO0FBQUEsa0JBQUU7QUFBQTtBQUFBLGdCQUg1QztBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsY0FNQTtBQUFBLGNBQ0E7QUFBQSxnQkFBQztBQUFBO0FBQUEsa0JBQ0MsU0FBU0QscUJBQXFCLGlCQUFpQixZQUFZO0FBQUEsa0JBQzNELE1BQUs7QUFBQSxrQkFDTCxTQUFTLE1BQU1DLG9CQUFvQixjQUFjO0FBQUEsa0JBQUU7QUFBQTtBQUFBLGdCQUhyRDtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsY0FNQTtBQUFBLGNBQ0E7QUFBQSxnQkFBQztBQUFBO0FBQUEsa0JBQ0MsU0FBU0QscUJBQXFCLGFBQWEsWUFBWTtBQUFBLGtCQUN2RCxNQUFLO0FBQUEsa0JBQ0wsU0FBUyxNQUFNQyxvQkFBb0IsVUFBVTtBQUFBLGtCQUFFO0FBQUE7QUFBQSxnQkFIakQ7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLGNBTUE7QUFBQSxjQUNBO0FBQUEsZ0JBQUM7QUFBQTtBQUFBLGtCQUNDLFNBQVNELHFCQUFxQixhQUFhLFlBQVk7QUFBQSxrQkFDdkQsTUFBSztBQUFBLGtCQUNMLFNBQVMsTUFBTUMsb0JBQW9CLFVBQVU7QUFBQSxrQkFBRTtBQUFBO0FBQUEsZ0JBSGpEO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxjQU1BO0FBQUEsY0FDQTtBQUFBLGdCQUFDO0FBQUE7QUFBQSxrQkFDQyxTQUFTRCxxQkFBcUIsYUFBYSxZQUFZO0FBQUEsa0JBQ3ZELE1BQUs7QUFBQSxrQkFDTCxTQUFTLE1BQU1DLG9CQUFvQixVQUFVO0FBQUEsa0JBQUU7QUFBQTtBQUFBLGdCQUhqRDtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsY0FNQTtBQUFBLGlCQW5DRjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQW9DQTtBQUFBLGVBM0RGO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBNERBO0FBQUEsVUFHQ0MsZUFBZWdFLE9BQU8sS0FDckIsdUJBQUMsU0FBSSxXQUFVLHdEQUNiO0FBQUEsbUNBQUMsVUFBSyxXQUFVLHVCQUNiaEU7QUFBQUEsNkJBQWVnRTtBQUFBQSxjQUFLO0FBQUEsaUJBRHZCO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBRUE7QUFBQSxZQUNBO0FBQUEsY0FBQztBQUFBO0FBQUEsZ0JBQ0MsU0FBUTtBQUFBLGdCQUNSLE1BQUs7QUFBQSxnQkFDTCxTQUFTRDtBQUFBQSxnQkFDVCxVQUFVMUQ7QUFBQUEsZ0JBRVY7QUFBQSx5Q0FBQyxVQUFPLFdBQVUsYUFBbEI7QUFBQTtBQUFBO0FBQUE7QUFBQSx5QkFBMkI7QUFBQTtBQUFBO0FBQUE7QUFBQSxjQU43QjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsWUFRQTtBQUFBLFlBQ0E7QUFBQSxjQUFDO0FBQUE7QUFBQSxnQkFDQyxTQUFRO0FBQUEsZ0JBQ1IsTUFBSztBQUFBLGdCQUNMLFNBQVMsTUFBTUosa0JBQWtCLG9CQUFJQyxJQUFJLENBQUM7QUFBQSxnQkFBRTtBQUFBO0FBQUEsY0FIOUM7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLFlBTUE7QUFBQSxlQW5CRjtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQW9CQTtBQUFBLGFBckZKO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUF1RkEsS0F4RkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQXlGQTtBQUFBLFFBR0N6QixPQUFPK0IsUUFDTix1QkFBQyxTQUFJLFdBQVUsaUNBQStCO0FBQUE7QUFBQSxVQUNuQ0QsZUFBZXlGO0FBQUFBLFVBQU87QUFBQSxVQUFLdkgsT0FBTytCLEtBQUt3RjtBQUFBQSxVQUFPO0FBQUEsVUFDdER2SCxPQUFPMkgsV0FBVyxZQUNqQix1QkFBQyxVQUFLLFdBQVUsdUJBQXNCLDZCQUF0QztBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUFtRDtBQUFBLGFBSHZEO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFLQTtBQUFBLFFBSUQ3RixlQUFleUYsU0FBUyxJQUN2Qix1QkFBQyxTQUFJLFdBQVUsdUVBQ1p6Rix5QkFBZTZEO0FBQUFBLFVBQUksQ0FBQ3pELFFBQ25CLHVCQUFDLFFBQWtCLFdBQVUsMkRBQzNCO0FBQUEsbUNBQUMsU0FBSSxXQUFVLFlBRWI7QUFBQSxxQ0FBQyxTQUFJLFdBQVUsOEJBQ2I7QUFBQSxnQkFBQztBQUFBO0FBQUEsa0JBQ0MsU0FBU1gsZUFBZXFGLElBQUkxRSxJQUFJMUMsRUFBRTtBQUFBLGtCQUNsQyxpQkFBaUIsTUFBTWtILHFCQUFxQnhFLElBQUkxQyxFQUFFO0FBQUEsa0JBQ2xELFdBQVU7QUFBQTtBQUFBLGdCQUhaO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxjQUdnQyxLQUpsQztBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQU1BO0FBQUEsY0FHQTtBQUFBLGdCQUFDO0FBQUE7QUFBQSxrQkFDQyxTQUFTLE1BQU1tQyxpQkFBaUJPLEdBQUc7QUFBQSxrQkFDbkMsV0FBVTtBQUFBLGtCQUVWO0FBQUE7QUFBQSxzQkFBQztBQUFBO0FBQUEsd0JBQ0MsS0FBS0EsSUFBSTBGLGlCQUFpQjFGLElBQUkyRjtBQUFBQSx3QkFDOUIsS0FBSzNGLElBQUkzQixVQUFVO0FBQUEsd0JBQ25CLFdBQVU7QUFBQTtBQUFBLHNCQUhaO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxvQkFHbUY7QUFBQSxvQkFFbkYsdUJBQUMsU0FBSSxXQUFVLDBHQUNiLGlDQUFDLGFBQVUsV0FBVSw2RUFBckI7QUFBQTtBQUFBO0FBQUE7QUFBQSwyQkFBOEYsS0FEaEc7QUFBQTtBQUFBO0FBQUE7QUFBQSwyQkFFQTtBQUFBO0FBQUE7QUFBQSxnQkFYRjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsY0FZQTtBQUFBLGNBR0MyQixJQUFJNEYsd0JBQ0gsdUJBQUMsU0FBSSxXQUFVLDBCQUNiLGlDQUFDLFNBQU0sU0FBUSxhQUFZLFdBQVUsV0FBUyx1QkFBOUM7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFFQSxLQUhGO0FBQUE7QUFBQTtBQUFBO0FBQUEscUJBSUE7QUFBQSxpQkEvQko7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFpQ0E7QUFBQSxZQUVBLHVCQUFDLGVBQVksV0FBVSxpQkFFckI7QUFBQSxxQ0FBQyxTQUFJLFdBQVUscUNBQ2I7QUFBQSx1Q0FBQyxTQUFNLFNBQVNoRSwwQkFBMEI1QixJQUFJQyxXQUFXLEdBQ3REb0IsNkJBQW1CckIsSUFBSUMsV0FBVyxLQURyQztBQUFBO0FBQUE7QUFBQTtBQUFBLHVCQUVBO0FBQUEsZ0JBQ0EsdUJBQUMsVUFBSyxXQUFVLGlDQUNiRDtBQUFBQSxzQkFBSXVGO0FBQUFBLGtCQUFNO0FBQUEsa0JBQUl2RixJQUFJd0Y7QUFBQUEscUJBRHJCO0FBQUE7QUFBQTtBQUFBO0FBQUEsdUJBRUE7QUFBQSxtQkFORjtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQU9BO0FBQUEsY0FHQ3hGLElBQUkzQixVQUNILHVCQUFDLE9BQUUsV0FBVSw4Q0FDVjJCLGNBQUkzQixVQURQO0FBQUE7QUFBQTtBQUFBO0FBQUEscUJBRUE7QUFBQSxjQUlGLHVCQUFDLFNBQUksV0FBVSx5REFDYjtBQUFBLHVDQUFDLFlBQVMsV0FBVSxhQUFwQjtBQUFBO0FBQUE7QUFBQTtBQUFBLHVCQUE2QjtBQUFBLGdCQUM1QnNDLFdBQVdYLElBQUk2RixVQUFVO0FBQUEsbUJBRjVCO0FBQUE7QUFBQTtBQUFBO0FBQUEscUJBR0E7QUFBQSxjQUdBLHVCQUFDLFNBQUksV0FBVSxtQkFDYjtBQUFBO0FBQUEsa0JBQUM7QUFBQTtBQUFBLG9CQUNDLFNBQVE7QUFBQSxvQkFDUixNQUFLO0FBQUEsb0JBQ0wsV0FBVTtBQUFBLG9CQUNWLFNBQVMsTUFBTWpDLG9CQUFvQjVELElBQUkyRixXQUFXM0YsSUFBSTFDLEVBQUU7QUFBQSxvQkFFeEQsaUNBQUMsWUFBUyxXQUFVLGFBQXBCO0FBQUE7QUFBQTtBQUFBO0FBQUEsMkJBQTZCO0FBQUE7QUFBQSxrQkFOL0I7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLGdCQU9BO0FBQUEsZ0JBQ0E7QUFBQSxrQkFBQztBQUFBO0FBQUEsb0JBQ0MsU0FBUTtBQUFBLG9CQUNSLE1BQUs7QUFBQSxvQkFDTCxXQUFVO0FBQUEsb0JBQ1YsU0FBUyxNQUFNbUMsaUJBQWlCTyxHQUFHO0FBQUEsb0JBRW5DLGlDQUFDLGFBQVUsV0FBVSxhQUFyQjtBQUFBO0FBQUE7QUFBQTtBQUFBLDJCQUE4QjtBQUFBO0FBQUEsa0JBTmhDO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxnQkFPQTtBQUFBLGdCQUNBO0FBQUEsa0JBQUM7QUFBQTtBQUFBLG9CQUNDLFNBQVE7QUFBQSxvQkFDUixNQUFLO0FBQUEsb0JBQ0wsU0FBUyxNQUFNOEIsa0JBQWtCOUIsSUFBSTFDLEVBQUU7QUFBQSxvQkFDdkMsVUFBVW9DO0FBQUFBLG9CQUVWLGlDQUFDLFVBQU8sV0FBVSxhQUFsQjtBQUFBO0FBQUE7QUFBQTtBQUFBLDJCQUEyQjtBQUFBO0FBQUEsa0JBTjdCO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxnQkFPQTtBQUFBLG1CQXhCRjtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQXlCQTtBQUFBLGlCQWxERjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQW1EQTtBQUFBLGVBdkZTTSxJQUFJMUMsSUFBZjtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQXdGQTtBQUFBLFFBQ0QsS0EzRkg7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQTRGQSxJQUVBLHVCQUFDLFFBQ0MsaUNBQUMsZUFBWSxXQUFVLHFCQUNyQjtBQUFBLGlDQUFDLGFBQVUsV0FBVSxrREFBckI7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFBbUU7QUFBQSxVQUNuRSx1QkFBQyxRQUFHLFdBQVUsNEJBQTJCLCtCQUF6QztBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUF3RDtBQUFBLFVBQ3hELHVCQUFDLE9BQUUsV0FBVSxpQ0FDVjJCLHlCQUFlRSxxQkFBcUIsUUFDakMseUNBQ0EsbURBSE47QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFJQTtBQUFBLGFBUEY7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQVFBLEtBVEY7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQVVBO0FBQUEsUUFJRHJCLE9BQU9nSSxXQUNOLHVCQUFDLGVBQVksU0FBUSxRQUFPLFNBQVNoSSxPQUFPZ0ksV0FBNUM7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQUFvRDtBQUFBLFdBdE54RDtBQUFBO0FBQUE7QUFBQTtBQUFBLGFBd05BO0FBQUEsU0F6Zko7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQTJmQTtBQUFBLElBR0M5SCxNQUFNNkIsUUFDTCx1QkFBQyxRQUNDO0FBQUEsNkJBQUMsY0FDQztBQUFBLCtCQUFDLGFBQVUsZ0NBQVg7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQUEyQjtBQUFBLFFBQzNCLHVCQUFDLG1CQUFnQixzREFBakI7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQUF1RDtBQUFBLFdBRnpEO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFHQTtBQUFBLE1BQ0EsdUJBQUMsZUFDQyxpQ0FBQyxTQUFJLFdBQVUseUNBQ2I7QUFBQSwrQkFBQyxTQUNDO0FBQUEsaUNBQUMsU0FBSSxXQUFVLHNCQUFzQjdCLGdCQUFNNkIsS0FBS2tHLGVBQWUsS0FBL0Q7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFBaUU7QUFBQSxVQUNqRSx1QkFBQyxTQUFJLFdBQVUsaUNBQWdDLDRCQUEvQztBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUEyRDtBQUFBLGFBRjdEO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFHQTtBQUFBLFFBQ0EsdUJBQUMsU0FDQztBQUFBLGlDQUFDLFNBQUksV0FBVSxzQkFBc0IvSCxnQkFBTTZCLEtBQUttRyxtQkFBbUIsS0FBbkU7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFBcUU7QUFBQSxVQUNyRSx1QkFBQyxTQUFJLFdBQVUsaUNBQWdDLDBCQUEvQztBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUF5RDtBQUFBLGFBRjNEO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFHQTtBQUFBLFFBQ0EsdUJBQUMsU0FDQztBQUFBLGlDQUFDLFNBQUksV0FBVSxzQkFBc0JoSSxnQkFBTTZCLEtBQUtvRyxtQkFBbUIsS0FBbkU7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFBcUU7QUFBQSxVQUNyRSx1QkFBQyxTQUFJLFdBQVUsaUNBQWdDLGlDQUEvQztBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUFnRTtBQUFBLGFBRmxFO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFHQTtBQUFBLFdBWkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQWFBLEtBZEY7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQWVBO0FBQUEsU0FwQkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQXFCQTtBQUFBLElBSUYsdUJBQUMsVUFBTyxNQUFNekcsa0JBQWtCLE1BQU0sY0FBYyxDQUFDOEYsU0FBUyxDQUFDQSxRQUFRN0YsaUJBQWlCLElBQUksR0FDMUYsaUNBQUMsaUJBQWMsV0FBVSwwQ0FDdEJELDJCQUNDLG1DQUNFO0FBQUEsNkJBQUMsZ0JBQ0M7QUFBQSwrQkFBQyxlQUFZLDZCQUFiO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFBMEI7QUFBQSxRQUMxQix1QkFBQyxxQkFBaUIsNENBQWxCO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFFQTtBQUFBLFdBSkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxhQUtBO0FBQUEsTUFFQSx1QkFBQyxTQUFJLFdBQVUsYUFFYjtBQUFBLCtCQUFDLFNBQUksV0FBVSx1REFDYjtBQUFBLFVBQUM7QUFBQTtBQUFBLFlBQ0MsS0FBS0EsY0FBY21HO0FBQUFBLFlBQ25CLEtBQUtuRyxjQUFjbkIsVUFBVTtBQUFBLFlBQzdCLFdBQVU7QUFBQTtBQUFBLFVBSFo7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLFFBRzJCLEtBSjdCO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFNQTtBQUFBLFFBR0EsdUJBQUMsU0FBSSxXQUFVLHlDQUNiO0FBQUEsaUNBQUMsU0FBSSxXQUFVLGFBQ2I7QUFBQSxtQ0FBQyxTQUNDO0FBQUEscUNBQUMsU0FBSSxXQUFVLDZDQUE0QywyQkFBM0Q7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFBc0U7QUFBQSxjQUN0RSx1QkFBQyxTQUFNLFNBQVN1RCwwQkFBMEJwQyxjQUFjUyxXQUFXLEdBQUcsV0FBVSxRQUM3RW9CLDZCQUFtQjdCLGNBQWNTLFdBQVcsS0FEL0M7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFFQTtBQUFBLGlCQUpGO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBS0E7QUFBQSxZQUVBLHVCQUFDLFNBQ0M7QUFBQSxxQ0FBQyxTQUFJLFdBQVUsNkNBQTRDLDBCQUEzRDtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQUFxRTtBQUFBLGNBQ3JFLHVCQUFDLFNBQUksV0FBVSxxQkFDWlQ7QUFBQUEsOEJBQWMrRjtBQUFBQSxnQkFBTTtBQUFBLGdCQUFJL0YsY0FBY2dHO0FBQUFBLGdCQUFPO0FBQUEsbUJBRGhEO0FBQUE7QUFBQTtBQUFBO0FBQUEscUJBRUE7QUFBQSxpQkFKRjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUtBO0FBQUEsWUFFQSx1QkFBQyxTQUNDO0FBQUEscUNBQUMsU0FBSSxXQUFVLDZDQUE0Qyx5QkFBM0Q7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFBb0U7QUFBQSxjQUNwRSx1QkFBQyxTQUFJLFdBQVUsV0FBV2hGLHlCQUFlaEIsY0FBYzBHLGVBQWUsS0FBdEU7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFBd0U7QUFBQSxpQkFGMUU7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFHQTtBQUFBLFlBRUEsdUJBQUMsU0FDQztBQUFBLHFDQUFDLFNBQUksV0FBVSw2Q0FBNEMsc0JBQTNEO0FBQUE7QUFBQTtBQUFBO0FBQUEscUJBQWlFO0FBQUEsY0FDakUsdUJBQUMsU0FBSSxXQUFVLHFCQUFxQjFHLHdCQUFjMkcsVUFBbEQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFBeUQ7QUFBQSxpQkFGM0Q7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFHQTtBQUFBLGVBdkJGO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBd0JBO0FBQUEsVUFFQSx1QkFBQyxTQUFJLFdBQVUsYUFDYjtBQUFBLG1DQUFDLFNBQ0M7QUFBQSxxQ0FBQyxTQUFJLFdBQVUsNkNBQTRDLHVCQUEzRDtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQUFrRTtBQUFBLGNBQ2xFLHVCQUFDLFNBQUksV0FBVSxXQUFXeEYscUJBQVduQixjQUFjcUcsVUFBVSxLQUE3RDtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQUErRDtBQUFBLGlCQUZqRTtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUdBO0FBQUEsWUFFQSx1QkFBQyxTQUNDO0FBQUEscUNBQUMsU0FBSSxXQUFVLDZDQUE0Qyx1QkFBM0Q7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFBa0U7QUFBQSxjQUNsRSx1QkFBQyxTQUFJLFdBQVUsV0FBV2xGLHFCQUFXbkIsY0FBYzRHLFVBQVUsS0FBN0Q7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFBK0Q7QUFBQSxpQkFGakU7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFHQTtBQUFBLFlBRUEsdUJBQUMsU0FDQztBQUFBLHFDQUFDLFNBQUksV0FBVSw2Q0FBNEMsd0JBQTNEO0FBQUE7QUFBQTtBQUFBO0FBQUEscUJBQW1FO0FBQUEsY0FDbkUsdUJBQUMsU0FBSSxXQUFVLCtCQUErQjVHLHdCQUFjbEMsTUFBNUQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFBK0Q7QUFBQSxpQkFGakU7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFHQTtBQUFBLFlBRUNrQyxjQUFjb0csd0JBQ2IsdUJBQUMsU0FDQztBQUFBLHFDQUFDLFNBQUksV0FBVSw2Q0FBNEMsOEJBQTNEO0FBQUE7QUFBQTtBQUFBO0FBQUEscUJBQXlFO0FBQUEsY0FDekUsdUJBQUMsU0FBTSxTQUFRLGFBQVksV0FBVSxRQUFPLGlDQUE1QztBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQUE2RDtBQUFBLGNBQzVEcEcsY0FBYzZHLHNCQUNiLHVCQUFDLFNBQUksV0FBVSxzQ0FBb0M7QUFBQTtBQUFBLGdCQUN2QzdHLGNBQWM2RztBQUFBQSxtQkFEMUI7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFFQTtBQUFBLGlCQU5KO0FBQUE7QUFBQTtBQUFBO0FBQUEsbUJBUUE7QUFBQSxlQXpCSjtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQTJCQTtBQUFBLGFBdERGO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUF1REE7QUFBQSxRQUdDN0csY0FBY25CLFVBQ2IsdUJBQUMsU0FDQztBQUFBLGlDQUFDLFNBQUksV0FBVSxrREFBaUQsc0JBQWhFO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBQXNFO0FBQUEsVUFDdEUsdUJBQUMsU0FBSSxXQUFVLG1DQUNabUIsd0JBQWNuQixVQURqQjtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUVBO0FBQUEsYUFKRjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBS0E7QUFBQSxRQUlEbUIsY0FBYzhHLFlBQVlDLE9BQU9DLEtBQUtoSCxjQUFjOEcsUUFBUSxFQUFFakIsU0FBUyxLQUN0RSx1QkFBQyxTQUNDO0FBQUEsaUNBQUMsU0FBSSxXQUFVLGtEQUFpRCx3QkFBaEU7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFBd0U7QUFBQSxVQUN4RSx1QkFBQyxTQUFJLFdBQVUsNkNBQ2IsaUNBQUMsU0FBS0wsZUFBS0MsVUFBVXpGLGNBQWM4RyxVQUFVLE1BQU0sQ0FBQyxLQUFwRDtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUFzRCxLQUR4RDtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUVBO0FBQUEsYUFKRjtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBS0E7QUFBQSxRQUlGLHVCQUFDLFNBQUksV0FBVSw0QkFDYjtBQUFBO0FBQUEsWUFBQztBQUFBO0FBQUEsY0FDQyxTQUFRO0FBQUEsY0FDUixTQUFTLE1BQU0xQyxvQkFBb0JwRSxjQUFjbUcsV0FBV25HLGNBQWNsQyxFQUFFO0FBQUEsY0FDNUUsV0FBVTtBQUFBLGNBRVY7QUFBQSx1Q0FBQyxZQUFTLFdBQVUsYUFBcEI7QUFBQTtBQUFBO0FBQUE7QUFBQSx1QkFBNkI7QUFBQTtBQUFBO0FBQUE7QUFBQSxZQUwvQjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsVUFPQTtBQUFBLFVBQ0E7QUFBQSxZQUFDO0FBQUE7QUFBQSxjQUNDLFNBQVE7QUFBQSxjQUNSLFNBQVMsTUFBTXVGLE9BQU95QyxLQUFLOUYsY0FBY21HLFdBQVcsUUFBUTtBQUFBLGNBQzVELFdBQVU7QUFBQSxjQUVWO0FBQUEsdUNBQUMsZ0JBQWEsV0FBVSxhQUF4QjtBQUFBO0FBQUE7QUFBQTtBQUFBLHVCQUFpQztBQUFBO0FBQUE7QUFBQTtBQUFBLFlBTG5DO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxVQU9BO0FBQUEsVUFDQTtBQUFBLFlBQUM7QUFBQTtBQUFBLGNBQ0MsU0FBUTtBQUFBLGNBQ1IsU0FBUyxNQUFNN0Qsa0JBQWtCdEMsY0FBY2xDLEVBQUU7QUFBQSxjQUNqRCxVQUFVb0M7QUFBQUEsY0FFVjtBQUFBLHVDQUFDLFVBQU8sV0FBVSxhQUFsQjtBQUFBO0FBQUE7QUFBQTtBQUFBLHVCQUEyQjtBQUFBO0FBQUE7QUFBQTtBQUFBLFlBTDdCO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxVQU9BO0FBQUEsYUF4QkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxlQXlCQTtBQUFBLFdBbEhGO0FBQUE7QUFBQTtBQUFBO0FBQUEsYUFtSEE7QUFBQSxTQTNIRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFdBNEhBLEtBOUhKO0FBQUE7QUFBQTtBQUFBO0FBQUEsV0FnSUEsS0FqSUY7QUFBQTtBQUFBO0FBQUE7QUFBQSxXQWtJQTtBQUFBLE9BenJCRjtBQUFBO0FBQUE7QUFBQTtBQUFBLFNBMHJCQTtBQUVKO0FBQUN6QixHQWwyQmVKLG9CQUFrQjtBQUFBLFVBQ25CVCxPQUFPO0FBQUE7QUFBQXFKLEtBRE41STtBQUFrQixJQUFBNEk7QUFBQUMsYUFBQUQsSUFBQSIsIm5hbWVzIjpbInVzZVN0YXRlIiwidXNlTWVtbyIsIlNwYXJrbGVzIiwiV2FuZDIiLCJMYXlvdXRUZW1wbGF0ZSIsIkltYWdlIiwiRG93bmxvYWQiLCJVcGxvYWQiLCJMb2FkZXIyIiwiU2VhcmNoIiwiVHJhc2gyIiwiWCIsIkNhbGVuZGFyIiwiRmlsZUltYWdlIiwiTWF4aW1pemUyIiwiRXh0ZXJuYWxMaW5rIiwiU2VjdGlvbkhlYWRlciIsIkNhcmQiLCJDYXJkQ29udGVudCIsIkNhcmREZXNjcmlwdGlvbiIsIkNhcmRIZWFkZXIiLCJDYXJkVGl0bGUiLCJJbmxpbmVBbGVydCIsIlRleHRhcmVhIiwiTGFiZWwiLCJCdXR0b24iLCJTZWxlY3QiLCJTZWxlY3RDb250ZW50IiwiU2VsZWN0SXRlbSIsIlNlbGVjdFRyaWdnZXIiLCJTZWxlY3RWYWx1ZSIsIklucHV0IiwiQmFkZ2UiLCJEaWFsb2ciLCJEaWFsb2dDb250ZW50IiwiRGlhbG9nSGVhZGVyIiwiRGlhbG9nVGl0bGUiLCJEaWFsb2dEZXNjcmlwdGlvbiIsIkNoZWNrYm94IiwidXNlQXV0aCIsIlRBQlMiLCJpZCIsImxhYmVsIiwiaWNvbiIsIlNUWUxFUyIsInZhbHVlIiwiQVNQRUNUX1JBVElPUyIsImRpbXMiLCJJbWFnZUNyZWF0b3JDbGllbnQiLCJpbWFnZXMiLCJ0ZW1wbGF0ZXMiLCJ1c2FnZSIsIl9zIiwiYXV0aCIsImFjdGl2ZVRhYiIsInNldEFjdGl2ZVRhYiIsInByb21wdCIsInNldFByb21wdCIsInN0eWxlIiwic2V0U3R5bGUiLCJhc3BlY3RSYXRpbyIsInNldEFzcGVjdFJhdGlvIiwiaXNHZW5lcmF0aW5nIiwic2V0SXNHZW5lcmF0aW5nIiwiZ2VuZXJhdGVkSW1hZ2VzIiwic2V0R2VuZXJhdGVkSW1hZ2VzIiwiZXJyb3IiLCJzZXRFcnJvciIsInNlYXJjaFF1ZXJ5Iiwic2V0U2VhcmNoUXVlcnkiLCJzb3VyY2VUeXBlRmlsdGVyIiwic2V0U291cmNlVHlwZUZpbHRlciIsInNlbGVjdGVkSW1hZ2VzIiwic2V0U2VsZWN0ZWRJbWFnZXMiLCJTZXQiLCJzZWxlY3RlZEltYWdlIiwic2V0U2VsZWN0ZWRJbWFnZSIsImlzRGVsZXRpbmciLCJzZXRJc0RlbGV0aW5nIiwiZmlsdGVyZWRJbWFnZXMiLCJkYXRhIiwiZmlsdGVyZWQiLCJmaWx0ZXIiLCJpbWciLCJzb3VyY2VfdHlwZSIsInRyaW0iLCJxdWVyeSIsInRvTG93ZXJDYXNlIiwicHJvbXB0TWF0Y2giLCJpbmNsdWRlcyIsImlkTWF0Y2giLCJmb3JtYXRGaWxlU2l6ZSIsImJ5dGVzIiwidG9GaXhlZCIsImZvcm1hdERhdGUiLCJkYXRlU3RyaW5nIiwiZGF0ZSIsIkRhdGUiLCJ0b0xvY2FsZURhdGVTdHJpbmciLCJtb250aCIsImRheSIsInllYXIiLCJob3VyIiwibWludXRlIiwiZ2V0U291cmNlVHlwZUxhYmVsIiwic291cmNlVHlwZSIsImxhYmVscyIsImFpX2dlbmVyYXRlZCIsImVuaGFuY2VkIiwidXBsb2FkZWQiLCJ0ZW1wbGF0ZSIsImdldFNvdXJjZVR5cGVCYWRnZVZhcmlhbnQiLCJ2YXJpYW50cyIsImhhbmRsZURlbGV0ZUltYWdlIiwiaW1hZ2VJZCIsImNvbmZpcm0iLCJyZXNwb25zZSIsImZldGNoIiwibWV0aG9kIiwiaGVhZGVycyIsIkF1dGhvcml6YXRpb24iLCJzZXNzaW9uIiwiYWNjZXNzX3Rva2VuIiwicmVzdWx0IiwianNvbiIsIm9rIiwic3VjY2VzcyIsIkVycm9yIiwid2luZG93IiwibG9jYXRpb24iLCJyZWxvYWQiLCJlcnIiLCJjb25zb2xlIiwiYWxlcnQiLCJtZXNzYWdlIiwiaGFuZGxlQnVsa0RlbGV0ZSIsInNpemUiLCJkZWxldGVQcm9taXNlcyIsIkFycmF5IiwiZnJvbSIsIm1hcCIsIlByb21pc2UiLCJhbGwiLCJoYW5kbGVEb3dubG9hZEltYWdlIiwiaW1hZ2VVcmwiLCJsaW5rIiwiZG9jdW1lbnQiLCJjcmVhdGVFbGVtZW50IiwiaHJlZiIsImRvd25sb2FkIiwidGFyZ2V0IiwiYm9keSIsImFwcGVuZENoaWxkIiwiY2xpY2siLCJyZW1vdmVDaGlsZCIsInRvZ2dsZUltYWdlU2VsZWN0aW9uIiwibmV3U2VsZWN0aW9uIiwiaGFzIiwiZGVsZXRlIiwiYWRkIiwidGFiIiwiZSIsInByZXZlbnREZWZhdWx0IiwiSlNPTiIsInN0cmluZ2lmeSIsIm51bWJlck9mSW1hZ2VzIiwicyIsImFyIiwibGVuZ3RoIiwib3BlbiIsIndpZHRoIiwiaGVpZ2h0Iiwic291cmNlIiwidGh1bWJuYWlsX3VybCIsImltYWdlX3VybCIsImlzX3B1c2hlZF90b19zaG9waWZ5IiwiY3JlYXRlZF9hdCIsIndhcm5pbmciLCJ0b3RhbEltYWdlcyIsImltYWdlc1RoaXNNb250aCIsInB1c2hlZFRvU2hvcGlmeSIsImZpbGVfc2l6ZV9ieXRlcyIsImZvcm1hdCIsInVwZGF0ZWRfYXQiLCJzaG9waWZ5X3Byb2R1Y3RfaWQiLCJzZXR0aW5ncyIsIk9iamVjdCIsImtleXMiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJpbWFnZS1jcmVhdG9yLWNsaWVudC50c3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgdXNlU3RhdGUsIHVzZU1lbW8gfSBmcm9tIFwicmVhY3RcIjtcbmltcG9ydCB7IFNwYXJrbGVzLCBXYW5kMiwgTGF5b3V0VGVtcGxhdGUsIEltYWdlLCBEb3dubG9hZCwgVXBsb2FkLCBMb2FkZXIyLCBTZWFyY2gsIFRyYXNoMiwgWCwgQ2FsZW5kYXIsIEZpbGVJbWFnZSwgTWF4aW1pemUyLCBFeHRlcm5hbExpbmsgfSBmcm9tIFwibHVjaWRlLXJlYWN0XCI7XG5cbmltcG9ydCB7IFNlY3Rpb25IZWFkZXIgfSBmcm9tIFwiQC9jb21wb25lbnRzL3NlY3Rpb24taGVhZGVyXCI7XG5pbXBvcnQgeyBDYXJkLCBDYXJkQ29udGVudCwgQ2FyZERlc2NyaXB0aW9uLCBDYXJkSGVhZGVyLCBDYXJkVGl0bGUgfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL2NhcmRcIjtcbmltcG9ydCB7IElubGluZUFsZXJ0IH0gZnJvbSBcIkAvY29tcG9uZW50cy91aS9pbmxpbmUtYWxlcnRcIjtcbmltcG9ydCB7IFRleHRhcmVhIH0gZnJvbSBcIkAvY29tcG9uZW50cy91aS90ZXh0YXJlYVwiO1xuaW1wb3J0IHsgTGFiZWwgfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL2xhYmVsXCI7XG5pbXBvcnQgeyBCdXR0b24gfSBmcm9tIFwiQC9jb21wb25lbnRzL3VpL2J1dHRvblwiO1xuaW1wb3J0IHsgU2VsZWN0LCBTZWxlY3RDb250ZW50LCBTZWxlY3RJdGVtLCBTZWxlY3RUcmlnZ2VyLCBTZWxlY3RWYWx1ZSB9IGZyb20gXCJAL2NvbXBvbmVudHMvdWkvc2VsZWN0XCI7XG5pbXBvcnQgeyBJbnB1dCB9IGZyb20gXCJAL2NvbXBvbmVudHMvdWkvaW5wdXRcIjtcbmltcG9ydCB7IEJhZGdlIH0gZnJvbSBcIkAvY29tcG9uZW50cy91aS9iYWRnZVwiO1xuaW1wb3J0IHsgRGlhbG9nLCBEaWFsb2dDb250ZW50LCBEaWFsb2dIZWFkZXIsIERpYWxvZ1RpdGxlLCBEaWFsb2dEZXNjcmlwdGlvbiB9IGZyb20gXCJAL2NvbXBvbmVudHMvdWkvZGlhbG9nXCI7XG5pbXBvcnQgeyBDaGVja2JveCB9IGZyb20gXCJAL2NvbXBvbmVudHMvdWkvY2hlY2tib3hcIjtcbmltcG9ydCB7IHVzZUF1dGggfSBmcm9tIFwiQC92aXRlL2F1dGgvYXV0aC1wcm92aWRlclwiO1xuXG50eXBlIEFwaVJlc3BvbnNlPFQ+ID0geyBkYXRhPzogVDsgZXJyb3I/OiBzdHJpbmc7IHdhcm5pbmc/OiBzdHJpbmc7IHNvdXJjZT86IHN0cmluZzsgcmVmcmVzaGVkQXQ/OiBzdHJpbmcgfTtcblxudHlwZSBTb3VyY2VUeXBlID0gJ2FpX2dlbmVyYXRlZCcgfCAnZW5oYW5jZWQnIHwgJ3VwbG9hZGVkJyB8ICd0ZW1wbGF0ZSc7XG50eXBlIEltYWdlRm9ybWF0ID0gJ3BuZycgfCAnanBnJyB8ICd3ZWJwJztcblxudHlwZSBHZW5lcmF0ZWRJbWFnZVR5cGUgPSB7XG4gIGlkOiBzdHJpbmc7XG4gIHVzZXJfaWQ6IHN0cmluZztcbiAgaW1hZ2VfdXJsOiBzdHJpbmc7XG4gIHRodW1ibmFpbF91cmw6IHN0cmluZyB8IG51bGw7XG4gIHNvdXJjZV90eXBlOiBTb3VyY2VUeXBlO1xuICBzb3VyY2VfaW1hZ2VfdXJsOiBzdHJpbmcgfCBudWxsO1xuICBwcm9tcHQ6IHN0cmluZyB8IG51bGw7XG4gIHNldHRpbmdzOiBSZWNvcmQ8c3RyaW5nLCB1bmtub3duPiB8IG51bGw7XG4gIHNob3BpZnlfcHJvZHVjdF9pZDogc3RyaW5nIHwgbnVsbDtcbiAgc2hvcGlmeV9pbWFnZV9pZDogc3RyaW5nIHwgbnVsbDtcbiAgd2lkdGg6IG51bWJlcjtcbiAgaGVpZ2h0OiBudW1iZXI7XG4gIGZpbGVfc2l6ZV9ieXRlczogbnVtYmVyO1xuICBmb3JtYXQ6IEltYWdlRm9ybWF0O1xuICBpc19wdXNoZWRfdG9fc2hvcGlmeTogYm9vbGVhbjtcbiAgY3JlYXRlZF9hdDogc3RyaW5nO1xuICB1cGRhdGVkX2F0OiBzdHJpbmc7XG59O1xuXG50eXBlIEltYWdlQ3JlYXRvckNsaWVudFByb3BzID0ge1xuICBpbWFnZXM6IEFwaVJlc3BvbnNlPEdlbmVyYXRlZEltYWdlVHlwZVtdPjtcbiAgdGVtcGxhdGVzOiBBcGlSZXNwb25zZTxhbnlbXT47XG4gIHVzYWdlOiBBcGlSZXNwb25zZTxhbnk+O1xufTtcblxudHlwZSBUYWJJZCA9IFwiZ2VuZXJhdGVcIiB8IFwiZW5oYW5jZVwiIHwgXCJ0ZW1wbGF0ZXNcIiB8IFwibGlicmFyeVwiO1xuXG5jb25zdCBUQUJTOiB7IGlkOiBUYWJJZDsgbGFiZWw6IHN0cmluZzsgaWNvbjogUmVhY3QuUmVhY3ROb2RlIH1bXSA9IFtcbiAgeyBpZDogXCJnZW5lcmF0ZVwiLCBsYWJlbDogXCJHZW5lcmF0ZVwiLCBpY29uOiA8U3BhcmtsZXMgY2xhc3NOYW1lPVwiaC00IHctNFwiIC8+IH0sXG4gIHsgaWQ6IFwiZW5oYW5jZVwiLCBsYWJlbDogXCJFbmhhbmNlXCIsIGljb246IDxXYW5kMiBjbGFzc05hbWU9XCJoLTQgdy00XCIgLz4gfSxcbiAgeyBpZDogXCJ0ZW1wbGF0ZXNcIiwgbGFiZWw6IFwiVGVtcGxhdGVzXCIsIGljb246IDxMYXlvdXRUZW1wbGF0ZSBjbGFzc05hbWU9XCJoLTQgdy00XCIgLz4gfSxcbiAgeyBpZDogXCJsaWJyYXJ5XCIsIGxhYmVsOiBcIkxpYnJhcnlcIiwgaWNvbjogPEltYWdlIGNsYXNzTmFtZT1cImgtNCB3LTRcIiAvPiB9LFxuXTtcblxuY29uc3QgU1RZTEVTID0gW1xuICB7IHZhbHVlOiBcInBob3RvcmVhbGlzdGljXCIsIGxhYmVsOiBcIlBob3RvcmVhbGlzdGljXCIgfSxcbiAgeyB2YWx1ZTogXCJpbGx1c3RyYXRpb25cIiwgbGFiZWw6IFwiSWxsdXN0cmF0aW9uXCIgfSxcbiAgeyB2YWx1ZTogXCJtaW5pbWFsaXN0XCIsIGxhYmVsOiBcIk1pbmltYWxpc3RcIiB9LFxuICB7IHZhbHVlOiBcInNrZXRjaFwiLCBsYWJlbDogXCJTa2V0Y2hcIiB9LFxuICB7IHZhbHVlOiBcIjNkLXJlbmRlclwiLCBsYWJlbDogXCIzRCBSZW5kZXJcIiB9LFxuICB7IHZhbHVlOiBcIndhdGVyY29sb3JcIiwgbGFiZWw6IFwiV2F0ZXJjb2xvclwiIH0sXG5dO1xuXG5jb25zdCBBU1BFQ1RfUkFUSU9TID0gW1xuICB7IHZhbHVlOiBcIjE6MVwiLCBsYWJlbDogXCIxOjEgKFNxdWFyZSlcIiwgZGltczogXCIxMDI0eDEwMjRcIiB9LFxuICB7IHZhbHVlOiBcIjE2OjlcIiwgbGFiZWw6IFwiMTY6OSAoTGFuZHNjYXBlKVwiLCBkaW1zOiBcIjE5MjB4MTA4MFwiIH0sXG4gIHsgdmFsdWU6IFwiOToxNlwiLCBsYWJlbDogXCI5OjE2IChQb3J0cmFpdClcIiwgZGltczogXCIxMDgweDE5MjBcIiB9LFxuICB7IHZhbHVlOiBcIjQ6M1wiLCBsYWJlbDogXCI0OjMgKFN0YW5kYXJkKVwiLCBkaW1zOiBcIjE2MDB4MTIwMFwiIH0sXG5dO1xuXG50eXBlIEdlbmVyYXRlZEltYWdlID0ge1xuICBpZDogc3RyaW5nO1xuICBpbWFnZVVybDogc3RyaW5nO1xuICB0aHVtYm5haWxVcmw6IHN0cmluZztcbiAgd2lkdGg6IG51bWJlcjtcbiAgaGVpZ2h0OiBudW1iZXI7XG59O1xuXG5leHBvcnQgZnVuY3Rpb24gSW1hZ2VDcmVhdG9yQ2xpZW50KHsgaW1hZ2VzLCB0ZW1wbGF0ZXMsIHVzYWdlIH06IEltYWdlQ3JlYXRvckNsaWVudFByb3BzKSB7XG4gIGNvbnN0IGF1dGggPSB1c2VBdXRoKCk7XG4gIGNvbnN0IFthY3RpdmVUYWIsIHNldEFjdGl2ZVRhYl0gPSB1c2VTdGF0ZTxUYWJJZD4oXCJnZW5lcmF0ZVwiKTtcblxuICAvLyBGb3JtIHN0YXRlIGZvciBHZW5lcmF0ZSB0YWJcbiAgY29uc3QgW3Byb21wdCwgc2V0UHJvbXB0XSA9IHVzZVN0YXRlKFwiXCIpO1xuICBjb25zdCBbc3R5bGUsIHNldFN0eWxlXSA9IHVzZVN0YXRlKFwicGhvdG9yZWFsaXN0aWNcIik7XG4gIGNvbnN0IFthc3BlY3RSYXRpbywgc2V0QXNwZWN0UmF0aW9dID0gdXNlU3RhdGUoXCIxOjFcIik7XG4gIGNvbnN0IFtpc0dlbmVyYXRpbmcsIHNldElzR2VuZXJhdGluZ10gPSB1c2VTdGF0ZShmYWxzZSk7XG4gIGNvbnN0IFtnZW5lcmF0ZWRJbWFnZXMsIHNldEdlbmVyYXRlZEltYWdlc10gPSB1c2VTdGF0ZTxHZW5lcmF0ZWRJbWFnZVtdPihbXSk7XG4gIGNvbnN0IFtlcnJvciwgc2V0RXJyb3JdID0gdXNlU3RhdGU8c3RyaW5nIHwgbnVsbD4obnVsbCk7XG5cbiAgLy8gTGlicmFyeSB0YWIgc3RhdGVcbiAgY29uc3QgW3NlYXJjaFF1ZXJ5LCBzZXRTZWFyY2hRdWVyeV0gPSB1c2VTdGF0ZShcIlwiKTtcbiAgY29uc3QgW3NvdXJjZVR5cGVGaWx0ZXIsIHNldFNvdXJjZVR5cGVGaWx0ZXJdID0gdXNlU3RhdGU8U291cmNlVHlwZSB8IFwiYWxsXCI+KFwiYWxsXCIpO1xuICBjb25zdCBbc2VsZWN0ZWRJbWFnZXMsIHNldFNlbGVjdGVkSW1hZ2VzXSA9IHVzZVN0YXRlPFNldDxzdHJpbmc+PihuZXcgU2V0KCkpO1xuICBjb25zdCBbc2VsZWN0ZWRJbWFnZSwgc2V0U2VsZWN0ZWRJbWFnZV0gPSB1c2VTdGF0ZTxHZW5lcmF0ZWRJbWFnZVR5cGUgfCBudWxsPihudWxsKTtcbiAgY29uc3QgW2lzRGVsZXRpbmcsIHNldElzRGVsZXRpbmddID0gdXNlU3RhdGUoZmFsc2UpO1xuXG4gIC8vIEZpbHRlciBhbmQgc2VhcmNoIGxpYnJhcnkgaW1hZ2VzXG4gIGNvbnN0IGZpbHRlcmVkSW1hZ2VzID0gdXNlTWVtbygoKSA9PiB7XG4gICAgaWYgKCFpbWFnZXMuZGF0YSkgcmV0dXJuIFtdO1xuXG4gICAgbGV0IGZpbHRlcmVkID0gaW1hZ2VzLmRhdGE7XG5cbiAgICAvLyBBcHBseSBzb3VyY2UgdHlwZSBmaWx0ZXJcbiAgICBpZiAoc291cmNlVHlwZUZpbHRlciAhPT0gXCJhbGxcIikge1xuICAgICAgZmlsdGVyZWQgPSBmaWx0ZXJlZC5maWx0ZXIoKGltZykgPT4gaW1nLnNvdXJjZV90eXBlID09PSBzb3VyY2VUeXBlRmlsdGVyKTtcbiAgICB9XG5cbiAgICAvLyBBcHBseSBzZWFyY2ggcXVlcnlcbiAgICBpZiAoc2VhcmNoUXVlcnkudHJpbSgpKSB7XG4gICAgICBjb25zdCBxdWVyeSA9IHNlYXJjaFF1ZXJ5LnRvTG93ZXJDYXNlKCk7XG4gICAgICBmaWx0ZXJlZCA9IGZpbHRlcmVkLmZpbHRlcigoaW1nKSA9PiB7XG4gICAgICAgIGNvbnN0IHByb21wdE1hdGNoID0gaW1nLnByb21wdD8udG9Mb3dlckNhc2UoKS5pbmNsdWRlcyhxdWVyeSk7XG4gICAgICAgIGNvbnN0IGlkTWF0Y2ggPSBpbWcuaWQudG9Mb3dlckNhc2UoKS5pbmNsdWRlcyhxdWVyeSk7XG4gICAgICAgIHJldHVybiBwcm9tcHRNYXRjaCB8fCBpZE1hdGNoO1xuICAgICAgfSk7XG4gICAgfVxuXG4gICAgcmV0dXJuIGZpbHRlcmVkO1xuICB9LCBbaW1hZ2VzLmRhdGEsIHNvdXJjZVR5cGVGaWx0ZXIsIHNlYXJjaFF1ZXJ5XSk7XG5cbiAgLy8gSGVscGVyIGZ1bmN0aW9ucyBmb3IgbGlicmFyeVxuICBjb25zdCBmb3JtYXRGaWxlU2l6ZSA9IChieXRlczogbnVtYmVyKTogc3RyaW5nID0+IHtcbiAgICBpZiAoYnl0ZXMgPCAxMDI0KSByZXR1cm4gYCR7Ynl0ZXN9IEJgO1xuICAgIGlmIChieXRlcyA8IDEwMjQgKiAxMDI0KSByZXR1cm4gYCR7KGJ5dGVzIC8gMTAyNCkudG9GaXhlZCgxKX0gS0JgO1xuICAgIHJldHVybiBgJHsoYnl0ZXMgLyAoMTAyNCAqIDEwMjQpKS50b0ZpeGVkKDEpfSBNQmA7XG4gIH07XG5cbiAgY29uc3QgZm9ybWF0RGF0ZSA9IChkYXRlU3RyaW5nOiBzdHJpbmcpOiBzdHJpbmcgPT4ge1xuICAgIGNvbnN0IGRhdGUgPSBuZXcgRGF0ZShkYXRlU3RyaW5nKTtcbiAgICByZXR1cm4gZGF0ZS50b0xvY2FsZURhdGVTdHJpbmcoXCJlbi1VU1wiLCB7XG4gICAgICBtb250aDogXCJzaG9ydFwiLFxuICAgICAgZGF5OiBcIm51bWVyaWNcIixcbiAgICAgIHllYXI6IFwibnVtZXJpY1wiLFxuICAgICAgaG91cjogXCIyLWRpZ2l0XCIsXG4gICAgICBtaW51dGU6IFwiMi1kaWdpdFwiXG4gICAgfSk7XG4gIH07XG5cbiAgY29uc3QgZ2V0U291cmNlVHlwZUxhYmVsID0gKHNvdXJjZVR5cGU6IFNvdXJjZVR5cGUpOiBzdHJpbmcgPT4ge1xuICAgIGNvbnN0IGxhYmVsczogUmVjb3JkPFNvdXJjZVR5cGUsIHN0cmluZz4gPSB7XG4gICAgICBhaV9nZW5lcmF0ZWQ6IFwiQUkgR2VuZXJhdGVkXCIsXG4gICAgICBlbmhhbmNlZDogXCJFbmhhbmNlZFwiLFxuICAgICAgdXBsb2FkZWQ6IFwiVXBsb2FkZWRcIixcbiAgICAgIHRlbXBsYXRlOiBcIlRlbXBsYXRlXCJcbiAgICB9O1xuICAgIHJldHVybiBsYWJlbHNbc291cmNlVHlwZV07XG4gIH07XG5cbiAgY29uc3QgZ2V0U291cmNlVHlwZUJhZGdlVmFyaWFudCA9IChzb3VyY2VUeXBlOiBTb3VyY2VUeXBlKTogXCJkZWZhdWx0XCIgfCBcInNlY29uZGFyeVwiIHwgXCJvdXRsaW5lXCIgPT4ge1xuICAgIGNvbnN0IHZhcmlhbnRzOiBSZWNvcmQ8U291cmNlVHlwZSwgXCJkZWZhdWx0XCIgfCBcInNlY29uZGFyeVwiIHwgXCJvdXRsaW5lXCI+ID0ge1xuICAgICAgYWlfZ2VuZXJhdGVkOiBcImRlZmF1bHRcIixcbiAgICAgIGVuaGFuY2VkOiBcInNlY29uZGFyeVwiLFxuICAgICAgdXBsb2FkZWQ6IFwib3V0bGluZVwiLFxuICAgICAgdGVtcGxhdGU6IFwib3V0bGluZVwiXG4gICAgfTtcbiAgICByZXR1cm4gdmFyaWFudHNbc291cmNlVHlwZV07XG4gIH07XG5cbiAgY29uc3QgaGFuZGxlRGVsZXRlSW1hZ2UgPSBhc3luYyAoaW1hZ2VJZDogc3RyaW5nKSA9PiB7XG4gICAgaWYgKCFjb25maXJtKFwiQXJlIHlvdSBzdXJlIHlvdSB3YW50IHRvIGRlbGV0ZSB0aGlzIGltYWdlPyBUaGlzIGFjdGlvbiBjYW5ub3QgYmUgdW5kb25lLlwiKSkge1xuICAgICAgcmV0dXJuO1xuICAgIH1cblxuICAgIHNldElzRGVsZXRpbmcodHJ1ZSk7XG4gICAgdHJ5IHtcbiAgICAgIGNvbnN0IHJlc3BvbnNlID0gYXdhaXQgZmV0Y2goYC9hcGkvaW1hZ2UtZ2VuZXJhdGlvbi8ke2ltYWdlSWR9YCwge1xuICAgICAgICBtZXRob2Q6IFwiREVMRVRFXCIsXG4gICAgICAgIGhlYWRlcnM6IHtcbiAgICAgICAgICBBdXRob3JpemF0aW9uOiBgQmVhcmVyICR7YXV0aC5zZXNzaW9uPy5hY2Nlc3NfdG9rZW59YCxcbiAgICAgICAgfSxcbiAgICAgIH0pO1xuXG4gICAgICBjb25zdCByZXN1bHQgPSBhd2FpdCByZXNwb25zZS5qc29uKCk7XG5cbiAgICAgIGlmICghcmVzcG9uc2Uub2sgfHwgIXJlc3VsdC5zdWNjZXNzKSB7XG4gICAgICAgIHRocm93IG5ldyBFcnJvcihyZXN1bHQuZXJyb3IgfHwgXCJGYWlsZWQgdG8gZGVsZXRlIGltYWdlXCIpO1xuICAgICAgfVxuXG4gICAgICAvLyBDbG9zZSBtb2RhbCBpZiB0aGlzIHdhcyB0aGUgc2VsZWN0ZWQgaW1hZ2VcbiAgICAgIGlmIChzZWxlY3RlZEltYWdlPy5pZCA9PT0gaW1hZ2VJZCkge1xuICAgICAgICBzZXRTZWxlY3RlZEltYWdlKG51bGwpO1xuICAgICAgfVxuXG4gICAgICAvLyBSZWxvYWQgcGFnZSB0byByZWZyZXNoIGRhdGFcbiAgICAgIHdpbmRvdy5sb2NhdGlvbi5yZWxvYWQoKTtcbiAgICB9IGNhdGNoIChlcnIpIHtcbiAgICAgIGNvbnNvbGUuZXJyb3IoXCJEZWxldGUgZXJyb3I6XCIsIGVycik7XG4gICAgICBhbGVydChlcnIgaW5zdGFuY2VvZiBFcnJvciA/IGVyci5tZXNzYWdlIDogXCJGYWlsZWQgdG8gZGVsZXRlIGltYWdlXCIpO1xuICAgIH0gZmluYWxseSB7XG4gICAgICBzZXRJc0RlbGV0aW5nKGZhbHNlKTtcbiAgICB9XG4gIH07XG5cbiAgY29uc3QgaGFuZGxlQnVsa0RlbGV0ZSA9IGFzeW5jICgpID0+IHtcbiAgICBpZiAoc2VsZWN0ZWRJbWFnZXMuc2l6ZSA9PT0gMCkgcmV0dXJuO1xuXG4gICAgaWYgKCFjb25maXJtKGBBcmUgeW91IHN1cmUgeW91IHdhbnQgdG8gZGVsZXRlICR7c2VsZWN0ZWRJbWFnZXMuc2l6ZX0gaW1hZ2Uocyk/IFRoaXMgYWN0aW9uIGNhbm5vdCBiZSB1bmRvbmUuYCkpIHtcbiAgICAgIHJldHVybjtcbiAgICB9XG5cbiAgICBzZXRJc0RlbGV0aW5nKHRydWUpO1xuICAgIHRyeSB7XG4gICAgICBjb25zdCBkZWxldGVQcm9taXNlcyA9IEFycmF5LmZyb20oc2VsZWN0ZWRJbWFnZXMpLm1hcCgoaW1hZ2VJZCkgPT5cbiAgICAgICAgZmV0Y2goYC9hcGkvaW1hZ2UtZ2VuZXJhdGlvbi8ke2ltYWdlSWR9YCwge1xuICAgICAgICAgIG1ldGhvZDogXCJERUxFVEVcIixcbiAgICAgICAgICBoZWFkZXJzOiB7XG4gICAgICAgICAgICBBdXRob3JpemF0aW9uOiBgQmVhcmVyICR7YXV0aC5zZXNzaW9uPy5hY2Nlc3NfdG9rZW59YCxcbiAgICAgICAgICB9LFxuICAgICAgICB9KVxuICAgICAgKTtcblxuICAgICAgYXdhaXQgUHJvbWlzZS5hbGwoZGVsZXRlUHJvbWlzZXMpO1xuICAgICAgc2V0U2VsZWN0ZWRJbWFnZXMobmV3IFNldCgpKTtcbiAgICAgIHdpbmRvdy5sb2NhdGlvbi5yZWxvYWQoKTtcbiAgICB9IGNhdGNoIChlcnIpIHtcbiAgICAgIGNvbnNvbGUuZXJyb3IoXCJCdWxrIGRlbGV0ZSBlcnJvcjpcIiwgZXJyKTtcbiAgICAgIGFsZXJ0KFwiRmFpbGVkIHRvIGRlbGV0ZSBzb21lIGltYWdlc1wiKTtcbiAgICB9IGZpbmFsbHkge1xuICAgICAgc2V0SXNEZWxldGluZyhmYWxzZSk7XG4gICAgfVxuICB9O1xuXG4gIGNvbnN0IGhhbmRsZURvd25sb2FkSW1hZ2UgPSAoaW1hZ2VVcmw6IHN0cmluZywgaW1hZ2VJZDogc3RyaW5nKSA9PiB7XG4gICAgY29uc3QgbGluayA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoXCJhXCIpO1xuICAgIGxpbmsuaHJlZiA9IGltYWdlVXJsO1xuICAgIGxpbmsuZG93bmxvYWQgPSBgaW1hZ2UtJHtpbWFnZUlkfS5wbmdgO1xuICAgIGxpbmsudGFyZ2V0ID0gXCJfYmxhbmtcIjtcbiAgICBkb2N1bWVudC5ib2R5LmFwcGVuZENoaWxkKGxpbmspO1xuICAgIGxpbmsuY2xpY2soKTtcbiAgICBkb2N1bWVudC5ib2R5LnJlbW92ZUNoaWxkKGxpbmspO1xuICB9O1xuXG4gIGNvbnN0IHRvZ2dsZUltYWdlU2VsZWN0aW9uID0gKGltYWdlSWQ6IHN0cmluZykgPT4ge1xuICAgIGNvbnN0IG5ld1NlbGVjdGlvbiA9IG5ldyBTZXQoc2VsZWN0ZWRJbWFnZXMpO1xuICAgIGlmIChuZXdTZWxlY3Rpb24uaGFzKGltYWdlSWQpKSB7XG4gICAgICBuZXdTZWxlY3Rpb24uZGVsZXRlKGltYWdlSWQpO1xuICAgIH0gZWxzZSB7XG4gICAgICBuZXdTZWxlY3Rpb24uYWRkKGltYWdlSWQpO1xuICAgIH1cbiAgICBzZXRTZWxlY3RlZEltYWdlcyhuZXdTZWxlY3Rpb24pO1xuICB9O1xuXG4gIHJldHVybiAoXG4gICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGZsZXgtY29sIGdhcC04IHAtNlwiPlxuICAgICAgPFNlY3Rpb25IZWFkZXJcbiAgICAgICAgdGl0bGU9XCJJbWFnZSBDcmVhdG9yXCJcbiAgICAgICAgZGVzY3JpcHRpb249XCJHZW5lcmF0ZSBtYXJrZXRpbmcgaW1hZ2VzIGFuZCBwcm9kdWN0IHZpc3VhbHMgdXNpbmcgQUktcG93ZXJlZCB0b29sc1wiXG4gICAgICAvPlxuXG4gICAgICB7LyogVGFiIE5hdmlnYXRpb24gKi99XG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cImJvcmRlci1iIGJvcmRlci1ib3JkZXJcIj5cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGdhcC0yXCI+XG4gICAgICAgICAge1RBQlMubWFwKCh0YWIpID0+IChcbiAgICAgICAgICAgIDxidXR0b25cbiAgICAgICAgICAgICAga2V5PXt0YWIuaWR9XG4gICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHNldEFjdGl2ZVRhYih0YWIuaWQpfVxuICAgICAgICAgICAgICBjbGFzc05hbWU9e2BcbiAgICAgICAgICAgICAgICBmbGV4IGl0ZW1zLWNlbnRlciBnYXAtMiBweC00IHB5LTIgdGV4dC1zbSBmb250LW1lZGl1bSB0cmFuc2l0aW9uLWNvbG9yc1xuICAgICAgICAgICAgICAgIGJvcmRlci1iLTIgLW1iLXB4XG4gICAgICAgICAgICAgICAgJHtcbiAgICAgICAgICAgICAgICAgIGFjdGl2ZVRhYiA9PT0gdGFiLmlkXG4gICAgICAgICAgICAgICAgICAgID8gXCJib3JkZXItcHJpbWFyeSB0ZXh0LXByaW1hcnlcIlxuICAgICAgICAgICAgICAgICAgICA6IFwiYm9yZGVyLXRyYW5zcGFyZW50IHRleHQtbXV0ZWQtZm9yZWdyb3VuZCBob3Zlcjp0ZXh0LWZvcmVncm91bmQgaG92ZXI6Ym9yZGVyLW11dGVkXCJcbiAgICAgICAgICAgICAgICB9XG4gICAgICAgICAgICAgIGB9XG4gICAgICAgICAgICA+XG4gICAgICAgICAgICAgIHt0YWIuaWNvbn1cbiAgICAgICAgICAgICAge3RhYi5sYWJlbH1cbiAgICAgICAgICAgIDwvYnV0dG9uPlxuICAgICAgICAgICkpfVxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvZGl2PlxuXG4gICAgICB7LyogVGFiIENvbnRlbnQgKi99XG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktNlwiPlxuICAgICAgICB7YWN0aXZlVGFiID09PSBcImdlbmVyYXRlXCIgJiYgKFxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS02XCI+XG4gICAgICAgICAgICA8Q2FyZD5cbiAgICAgICAgICAgICAgPENhcmRIZWFkZXI+XG4gICAgICAgICAgICAgICAgPENhcmRUaXRsZT5BSSBJbWFnZSBHZW5lcmF0aW9uPC9DYXJkVGl0bGU+XG4gICAgICAgICAgICAgICAgPENhcmREZXNjcmlwdGlvbj5cbiAgICAgICAgICAgICAgICAgIENyZWF0ZSB1bmlxdWUgbWFya2V0aW5nIGltYWdlcyBhbmQgcHJvZHVjdCB2aXN1YWxzIGZyb20gdGV4dCBkZXNjcmlwdGlvbnNcbiAgICAgICAgICAgICAgICA8L0NhcmREZXNjcmlwdGlvbj5cbiAgICAgICAgICAgICAgPC9DYXJkSGVhZGVyPlxuICAgICAgICAgICAgICA8Q2FyZENvbnRlbnQ+XG4gICAgICAgICAgICAgICAgPGZvcm1cbiAgICAgICAgICAgICAgICAgIG9uU3VibWl0PXthc3luYyAoZSkgPT4ge1xuICAgICAgICAgICAgICAgICAgICBlLnByZXZlbnREZWZhdWx0KCk7XG4gICAgICAgICAgICAgICAgICAgIGlmICghcHJvbXB0LnRyaW0oKSB8fCBpc0dlbmVyYXRpbmcpIHJldHVybjtcblxuICAgICAgICAgICAgICAgICAgICBzZXRJc0dlbmVyYXRpbmcodHJ1ZSk7XG4gICAgICAgICAgICAgICAgICAgIHNldEVycm9yKG51bGwpO1xuXG4gICAgICAgICAgICAgICAgICAgIHRyeSB7XG4gICAgICAgICAgICAgICAgICAgICAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBmZXRjaChcIi9hcGkvbWFya2V0aW5nL2ltYWdlLWdlbmVyYXRpb24vZ2VuZXJhdGVcIiwge1xuICAgICAgICAgICAgICAgICAgICAgICAgbWV0aG9kOiBcIlBPU1RcIixcbiAgICAgICAgICAgICAgICAgICAgICAgIGhlYWRlcnM6IHtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgXCJDb250ZW50LVR5cGVcIjogXCJhcHBsaWNhdGlvbi9qc29uXCIsXG4gICAgICAgICAgICAgICAgICAgICAgICB9LFxuICAgICAgICAgICAgICAgICAgICAgICAgYm9keTogSlNPTi5zdHJpbmdpZnkoe1xuICAgICAgICAgICAgICAgICAgICAgICAgICBwcm9tcHQ6IHByb21wdC50cmltKCksXG4gICAgICAgICAgICAgICAgICAgICAgICAgIHN0eWxlLFxuICAgICAgICAgICAgICAgICAgICAgICAgICBhc3BlY3RSYXRpbyxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgbnVtYmVyT2ZJbWFnZXM6IDEsXG4gICAgICAgICAgICAgICAgICAgICAgICB9KSxcbiAgICAgICAgICAgICAgICAgICAgICB9KTtcblxuICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IHJlc3BvbnNlLmpzb24oKTtcblxuICAgICAgICAgICAgICAgICAgICAgIGlmICghcmVzcG9uc2Uub2sgfHwgIXJlc3VsdC5zdWNjZXNzKSB7XG4gICAgICAgICAgICAgICAgICAgICAgICB0aHJvdyBuZXcgRXJyb3IocmVzdWx0LmVycm9yIHx8IFwiRmFpbGVkIHRvIGdlbmVyYXRlIGltYWdlXCIpO1xuICAgICAgICAgICAgICAgICAgICAgIH1cblxuICAgICAgICAgICAgICAgICAgICAgIHNldEdlbmVyYXRlZEltYWdlcyhyZXN1bHQuZGF0YS5pbWFnZXMgfHwgW10pO1xuICAgICAgICAgICAgICAgICAgICAgIHNldFByb21wdChcIlwiKTtcbiAgICAgICAgICAgICAgICAgICAgfSBjYXRjaCAoZXJyKSB7XG4gICAgICAgICAgICAgICAgICAgICAgY29uc29sZS5lcnJvcihcIkltYWdlIGdlbmVyYXRpb24gZXJyb3I6XCIsIGVycik7XG4gICAgICAgICAgICAgICAgICAgICAgc2V0RXJyb3IoZXJyIGluc3RhbmNlb2YgRXJyb3IgPyBlcnIubWVzc2FnZSA6IFwiRmFpbGVkIHRvIGdlbmVyYXRlIGltYWdlXCIpO1xuICAgICAgICAgICAgICAgICAgICB9IGZpbmFsbHkge1xuICAgICAgICAgICAgICAgICAgICAgIHNldElzR2VuZXJhdGluZyhmYWxzZSk7XG4gICAgICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgICAgICAgIH19XG4gICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJzcGFjZS15LTZcIlxuICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgIHsvKiBQcm9tcHQgSW5wdXQgKi99XG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktMlwiPlxuICAgICAgICAgICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cInByb21wdFwiPkltYWdlIERlc2NyaXB0aW9uPC9MYWJlbD5cbiAgICAgICAgICAgICAgICAgICAgPFRleHRhcmVhXG4gICAgICAgICAgICAgICAgICAgICAgaWQ9XCJwcm9tcHRcIlxuICAgICAgICAgICAgICAgICAgICAgIHBsYWNlaG9sZGVyPVwiRGVzY3JpYmUgdGhlIGltYWdlIHlvdSB3YW50IHRvIGdlbmVyYXRlLi4uIChlLmcuLCAnUHJvZmVzc2lvbmFsIHByb2R1Y3QgcGhvdG8gb2YgYSBibHVlIHNhZmV0eSBib2xsYXJkIG9uIHdoaXRlIGJhY2tncm91bmQgd2l0aCBkcmFtYXRpYyBsaWdodGluZycpXCJcbiAgICAgICAgICAgICAgICAgICAgICB2YWx1ZT17cHJvbXB0fVxuICAgICAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0UHJvbXB0KGUudGFyZ2V0LnZhbHVlKX1cbiAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJtaW4taC1bMTIwcHhdIHJlc2l6ZS1ub25lXCJcbiAgICAgICAgICAgICAgICAgICAgICBkaXNhYmxlZD17aXNHZW5lcmF0aW5nfVxuICAgICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LXhzIHRleHQtbXV0ZWQtZm9yZWdyb3VuZFwiPlxuICAgICAgICAgICAgICAgICAgICAgIEJlIHNwZWNpZmljIGFib3V0IGNvbG9ycywgbGlnaHRpbmcsIGNvbXBvc2l0aW9uLCBhbmQgbW9vZCBmb3IgYmVzdCByZXN1bHRzXG4gICAgICAgICAgICAgICAgICAgIDwvcD5cbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICAgICAgICB7LyogU3R5bGUgYW5kIEFzcGVjdCBSYXRpbyAqL31cbiAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZ3JpZCBncmlkLWNvbHMtMSBtZDpncmlkLWNvbHMtMiBnYXAtNFwiPlxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktMlwiPlxuICAgICAgICAgICAgICAgICAgICAgIDxMYWJlbCBodG1sRm9yPVwic3R5bGVcIj5TdHlsZTwvTGFiZWw+XG4gICAgICAgICAgICAgICAgICAgICAgPFNlbGVjdCB2YWx1ZT17c3R5bGV9IG9uVmFsdWVDaGFuZ2U9e3NldFN0eWxlfSBkaXNhYmxlZD17aXNHZW5lcmF0aW5nfT5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxTZWxlY3RUcmlnZ2VyIGlkPVwic3R5bGVcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgPFNlbGVjdFZhbHVlIHBsYWNlaG9sZGVyPVwiU2VsZWN0IHN0eWxlXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvU2VsZWN0VHJpZ2dlcj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxTZWxlY3RDb250ZW50PlxuICAgICAgICAgICAgICAgICAgICAgICAgICB7U1RZTEVTLm1hcCgocykgPT4gKFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxTZWxlY3RJdGVtIGtleT17cy52YWx1ZX0gdmFsdWU9e3MudmFsdWV9PlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAge3MubGFiZWx9XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgPC9TZWxlY3RJdGVtPlxuICAgICAgICAgICAgICAgICAgICAgICAgICApKX1cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvU2VsZWN0Q29udGVudD5cbiAgICAgICAgICAgICAgICAgICAgICA8L1NlbGVjdD5cbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJzcGFjZS15LTJcIj5cbiAgICAgICAgICAgICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cImFzcGVjdFJhdGlvXCI+QXNwZWN0IFJhdGlvPC9MYWJlbD5cbiAgICAgICAgICAgICAgICAgICAgICA8U2VsZWN0IHZhbHVlPXthc3BlY3RSYXRpb30gb25WYWx1ZUNoYW5nZT17c2V0QXNwZWN0UmF0aW99IGRpc2FibGVkPXtpc0dlbmVyYXRpbmd9PlxuICAgICAgICAgICAgICAgICAgICAgICAgPFNlbGVjdFRyaWdnZXIgaWQ9XCJhc3BlY3RSYXRpb1wiPlxuICAgICAgICAgICAgICAgICAgICAgICAgICA8U2VsZWN0VmFsdWUgcGxhY2Vob2xkZXI9XCJTZWxlY3QgYXNwZWN0IHJhdGlvXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvU2VsZWN0VHJpZ2dlcj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxTZWxlY3RDb250ZW50PlxuICAgICAgICAgICAgICAgICAgICAgICAgICB7QVNQRUNUX1JBVElPUy5tYXAoKGFyKSA9PiAoXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgPFNlbGVjdEl0ZW0ga2V5PXthci52YWx1ZX0gdmFsdWU9e2FyLnZhbHVlfT5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHthci5sYWJlbH0gPHNwYW4gY2xhc3NOYW1lPVwidGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+KHthci5kaW1zfSk8L3NwYW4+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgPC9TZWxlY3RJdGVtPlxuICAgICAgICAgICAgICAgICAgICAgICAgICApKX1cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvU2VsZWN0Q29udGVudD5cbiAgICAgICAgICAgICAgICAgICAgICA8L1NlbGVjdD5cbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgICAgICAgICAgey8qIEVycm9yIERpc3BsYXkgKi99XG4gICAgICAgICAgICAgICAgICB7ZXJyb3IgJiYgKFxuICAgICAgICAgICAgICAgICAgICA8SW5saW5lQWxlcnQgdmFyaWFudD1cImVycm9yXCIgdGl0bGU9XCJHZW5lcmF0aW9uIEZhaWxlZFwiIG1lc3NhZ2U9e2Vycm9yfSAvPlxuICAgICAgICAgICAgICAgICAgKX1cblxuICAgICAgICAgICAgICAgICAgey8qIEdlbmVyYXRlIEJ1dHRvbiAqL31cbiAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgdHlwZT1cInN1Ym1pdFwiXG4gICAgICAgICAgICAgICAgICAgIHNpemU9XCJsZ1wiXG4gICAgICAgICAgICAgICAgICAgIGRpc2FibGVkPXshcHJvbXB0LnRyaW0oKSB8fCBpc0dlbmVyYXRpbmd9XG4gICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cInctZnVsbFwiXG4gICAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICAgIHtpc0dlbmVyYXRpbmcgPyAoXG4gICAgICAgICAgICAgICAgICAgICAgPD5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxMb2FkZXIyIGNsYXNzTmFtZT1cImgtNCB3LTQgYW5pbWF0ZS1zcGluXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICAgIEdlbmVyYXRpbmcgSW1hZ2UuLi5cbiAgICAgICAgICAgICAgICAgICAgICA8Lz5cbiAgICAgICAgICAgICAgICAgICAgKSA6IChcbiAgICAgICAgICAgICAgICAgICAgICA8PlxuICAgICAgICAgICAgICAgICAgICAgICAgPFNwYXJrbGVzIGNsYXNzTmFtZT1cImgtNCB3LTRcIiAvPlxuICAgICAgICAgICAgICAgICAgICAgICAgR2VuZXJhdGUgSW1hZ2VcbiAgICAgICAgICAgICAgICAgICAgICA8Lz5cbiAgICAgICAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICAgICAgICAgIDwvZm9ybT5cbiAgICAgICAgICAgICAgPC9DYXJkQ29udGVudD5cbiAgICAgICAgICAgIDwvQ2FyZD5cblxuICAgICAgICAgICAgey8qIEdlbmVyYXRlZCBJbWFnZXMgR3JpZCAqL31cbiAgICAgICAgICAgIHtnZW5lcmF0ZWRJbWFnZXMubGVuZ3RoID4gMCAmJiAoXG4gICAgICAgICAgICAgIDxDYXJkPlxuICAgICAgICAgICAgICAgIDxDYXJkSGVhZGVyPlxuICAgICAgICAgICAgICAgICAgPENhcmRUaXRsZT5HZW5lcmF0ZWQgSW1hZ2VzPC9DYXJkVGl0bGU+XG4gICAgICAgICAgICAgICAgICA8Q2FyZERlc2NyaXB0aW9uPlxuICAgICAgICAgICAgICAgICAgICBZb3VyIEFJLWdlbmVyYXRlZCBpbWFnZXMgYXJlIHJlYWR5LiBEb3dubG9hZCBvciBzYXZlIHRoZW0gdG8geW91ciBsaWJyYXJ5LlxuICAgICAgICAgICAgICAgICAgPC9DYXJkRGVzY3JpcHRpb24+XG4gICAgICAgICAgICAgICAgPC9DYXJkSGVhZGVyPlxuICAgICAgICAgICAgICAgIDxDYXJkQ29udGVudD5cbiAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZ3JpZCBncmlkLWNvbHMtMSBtZDpncmlkLWNvbHMtMiBsZzpncmlkLWNvbHMtMyBnYXAtNFwiPlxuICAgICAgICAgICAgICAgICAgICB7Z2VuZXJhdGVkSW1hZ2VzLm1hcCgoaW1nKSA9PiAoXG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBrZXk9e2ltZy5pZH0gY2xhc3NOYW1lPVwiZ3JvdXAgcmVsYXRpdmVcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiYXNwZWN0LXNxdWFyZSByb3VuZGVkLWxnIG92ZXJmbG93LWhpZGRlbiBib3JkZXIgYm9yZGVyLWJvcmRlciBiZy1tdXRlZFwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgICA8aW1nXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgc3JjPXtpbWcuaW1hZ2VVcmx9XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgYWx0PVwiR2VuZXJhdGVkIGltYWdlXCJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJ3LWZ1bGwgaC1mdWxsIG9iamVjdC1jb3ZlclwiXG4gICAgICAgICAgICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgICAgICAgICAgICAgICAgey8qIEltYWdlIEFjdGlvbnMgKi99XG4gICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIm10LTMgZmxleCBnYXAtMlwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgICA8QnV0dG9uXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgdmFyaWFudD1cIm91dGxpbmVcIlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNpemU9XCJzbVwiXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiZmxleC0xXCJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICB3aW5kb3cub3BlbihpbWcuaW1hZ2VVcmwsIFwiX2JsYW5rXCIpO1xuICAgICAgICAgICAgICAgICAgICAgICAgICAgIH19XG4gICAgICAgICAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8RG93bmxvYWQgY2xhc3NOYW1lPVwiaC0zIHctM1wiIC8+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgRG93bmxvYWRcbiAgICAgICAgICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICB2YXJpYW50PVwib3V0bGluZVwiXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgc2l6ZT1cInNtXCJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJmbGV4LTFcIlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC8vIFRPRE86IEltcGxlbWVudCBzYXZlIHRvIGxpYnJhcnlcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGFsZXJ0KFwiU2F2ZSB0byBsaWJyYXJ5IGZlYXR1cmUgY29taW5nIHNvb24hXCIpO1xuICAgICAgICAgICAgICAgICAgICAgICAgICAgIH19XG4gICAgICAgICAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8SW1hZ2UgY2xhc3NOYW1lPVwiaC0zIHctM1wiIC8+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgU2F2ZSB0byBMaWJyYXJ5XG4gICAgICAgICAgICAgICAgICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICAgICAgICAgICAgICAgICAgICA8QnV0dG9uXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgdmFyaWFudD1cIm91dGxpbmVcIlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNpemU9XCJzbVwiXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiZmxleC0xXCJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAvLyBUT0RPOiBJbXBsZW1lbnQgcHVzaCB0byBTaG9waWZ5XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBhbGVydChcIlB1c2ggdG8gU2hvcGlmeSBmZWF0dXJlIGNvbWluZyBzb29uIVwiKTtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICB9fVxuICAgICAgICAgICAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgPFVwbG9hZCBjbGFzc05hbWU9XCJoLTMgdy0zXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICBQdXNoIHRvIFNob3BpZnlcbiAgICAgICAgICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJtdC0yIHRleHQteHMgdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICAgIHtpbWcud2lkdGh9IMOXIHtpbWcuaGVpZ2h0fXB4XG4gICAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgKSl9XG4gICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICA8L0NhcmRDb250ZW50PlxuICAgICAgICAgICAgICA8L0NhcmQ+XG4gICAgICAgICAgICApfVxuXG4gICAgICAgICAgICB7LyogUXVpY2sgU3RhcnQgR3VpZGUgKi99XG4gICAgICAgICAgICA8Q2FyZD5cbiAgICAgICAgICAgICAgPENhcmRIZWFkZXI+XG4gICAgICAgICAgICAgICAgPENhcmRUaXRsZT5UaXBzIGZvciBCZXR0ZXIgUmVzdWx0czwvQ2FyZFRpdGxlPlxuICAgICAgICAgICAgICAgIDxDYXJkRGVzY3JpcHRpb24+SG93IHRvIHdyaXRlIGVmZmVjdGl2ZSBwcm9tcHRzPC9DYXJkRGVzY3JpcHRpb24+XG4gICAgICAgICAgICAgIDwvQ2FyZEhlYWRlcj5cbiAgICAgICAgICAgICAgPENhcmRDb250ZW50PlxuICAgICAgICAgICAgICAgIDx1bCBjbGFzc05hbWU9XCJzcGFjZS15LTIgdGV4dC1zbSB0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5cbiAgICAgICAgICAgICAgICAgIDxsaT7igKIgQmUgc3BlY2lmaWMgYWJvdXQgY29sb3JzLCBtYXRlcmlhbHMsIGFuZCB0ZXh0dXJlczwvbGk+XG4gICAgICAgICAgICAgICAgICA8bGk+4oCiIERlc2NyaWJlIHRoZSBsaWdodGluZyBhbmQgbW9vZCAoZS5nLiwgXCJkcmFtYXRpYyBsaWdodGluZ1wiLCBcInNvZnQgbmF0dXJhbCBsaWdodFwiKTwvbGk+XG4gICAgICAgICAgICAgICAgICA8bGk+4oCiIEluY2x1ZGUgY29tcG9zaXRpb24gZGV0YWlscyAoZS5nLiwgXCJjZW50ZXJlZFwiLCBcImNsb3NlLXVwXCIsIFwid2lkZSBhbmdsZVwiKTwvbGk+XG4gICAgICAgICAgICAgICAgICA8bGk+4oCiIE1lbnRpb24gdGhlIGJhY2tncm91bmQgYW5kIGVudmlyb25tZW50PC9saT5cbiAgICAgICAgICAgICAgICAgIDxsaT7igKIgU3BlY2lmeSBjYW1lcmEgYW5nbGUgb3IgcGVyc3BlY3RpdmUgaWYgbmVlZGVkPC9saT5cbiAgICAgICAgICAgICAgICA8L3VsPlxuICAgICAgICAgICAgICA8L0NhcmRDb250ZW50PlxuICAgICAgICAgICAgPC9DYXJkPlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICApfVxuXG4gICAgICAgIHthY3RpdmVUYWIgPT09IFwiZW5oYW5jZVwiICYmIChcbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktNlwiPlxuICAgICAgICAgICAgPENhcmQ+XG4gICAgICAgICAgICAgIDxDYXJkSGVhZGVyPlxuICAgICAgICAgICAgICAgIDxDYXJkVGl0bGU+SW1hZ2UgRW5oYW5jZW1lbnQ8L0NhcmRUaXRsZT5cbiAgICAgICAgICAgICAgICA8Q2FyZERlc2NyaXB0aW9uPlxuICAgICAgICAgICAgICAgICAgRWRpdCBhbmQgaW1wcm92ZSBleGlzdGluZyBpbWFnZXMgd2l0aCBBSS1wb3dlcmVkIHRvb2xzXG4gICAgICAgICAgICAgICAgPC9DYXJkRGVzY3JpcHRpb24+XG4gICAgICAgICAgICAgIDwvQ2FyZEhlYWRlcj5cbiAgICAgICAgICAgICAgPENhcmRDb250ZW50PlxuICAgICAgICAgICAgICAgIDxJbmxpbmVBbGVydFxuICAgICAgICAgICAgICAgICAgdmFyaWFudD1cImluZm9cIlxuICAgICAgICAgICAgICAgICAgdGl0bGU9XCJQaGFzZSAxIE1WUFwiXG4gICAgICAgICAgICAgICAgICBtZXNzYWdlPVwiSW1hZ2UgZW5oYW5jZW1lbnQgdG9vbHMgd2lsbCBiZSBpbXBsZW1lbnRlZCBpbiB0aGUgbmV4dCBwaGFzZS4gVGhpcyBzZWN0aW9uIHdpbGwgaW5jbHVkZSBiYWNrZ3JvdW5kIHJlbW92YWwsIHVwc2NhbGluZywgYW5kIGVkaXRpbmcgY2FwYWJpbGl0aWVzLlwiXG4gICAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgICAgPC9DYXJkQ29udGVudD5cbiAgICAgICAgICAgIDwvQ2FyZD5cblxuICAgICAgICAgICAgPENhcmQ+XG4gICAgICAgICAgICAgIDxDYXJkSGVhZGVyPlxuICAgICAgICAgICAgICAgIDxDYXJkVGl0bGU+QXZhaWxhYmxlIEVuaGFuY2VtZW50czwvQ2FyZFRpdGxlPlxuICAgICAgICAgICAgICAgIDxDYXJkRGVzY3JpcHRpb24+UGxhbm5lZCBlbmhhbmNlbWVudCBmZWF0dXJlczwvQ2FyZERlc2NyaXB0aW9uPlxuICAgICAgICAgICAgICA8L0NhcmRIZWFkZXI+XG4gICAgICAgICAgICAgIDxDYXJkQ29udGVudD5cbiAgICAgICAgICAgICAgICA8dWwgY2xhc3NOYW1lPVwic3BhY2UteS0yIHRleHQtc20gdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+XG4gICAgICAgICAgICAgICAgICA8bGk+4oCiIEJhY2tncm91bmQgcmVtb3ZhbCBhbmQgcmVwbGFjZW1lbnQ8L2xpPlxuICAgICAgICAgICAgICAgICAgPGxpPuKAoiBJbWFnZSB1cHNjYWxpbmcgYW5kIHF1YWxpdHkgaW1wcm92ZW1lbnQ8L2xpPlxuICAgICAgICAgICAgICAgICAgPGxpPuKAoiBPYmplY3QgcmVtb3ZhbCBhbmQgaW5wYWludGluZzwvbGk+XG4gICAgICAgICAgICAgICAgICA8bGk+4oCiIENvbG9yIGNvcnJlY3Rpb24gYW5kIGFkanVzdG1lbnRzPC9saT5cbiAgICAgICAgICAgICAgICA8L3VsPlxuICAgICAgICAgICAgICA8L0NhcmRDb250ZW50PlxuICAgICAgICAgICAgPC9DYXJkPlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICApfVxuXG4gICAgICAgIHthY3RpdmVUYWIgPT09IFwidGVtcGxhdGVzXCIgJiYgKFxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS02XCI+XG4gICAgICAgICAgICA8Q2FyZD5cbiAgICAgICAgICAgICAgPENhcmRIZWFkZXI+XG4gICAgICAgICAgICAgICAgPENhcmRUaXRsZT5NYXJrZXRpbmcgVGVtcGxhdGVzPC9DYXJkVGl0bGU+XG4gICAgICAgICAgICAgICAgPENhcmREZXNjcmlwdGlvbj5cbiAgICAgICAgICAgICAgICAgIFByZS1kZXNpZ25lZCB0ZW1wbGF0ZXMgZm9yIHNvY2lhbCBtZWRpYSwgYWRzLCBhbmQgcHJvbW90aW9uYWwgbWF0ZXJpYWxzXG4gICAgICAgICAgICAgICAgPC9DYXJkRGVzY3JpcHRpb24+XG4gICAgICAgICAgICAgIDwvQ2FyZEhlYWRlcj5cbiAgICAgICAgICAgICAgPENhcmRDb250ZW50PlxuICAgICAgICAgICAgICAgIDxJbmxpbmVBbGVydFxuICAgICAgICAgICAgICAgICAgdmFyaWFudD1cImluZm9cIlxuICAgICAgICAgICAgICAgICAgdGl0bGU9XCJQaGFzZSAxIE1WUFwiXG4gICAgICAgICAgICAgICAgICBtZXNzYWdlPVwiVGVtcGxhdGUgbGlicmFyeSB3aWxsIGJlIGltcGxlbWVudGVkIGluIHRoZSBuZXh0IHBoYXNlLiBUaGlzIHNlY3Rpb24gd2lsbCBpbmNsdWRlIHNvY2lhbCBtZWRpYSBwb3N0cywgYWQgYmFubmVycywgYW5kIHByb21vdGlvbmFsIGdyYXBoaWNzLlwiXG4gICAgICAgICAgICAgICAgLz5cbiAgICAgICAgICAgICAgPC9DYXJkQ29udGVudD5cbiAgICAgICAgICAgIDwvQ2FyZD5cblxuICAgICAgICAgICAgPENhcmQ+XG4gICAgICAgICAgICAgIDxDYXJkSGVhZGVyPlxuICAgICAgICAgICAgICAgIDxDYXJkVGl0bGU+VGVtcGxhdGUgQ2F0ZWdvcmllczwvQ2FyZFRpdGxlPlxuICAgICAgICAgICAgICAgIDxDYXJkRGVzY3JpcHRpb24+UGxhbm5lZCB0ZW1wbGF0ZSB0eXBlczwvQ2FyZERlc2NyaXB0aW9uPlxuICAgICAgICAgICAgICA8L0NhcmRIZWFkZXI+XG4gICAgICAgICAgICAgIDxDYXJkQ29udGVudD5cbiAgICAgICAgICAgICAgICA8dWwgY2xhc3NOYW1lPVwic3BhY2UteS0yIHRleHQtc20gdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+XG4gICAgICAgICAgICAgICAgICA8bGk+4oCiIFNvY2lhbCBtZWRpYSBwb3N0cyAoSW5zdGFncmFtLCBGYWNlYm9vaywgTGlua2VkSW4pPC9saT5cbiAgICAgICAgICAgICAgICAgIDxsaT7igKIgRGlzcGxheSBhZHMgKEdvb2dsZSBBZHMsIGJhbm5lciBhZHMpPC9saT5cbiAgICAgICAgICAgICAgICAgIDxsaT7igKIgRW1haWwgbWFya2V0aW5nIGhlYWRlcnMgYW5kIGdyYXBoaWNzPC9saT5cbiAgICAgICAgICAgICAgICAgIDxsaT7igKIgUHJvZHVjdCBjYXRhbG9nIGFuZCBlLWNvbW1lcmNlIGltYWdlczwvbGk+XG4gICAgICAgICAgICAgICAgPC91bD5cbiAgICAgICAgICAgICAgPC9DYXJkQ29udGVudD5cbiAgICAgICAgICAgIDwvQ2FyZD5cbiAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgKX1cblxuICAgICAgICB7YWN0aXZlVGFiID09PSBcImxpYnJhcnlcIiAmJiAoXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJzcGFjZS15LTZcIj5cbiAgICAgICAgICAgIHsvKiBTZWFyY2ggYW5kIEZpbHRlciBCYXIgKi99XG4gICAgICAgICAgICA8Q2FyZD5cbiAgICAgICAgICAgICAgPENhcmRDb250ZW50IGNsYXNzTmFtZT1cInB0LTZcIj5cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggZmxleC1jb2wgbWQ6ZmxleC1yb3cgZ2FwLTRcIj5cbiAgICAgICAgICAgICAgICAgIHsvKiBTZWFyY2ggSW5wdXQgKi99XG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXgtMVwiPlxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInJlbGF0aXZlXCI+XG4gICAgICAgICAgICAgICAgICAgICAgPFNlYXJjaCBjbGFzc05hbWU9XCJhYnNvbHV0ZSBsZWZ0LTMgdG9wLTEvMiAtdHJhbnNsYXRlLXktMS8yIGgtNCB3LTQgdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICA8SW5wdXRcbiAgICAgICAgICAgICAgICAgICAgICAgIHBsYWNlaG9sZGVyPVwiU2VhcmNoIGJ5IHByb21wdCBvciBJRC4uLlwiXG4gICAgICAgICAgICAgICAgICAgICAgICB2YWx1ZT17c2VhcmNoUXVlcnl9XG4gICAgICAgICAgICAgICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IHNldFNlYXJjaFF1ZXJ5KGUudGFyZ2V0LnZhbHVlKX1cbiAgICAgICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cInBsLTEwXCJcbiAgICAgICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgICAgIHtzZWFyY2hRdWVyeSAmJiAoXG4gICAgICAgICAgICAgICAgICAgICAgICA8YnV0dG9uXG4gICAgICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHNldFNlYXJjaFF1ZXJ5KFwiXCIpfVxuICAgICAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJhYnNvbHV0ZSByaWdodC0zIHRvcC0xLzIgLXRyYW5zbGF0ZS15LTEvMiB0ZXh0LW11dGVkLWZvcmVncm91bmQgaG92ZXI6dGV4dC1mb3JlZ3JvdW5kXCJcbiAgICAgICAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgPFggY2xhc3NOYW1lPVwiaC00IHctNFwiIC8+XG4gICAgICAgICAgICAgICAgICAgICAgICA8L2J1dHRvbj5cbiAgICAgICAgICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICAgICAgICB7LyogRmlsdGVyIEJ1dHRvbnMgKi99XG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggZ2FwLTIgZmxleC13cmFwXCI+XG4gICAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgICB2YXJpYW50PXtzb3VyY2VUeXBlRmlsdGVyID09PSBcImFsbFwiID8gXCJkZWZhdWx0XCIgOiBcIm91dGxpbmVcIn1cbiAgICAgICAgICAgICAgICAgICAgICBzaXplPVwic21cIlxuICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHNldFNvdXJjZVR5cGVGaWx0ZXIoXCJhbGxcIil9XG4gICAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgICBBbGxcbiAgICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgICB2YXJpYW50PXtzb3VyY2VUeXBlRmlsdGVyID09PSBcImFpX2dlbmVyYXRlZFwiID8gXCJkZWZhdWx0XCIgOiBcIm91dGxpbmVcIn1cbiAgICAgICAgICAgICAgICAgICAgICBzaXplPVwic21cIlxuICAgICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IHNldFNvdXJjZVR5cGVGaWx0ZXIoXCJhaV9nZW5lcmF0ZWRcIil9XG4gICAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgICBBSSBHZW5lcmF0ZWRcbiAgICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgICB2YXJpYW50PXtzb3VyY2VUeXBlRmlsdGVyID09PSBcImVuaGFuY2VkXCIgPyBcImRlZmF1bHRcIiA6IFwib3V0bGluZVwifVxuICAgICAgICAgICAgICAgICAgICAgIHNpemU9XCJzbVwiXG4gICAgICAgICAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gc2V0U291cmNlVHlwZUZpbHRlcihcImVuaGFuY2VkXCIpfVxuICAgICAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICAgICAgRW5oYW5jZWRcbiAgICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgICB2YXJpYW50PXtzb3VyY2VUeXBlRmlsdGVyID09PSBcInVwbG9hZGVkXCIgPyBcImRlZmF1bHRcIiA6IFwib3V0bGluZVwifVxuICAgICAgICAgICAgICAgICAgICAgIHNpemU9XCJzbVwiXG4gICAgICAgICAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gc2V0U291cmNlVHlwZUZpbHRlcihcInVwbG9hZGVkXCIpfVxuICAgICAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICAgICAgVXBsb2FkZWRcbiAgICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgICB2YXJpYW50PXtzb3VyY2VUeXBlRmlsdGVyID09PSBcInRlbXBsYXRlXCIgPyBcImRlZmF1bHRcIiA6IFwib3V0bGluZVwifVxuICAgICAgICAgICAgICAgICAgICAgIHNpemU9XCJzbVwiXG4gICAgICAgICAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gc2V0U291cmNlVHlwZUZpbHRlcihcInRlbXBsYXRlXCIpfVxuICAgICAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICAgICAgVGVtcGxhdGVcbiAgICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgICAgICAgIHsvKiBCdWxrIEFjdGlvbnMgKi99XG4gICAgICAgICAgICAgICAge3NlbGVjdGVkSW1hZ2VzLnNpemUgPiAwICYmIChcbiAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwibXQtNCBmbGV4IGl0ZW1zLWNlbnRlciBnYXAtNCBwLTMgYmctbXV0ZWQgcm91bmRlZC1sZ1wiPlxuICAgICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJ0ZXh0LXNtIGZvbnQtbWVkaXVtXCI+XG4gICAgICAgICAgICAgICAgICAgICAge3NlbGVjdGVkSW1hZ2VzLnNpemV9IGltYWdlKHMpIHNlbGVjdGVkXG4gICAgICAgICAgICAgICAgICAgIDwvc3Bhbj5cbiAgICAgICAgICAgICAgICAgICAgPEJ1dHRvblxuICAgICAgICAgICAgICAgICAgICAgIHZhcmlhbnQ9XCJkZXN0cnVjdGl2ZVwiXG4gICAgICAgICAgICAgICAgICAgICAgc2l6ZT1cInNtXCJcbiAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXtoYW5kbGVCdWxrRGVsZXRlfVxuICAgICAgICAgICAgICAgICAgICAgIGRpc2FibGVkPXtpc0RlbGV0aW5nfVxuICAgICAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICAgICAgPFRyYXNoMiBjbGFzc05hbWU9XCJoLTQgdy00XCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICBEZWxldGUgU2VsZWN0ZWRcbiAgICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgICB2YXJpYW50PVwib3V0bGluZVwiXG4gICAgICAgICAgICAgICAgICAgICAgc2l6ZT1cInNtXCJcbiAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBzZXRTZWxlY3RlZEltYWdlcyhuZXcgU2V0KCkpfVxuICAgICAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICAgICAgQ2xlYXIgU2VsZWN0aW9uXG4gICAgICAgICAgICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgICAgPC9DYXJkQ29udGVudD5cbiAgICAgICAgICAgIDwvQ2FyZD5cblxuICAgICAgICAgICAgey8qIFJlc3VsdHMgQ291bnQgKi99XG4gICAgICAgICAgICB7aW1hZ2VzLmRhdGEgJiYgKFxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtc20gdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+XG4gICAgICAgICAgICAgICAgU2hvd2luZyB7ZmlsdGVyZWRJbWFnZXMubGVuZ3RofSBvZiB7aW1hZ2VzLmRhdGEubGVuZ3RofSBpbWFnZXNcbiAgICAgICAgICAgICAgICB7aW1hZ2VzLnNvdXJjZSA9PT0gXCJzYW1wbGVcIiAmJiAoXG4gICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJtbC0yIHRleHQtYW1iZXItNjAwXCI+KFNhbXBsZSBEYXRhKTwvc3Bhbj5cbiAgICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICl9XG5cbiAgICAgICAgICAgIHsvKiBJbWFnZSBHcmlkICovfVxuICAgICAgICAgICAge2ZpbHRlcmVkSW1hZ2VzLmxlbmd0aCA+IDAgPyAoXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZ3JpZCBncmlkLWNvbHMtMSBzbTpncmlkLWNvbHMtMiBsZzpncmlkLWNvbHMtMyB4bDpncmlkLWNvbHMtNCBnYXAtNFwiPlxuICAgICAgICAgICAgICAgIHtmaWx0ZXJlZEltYWdlcy5tYXAoKGltZykgPT4gKFxuICAgICAgICAgICAgICAgICAgPENhcmQga2V5PXtpbWcuaWR9IGNsYXNzTmFtZT1cImdyb3VwIG92ZXJmbG93LWhpZGRlbiBob3ZlcjpzaGFkb3ctbGcgdHJhbnNpdGlvbi1zaGFkb3dcIj5cbiAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJyZWxhdGl2ZVwiPlxuICAgICAgICAgICAgICAgICAgICAgIHsvKiBTZWxlY3Rpb24gQ2hlY2tib3ggKi99XG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJhYnNvbHV0ZSB0b3AtMiBsZWZ0LTIgei0xMFwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgPENoZWNrYm94XG4gICAgICAgICAgICAgICAgICAgICAgICAgIGNoZWNrZWQ9e3NlbGVjdGVkSW1hZ2VzLmhhcyhpbWcuaWQpfVxuICAgICAgICAgICAgICAgICAgICAgICAgICBvbkNoZWNrZWRDaGFuZ2U9eygpID0+IHRvZ2dsZUltYWdlU2VsZWN0aW9uKGltZy5pZCl9XG4gICAgICAgICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cImJnLXdoaXRlIHNoYWRvdy1tZFwiXG4gICAgICAgICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICAgICAgICAgICAgey8qIEltYWdlIFRodW1ibmFpbCAqL31cbiAgICAgICAgICAgICAgICAgICAgICA8YnV0dG9uXG4gICAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBzZXRTZWxlY3RlZEltYWdlKGltZyl9XG4gICAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJ3LWZ1bGwgYXNwZWN0LXNxdWFyZSBvdmVyZmxvdy1oaWRkZW4gYmctbXV0ZWQgcmVsYXRpdmVcIlxuICAgICAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxpbWdcbiAgICAgICAgICAgICAgICAgICAgICAgICAgc3JjPXtpbWcudGh1bWJuYWlsX3VybCB8fCBpbWcuaW1hZ2VfdXJsfVxuICAgICAgICAgICAgICAgICAgICAgICAgICBhbHQ9e2ltZy5wcm9tcHQgfHwgXCJHZW5lcmF0ZWQgaW1hZ2VcIn1cbiAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwidy1mdWxsIGgtZnVsbCBvYmplY3QtY292ZXIgdHJhbnNpdGlvbi10cmFuc2Zvcm0gZ3JvdXAtaG92ZXI6c2NhbGUtMTA1XCJcbiAgICAgICAgICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImFic29sdXRlIGluc2V0LTAgYmctYmxhY2svMCBncm91cC1ob3ZlcjpiZy1ibGFjay8zMCB0cmFuc2l0aW9uLWNvbG9ycyBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlclwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgICA8TWF4aW1pemUyIGNsYXNzTmFtZT1cImgtOCB3LTggdGV4dC13aGl0ZSBvcGFjaXR5LTAgZ3JvdXAtaG92ZXI6b3BhY2l0eS0xMDAgdHJhbnNpdGlvbi1vcGFjaXR5XCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgICAgIDwvYnV0dG9uPlxuXG4gICAgICAgICAgICAgICAgICAgICAgey8qIFNob3BpZnkgQmFkZ2UgKi99XG4gICAgICAgICAgICAgICAgICAgICAge2ltZy5pc19wdXNoZWRfdG9fc2hvcGlmeSAmJiAoXG4gICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImFic29sdXRlIHRvcC0yIHJpZ2h0LTJcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgPEJhZGdlIHZhcmlhbnQ9XCJzZWNvbmRhcnlcIiBjbGFzc05hbWU9XCJ0ZXh0LXhzXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgU2hvcGlmeVxuICAgICAgICAgICAgICAgICAgICAgICAgICA8L0JhZGdlPlxuICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICAgICAgICAgICAgPENhcmRDb250ZW50IGNsYXNzTmFtZT1cInAtMyBzcGFjZS15LTJcIj5cbiAgICAgICAgICAgICAgICAgICAgICB7LyogU291cmNlIFR5cGUgQmFkZ2UgKi99XG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW5cIj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxCYWRnZSB2YXJpYW50PXtnZXRTb3VyY2VUeXBlQmFkZ2VWYXJpYW50KGltZy5zb3VyY2VfdHlwZSl9PlxuICAgICAgICAgICAgICAgICAgICAgICAgICB7Z2V0U291cmNlVHlwZUxhYmVsKGltZy5zb3VyY2VfdHlwZSl9XG4gICAgICAgICAgICAgICAgICAgICAgICA8L0JhZGdlPlxuICAgICAgICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwidGV4dC14cyB0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5cbiAgICAgICAgICAgICAgICAgICAgICAgICAge2ltZy53aWR0aH0gw5cge2ltZy5oZWlnaHR9XG4gICAgICAgICAgICAgICAgICAgICAgICA8L3NwYW4+XG4gICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICAgICAgICAgICAgICB7LyogUHJvbXB0IFByZXZpZXcgKi99XG4gICAgICAgICAgICAgICAgICAgICAge2ltZy5wcm9tcHQgJiYgKFxuICAgICAgICAgICAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwidGV4dC14cyB0ZXh0LW11dGVkLWZvcmVncm91bmQgbGluZS1jbGFtcC0yXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICAgIHtpbWcucHJvbXB0fVxuICAgICAgICAgICAgICAgICAgICAgICAgPC9wPlxuICAgICAgICAgICAgICAgICAgICAgICl9XG5cbiAgICAgICAgICAgICAgICAgICAgICB7LyogTWV0YWRhdGEgKi99XG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLWNlbnRlciBnYXAtMiB0ZXh0LXhzIHRleHQtbXV0ZWQtZm9yZWdyb3VuZFwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgPENhbGVuZGFyIGNsYXNzTmFtZT1cImgtMyB3LTNcIiAvPlxuICAgICAgICAgICAgICAgICAgICAgICAge2Zvcm1hdERhdGUoaW1nLmNyZWF0ZWRfYXQpfVxuICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICAgICAgICAgICAgey8qIEFjdGlvbiBCdXR0b25zICovfVxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBnYXAtMiBwdC0yXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICA8QnV0dG9uXG4gICAgICAgICAgICAgICAgICAgICAgICAgIHZhcmlhbnQ9XCJvdXRsaW5lXCJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgc2l6ZT1cInNtXCJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiZmxleC0xXCJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgb25DbGljaz17KCkgPT4gaGFuZGxlRG93bmxvYWRJbWFnZShpbWcuaW1hZ2VfdXJsLCBpbWcuaWQpfVxuICAgICAgICAgICAgICAgICAgICAgICAgPlxuICAgICAgICAgICAgICAgICAgICAgICAgICA8RG93bmxvYWQgY2xhc3NOYW1lPVwiaC0zIHctM1wiIC8+XG4gICAgICAgICAgICAgICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgICAgICAgdmFyaWFudD1cIm91dGxpbmVcIlxuICAgICAgICAgICAgICAgICAgICAgICAgICBzaXplPVwic21cIlxuICAgICAgICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJmbGV4LTFcIlxuICAgICAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBzZXRTZWxlY3RlZEltYWdlKGltZyl9XG4gICAgICAgICAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxGaWxlSW1hZ2UgY2xhc3NOYW1lPVwiaC0zIHctM1wiIC8+XG4gICAgICAgICAgICAgICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgICAgICAgdmFyaWFudD1cIm91dGxpbmVcIlxuICAgICAgICAgICAgICAgICAgICAgICAgICBzaXplPVwic21cIlxuICAgICAgICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiBoYW5kbGVEZWxldGVJbWFnZShpbWcuaWQpfVxuICAgICAgICAgICAgICAgICAgICAgICAgICBkaXNhYmxlZD17aXNEZWxldGluZ31cbiAgICAgICAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgPFRyYXNoMiBjbGFzc05hbWU9XCJoLTMgdy0zXCIgLz5cbiAgICAgICAgICAgICAgICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgICA8L0NhcmRDb250ZW50PlxuICAgICAgICAgICAgICAgICAgPC9DYXJkPlxuICAgICAgICAgICAgICAgICkpfVxuICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICkgOiAoXG4gICAgICAgICAgICAgIDxDYXJkPlxuICAgICAgICAgICAgICAgIDxDYXJkQ29udGVudCBjbGFzc05hbWU9XCJweS0xMiB0ZXh0LWNlbnRlclwiPlxuICAgICAgICAgICAgICAgICAgPEZpbGVJbWFnZSBjbGFzc05hbWU9XCJoLTEyIHctMTIgbXgtYXV0byBtYi00IHRleHQtbXV0ZWQtZm9yZWdyb3VuZFwiIC8+XG4gICAgICAgICAgICAgICAgICA8aDMgY2xhc3NOYW1lPVwidGV4dC1sZyBmb250LW1lZGl1bSBtYi0yXCI+Tm8gaW1hZ2VzIGZvdW5kPC9oMz5cbiAgICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQtc20gdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+XG4gICAgICAgICAgICAgICAgICAgIHtzZWFyY2hRdWVyeSB8fCBzb3VyY2VUeXBlRmlsdGVyICE9PSBcImFsbFwiXG4gICAgICAgICAgICAgICAgICAgICAgPyBcIlRyeSBhZGp1c3RpbmcgeW91ciBzZWFyY2ggb3IgZmlsdGVyc1wiXG4gICAgICAgICAgICAgICAgICAgICAgOiBcIlN0YXJ0IGdlbmVyYXRpbmcgaW1hZ2VzIHRvIGJ1aWxkIHlvdXIgbGlicmFyeVwifVxuICAgICAgICAgICAgICAgICAgPC9wPlxuICAgICAgICAgICAgICAgIDwvQ2FyZENvbnRlbnQ+XG4gICAgICAgICAgICAgIDwvQ2FyZD5cbiAgICAgICAgICAgICl9XG5cbiAgICAgICAgICAgIHsvKiBTYW1wbGUgRGF0YSBXYXJuaW5nICovfVxuICAgICAgICAgICAge2ltYWdlcy53YXJuaW5nICYmIChcbiAgICAgICAgICAgICAgPElubGluZUFsZXJ0IHZhcmlhbnQ9XCJpbmZvXCIgbWVzc2FnZT17aW1hZ2VzLndhcm5pbmd9IC8+XG4gICAgICAgICAgICApfVxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICApfVxuICAgICAgPC9kaXY+XG5cbiAgICAgIHsvKiBVc2FnZSBJbmZvcm1hdGlvbiAoaWYgYXZhaWxhYmxlKSAqL31cbiAgICAgIHt1c2FnZS5kYXRhICYmIChcbiAgICAgICAgPENhcmQ+XG4gICAgICAgICAgPENhcmRIZWFkZXI+XG4gICAgICAgICAgICA8Q2FyZFRpdGxlPlVzYWdlIFN0YXRpc3RpY3M8L0NhcmRUaXRsZT5cbiAgICAgICAgICAgIDxDYXJkRGVzY3JpcHRpb24+WW91ciBpbWFnZSBnZW5lcmF0aW9uIHVzYWdlIGFuZCBsaW1pdHM8L0NhcmREZXNjcmlwdGlvbj5cbiAgICAgICAgICA8L0NhcmRIZWFkZXI+XG4gICAgICAgICAgPENhcmRDb250ZW50PlxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdyaWQtY29scy0xIG1kOmdyaWQtY29scy0zIGdhcC00XCI+XG4gICAgICAgICAgICAgIDxkaXY+XG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LTJ4bCBmb250LWJvbGRcIj57dXNhZ2UuZGF0YS50b3RhbEltYWdlcyA/PyAwfTwvZGl2PlxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGV4dC1zbSB0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5Ub3RhbCBJbWFnZXM8L2Rpdj5cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDxkaXY+XG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LTJ4bCBmb250LWJvbGRcIj57dXNhZ2UuZGF0YS5pbWFnZXNUaGlzTW9udGggPz8gMH08L2Rpdj5cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtc20gdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+VGhpcyBNb250aDwvZGl2PlxuICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgPGRpdj5cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtMnhsIGZvbnQtYm9sZFwiPnt1c2FnZS5kYXRhLnB1c2hlZFRvU2hvcGlmeSA/PyAwfTwvZGl2PlxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGV4dC1zbSB0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5QdXNoZWQgdG8gU2hvcGlmeTwvZGl2PlxuICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDwvQ2FyZENvbnRlbnQ+XG4gICAgICAgIDwvQ2FyZD5cbiAgICAgICl9XG5cbiAgICAgIHsvKiBJbWFnZSBEZXRhaWwgTW9kYWwgKi99XG4gICAgICA8RGlhbG9nIG9wZW49e3NlbGVjdGVkSW1hZ2UgIT09IG51bGx9IG9uT3BlbkNoYW5nZT17KG9wZW4pID0+ICFvcGVuICYmIHNldFNlbGVjdGVkSW1hZ2UobnVsbCl9PlxuICAgICAgICA8RGlhbG9nQ29udGVudCBjbGFzc05hbWU9XCJtYXgtdy00eGwgbWF4LWgtWzkwdmhdIG92ZXJmbG93LXktYXV0b1wiPlxuICAgICAgICAgIHtzZWxlY3RlZEltYWdlICYmIChcbiAgICAgICAgICAgIDw+XG4gICAgICAgICAgICAgIDxEaWFsb2dIZWFkZXI+XG4gICAgICAgICAgICAgICAgPERpYWxvZ1RpdGxlPkltYWdlIERldGFpbHM8L0RpYWxvZ1RpdGxlPlxuICAgICAgICAgICAgICAgIDxEaWFsb2dEZXNjcmlwdGlvbj5cbiAgICAgICAgICAgICAgICAgIFZpZXcgZnVsbCBpbWFnZSBhbmQgbWV0YWRhdGFcbiAgICAgICAgICAgICAgICA8L0RpYWxvZ0Rlc2NyaXB0aW9uPlxuICAgICAgICAgICAgICA8L0RpYWxvZ0hlYWRlcj5cblxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktNlwiPlxuICAgICAgICAgICAgICAgIHsvKiBGdWxsIEltYWdlICovfVxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicmVsYXRpdmUgdy1mdWxsIGJnLW11dGVkIHJvdW5kZWQtbGcgb3ZlcmZsb3ctaGlkZGVuXCI+XG4gICAgICAgICAgICAgICAgICA8aW1nXG4gICAgICAgICAgICAgICAgICAgIHNyYz17c2VsZWN0ZWRJbWFnZS5pbWFnZV91cmx9XG4gICAgICAgICAgICAgICAgICAgIGFsdD17c2VsZWN0ZWRJbWFnZS5wcm9tcHQgfHwgXCJHZW5lcmF0ZWQgaW1hZ2VcIn1cbiAgICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwidy1mdWxsIGgtYXV0b1wiXG4gICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICAgICAgey8qIE1ldGFkYXRhIEdyaWQgKi99XG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdyaWQtY29scy0xIG1kOmdyaWQtY29scy0yIGdhcC00XCI+XG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktM1wiPlxuICAgICAgICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGV4dC1zbSBmb250LW1lZGl1bSB0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5Tb3VyY2UgVHlwZTwvZGl2PlxuICAgICAgICAgICAgICAgICAgICAgIDxCYWRnZSB2YXJpYW50PXtnZXRTb3VyY2VUeXBlQmFkZ2VWYXJpYW50KHNlbGVjdGVkSW1hZ2Uuc291cmNlX3R5cGUpfSBjbGFzc05hbWU9XCJtdC0xXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICB7Z2V0U291cmNlVHlwZUxhYmVsKHNlbGVjdGVkSW1hZ2Uuc291cmNlX3R5cGUpfVxuICAgICAgICAgICAgICAgICAgICAgIDwvQmFkZ2U+XG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICAgICAgICAgIDxkaXY+XG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LXNtIGZvbnQtbWVkaXVtIHRleHQtbXV0ZWQtZm9yZWdyb3VuZFwiPkRpbWVuc2lvbnM8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtc20gZm9udC1tb25vXCI+XG4gICAgICAgICAgICAgICAgICAgICAgICB7c2VsZWN0ZWRJbWFnZS53aWR0aH0gw5cge3NlbGVjdGVkSW1hZ2UuaGVpZ2h0fSBweFxuICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGV4dC1zbSBmb250LW1lZGl1bSB0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5GaWxlIFNpemU8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtc21cIj57Zm9ybWF0RmlsZVNpemUoc2VsZWN0ZWRJbWFnZS5maWxlX3NpemVfYnl0ZXMpfTwvZGl2PlxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGV4dC1zbSBmb250LW1lZGl1bSB0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5Gb3JtYXQ8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtc20gdXBwZXJjYXNlXCI+e3NlbGVjdGVkSW1hZ2UuZm9ybWF0fTwvZGl2PlxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktM1wiPlxuICAgICAgICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGV4dC1zbSBmb250LW1lZGl1bSB0ZXh0LW11dGVkLWZvcmVncm91bmRcIj5DcmVhdGVkPC9kaXY+XG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LXNtXCI+e2Zvcm1hdERhdGUoc2VsZWN0ZWRJbWFnZS5jcmVhdGVkX2F0KX08L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICAgICAgICAgICAgPGRpdj5cbiAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtc20gZm9udC1tZWRpdW0gdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+VXBkYXRlZDwvZGl2PlxuICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGV4dC1zbVwiPntmb3JtYXREYXRlKHNlbGVjdGVkSW1hZ2UudXBkYXRlZF9hdCl9PC9kaXY+XG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgICAgICAgICAgIDxkaXY+XG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LXNtIGZvbnQtbWVkaXVtIHRleHQtbXV0ZWQtZm9yZWdyb3VuZFwiPkltYWdlIElEPC9kaXY+XG4gICAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LXhzIGZvbnQtbW9ubyBicmVhay1hbGxcIj57c2VsZWN0ZWRJbWFnZS5pZH08L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICAgICAgICAgICAge3NlbGVjdGVkSW1hZ2UuaXNfcHVzaGVkX3RvX3Nob3BpZnkgJiYgKFxuICAgICAgICAgICAgICAgICAgICAgIDxkaXY+XG4gICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtc20gZm9udC1tZWRpdW0gdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+U2hvcGlmeSBTdGF0dXM8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgICAgIDxCYWRnZSB2YXJpYW50PVwic2Vjb25kYXJ5XCIgY2xhc3NOYW1lPVwibXQtMVwiPlB1c2hlZCB0byBTaG9waWZ5PC9CYWRnZT5cbiAgICAgICAgICAgICAgICAgICAgICAgIHtzZWxlY3RlZEltYWdlLnNob3BpZnlfcHJvZHVjdF9pZCAmJiAoXG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGV4dC14cyB0ZXh0LW11dGVkLWZvcmVncm91bmQgbXQtMVwiPlxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIFByb2R1Y3Q6IHtzZWxlY3RlZEltYWdlLnNob3BpZnlfcHJvZHVjdF9pZH1cbiAgICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICAgICAgICB7LyogUHJvbXB0ICovfVxuICAgICAgICAgICAgICAgIHtzZWxlY3RlZEltYWdlLnByb21wdCAmJiAoXG4gICAgICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtc20gZm9udC1tZWRpdW0gdGV4dC1tdXRlZC1mb3JlZ3JvdW5kIG1iLTJcIj5Qcm9tcHQ8L2Rpdj5cbiAgICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJ0ZXh0LXNtIGJnLW11dGVkIHAtMyByb3VuZGVkLWxnXCI+XG4gICAgICAgICAgICAgICAgICAgICAge3NlbGVjdGVkSW1hZ2UucHJvbXB0fVxuICAgICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICl9XG5cbiAgICAgICAgICAgICAgICB7LyogU2V0dGluZ3MgKi99XG4gICAgICAgICAgICAgICAge3NlbGVjdGVkSW1hZ2Uuc2V0dGluZ3MgJiYgT2JqZWN0LmtleXMoc2VsZWN0ZWRJbWFnZS5zZXR0aW5ncykubGVuZ3RoID4gMCAmJiAoXG4gICAgICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtc20gZm9udC1tZWRpdW0gdGV4dC1tdXRlZC1mb3JlZ3JvdW5kIG1iLTJcIj5TZXR0aW5nczwvZGl2PlxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQteHMgYmctbXV0ZWQgcC0zIHJvdW5kZWQtbGcgZm9udC1tb25vXCI+XG4gICAgICAgICAgICAgICAgICAgICAgPHByZT57SlNPTi5zdHJpbmdpZnkoc2VsZWN0ZWRJbWFnZS5zZXR0aW5ncywgbnVsbCwgMil9PC9wcmU+XG4gICAgICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgKX1cblxuICAgICAgICAgICAgICAgIHsvKiBBY3Rpb24gQnV0dG9ucyAqL31cbiAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggZ2FwLTMgcHQtNCBib3JkZXItdFwiPlxuICAgICAgICAgICAgICAgICAgPEJ1dHRvblxuICAgICAgICAgICAgICAgICAgICB2YXJpYW50PVwiZGVmYXVsdFwiXG4gICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IGhhbmRsZURvd25sb2FkSW1hZ2Uoc2VsZWN0ZWRJbWFnZS5pbWFnZV91cmwsIHNlbGVjdGVkSW1hZ2UuaWQpfVxuICAgICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJmbGV4LTFcIlxuICAgICAgICAgICAgICAgICAgPlxuICAgICAgICAgICAgICAgICAgICA8RG93bmxvYWQgY2xhc3NOYW1lPVwiaC00IHctNFwiIC8+XG4gICAgICAgICAgICAgICAgICAgIERvd25sb2FkXG4gICAgICAgICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgICAgdmFyaWFudD1cIm91dGxpbmVcIlxuICAgICAgICAgICAgICAgICAgICBvbkNsaWNrPXsoKSA9PiB3aW5kb3cub3BlbihzZWxlY3RlZEltYWdlLmltYWdlX3VybCwgXCJfYmxhbmtcIil9XG4gICAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cImZsZXgtMVwiXG4gICAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICAgIDxFeHRlcm5hbExpbmsgY2xhc3NOYW1lPVwiaC00IHctNFwiIC8+XG4gICAgICAgICAgICAgICAgICAgIE9wZW4gaW4gTmV3IFRhYlxuICAgICAgICAgICAgICAgICAgPC9CdXR0b24+XG4gICAgICAgICAgICAgICAgICA8QnV0dG9uXG4gICAgICAgICAgICAgICAgICAgIHZhcmlhbnQ9XCJkZXN0cnVjdGl2ZVwiXG4gICAgICAgICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IGhhbmRsZURlbGV0ZUltYWdlKHNlbGVjdGVkSW1hZ2UuaWQpfVxuICAgICAgICAgICAgICAgICAgICBkaXNhYmxlZD17aXNEZWxldGluZ31cbiAgICAgICAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgICAgICAgPFRyYXNoMiBjbGFzc05hbWU9XCJoLTQgdy00XCIgLz5cbiAgICAgICAgICAgICAgICAgICAgRGVsZXRlXG4gICAgICAgICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICA8Lz5cbiAgICAgICAgICApfVxuICAgICAgICA8L0RpYWxvZ0NvbnRlbnQ+XG4gICAgICA8L0RpYWxvZz5cbiAgICA8L2Rpdj5cbiAgKTtcbn1cbiJdLCJmaWxlIjoiQzovUHJvamVjdHMvU291cmNlIDQgSW5kdXN0cmllcy9zcmMvcGFnZXMvbWFya2V0aW5nL2ltYWdlLWNyZWF0b3IvaW1hZ2UtY3JlYXRvci1jbGllbnQudHN4In0=
