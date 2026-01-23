@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orlando Concrete Driveway Experts | Licensed & Insured</title>
 
-    <!-- Google Analytics 4 - Replace G-XXXXXXXXXX with your measurement ID -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ESGX0PBHW0"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'G-XXXXXXXXXX');
+        gtag('config', 'G-ESGX0PBHW0');
     </script>
     <meta name="description" content="Orlando's trusted concrete driveway experts. Licensed & insured. Free quotes on installation, replacement & stamped concrete. Call (407) 900-1517.">
 
@@ -2752,6 +2752,11 @@
             if (navLinks) {
                 navLinks.classList.remove('active');
             }
+
+            // Close any open dropdowns
+            document.querySelectorAll('.dropdown').forEach(function(d) {
+                d.classList.remove('active');
+            });
         }
         
         function toggleMenu() {
@@ -2761,19 +2766,42 @@
             }
         }
 
-        // Handle mobile dropdown toggle
+        // Handle mobile dropdown toggle - bind to ALL dropdowns
         document.addEventListener('DOMContentLoaded', function() {
-            const dropdown = document.querySelector('.dropdown > a');
-            if (dropdown) {
+            const dropdowns = document.querySelectorAll('.dropdown > a');
+            dropdowns.forEach(function(dropdown) {
                 dropdown.addEventListener('click', function(e) {
                     // Only toggle dropdown on mobile
                     if (window.innerWidth <= 968) {
                         e.preventDefault();
+                        e.stopPropagation();
                         const dropdownParent = this.parentElement;
+                        // Close other dropdowns first
+                        document.querySelectorAll('.dropdown').forEach(function(d) {
+                            if (d !== dropdownParent) {
+                                d.classList.remove('active');
+                            }
+                        });
                         dropdownParent.classList.toggle('active');
                     }
                 });
-            }
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown').forEach(function(d) {
+                        d.classList.remove('active');
+                    });
+                }
+            });
+
+            // Close dropdowns on window resize (switching between mobile/desktop)
+            window.addEventListener('resize', function() {
+                document.querySelectorAll('.dropdown').forEach(function(d) {
+                    d.classList.remove('active');
+                });
+            });
         });
 
         function handleSubmit(event) {
