@@ -640,7 +640,11 @@
                 <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%23C4704A'/%3E%3Cpath d='M80 80h240v240H80z' fill='none' stroke='%23fff' stroke-width='8'/%3E%3Cpath d='M120 200 L180 160 L240 180 L280 140' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M100 280 Q200 240 300 280' fill='none' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3Ctext x='200' y='350' font-family='Outfit' font-size='32' font-weight='700' fill='%23fff' text-anchor='middle'%3EOCD%3C/text%3E%3C/svg%3E" alt="Orlando Concrete Driveway">
                 <span class="logo-text">Orlando Concrete Driveway</span>
             </a>
-            <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle menu">☰</button>
+            <button class="menu-toggle" id="menuToggle" onclick="toggleMenu()" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="index.html">Home</a></li>
                 <li class="dropdown">
@@ -775,7 +779,51 @@
             alert('Thank you for your interest! In a real website, this form would submit to your server. For now, please call (407) 900-1517 or email contact@orlandoconcretedriveway.com');
             return false;
         }
-        
+
+        // Scroll-triggered animations using Intersection Observer
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add reveal classes to elements
+            const animatedSections = document.querySelectorAll('.section-header, .how-it-works, .services-preview, .why-choose, .cta-section, .projects-gallery, .testimonials-section, .service-area-section');
+            animatedSections.forEach(section => section.classList.add('reveal'));
+
+            // Add stagger animation to grid items
+            const gridItems = document.querySelectorAll('.service-card, .feature, .process-step, .testimonial-card, .trust-item');
+            gridItems.forEach(item => item.classList.add('reveal-stagger'));
+
+            // Create Intersection Observer
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px 0px -50px 0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+
+                        // For parent containers, also activate children with stagger
+                        const staggerChildren = entry.target.querySelectorAll('.reveal-stagger');
+                        staggerChildren.forEach((child, index) => {
+                            setTimeout(() => {
+                                child.classList.add('active');
+                            }, index * 100);
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all reveal elements
+            document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Also observe stagger items individually for when they come into view
+            document.querySelectorAll('.reveal-stagger').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
     </script>
 
     <!-- HOME PAGE -->
@@ -966,7 +1014,7 @@
             <!-- Before/After Featured Projects -->
             <div class="before-after-gallery">
                 <div class="before-after-item">
-                    <div class="before-after-slider">
+                    <div class="before-after-slider" style="--slider-position: 50%;">
                         <div class="comparison-images">
                             <img class="before-img" src="images/winter-park/after.webp" alt="Old driveway before replacement in Winter Park" loading="lazy">
                             <img class="after-img" src="images/winter-park/before.webp" alt="Beautiful new concrete driveway in Winter Park" loading="lazy">
@@ -975,6 +1023,12 @@
                             <span class="label-before">Before</span>
                             <span class="label-after">After</span>
                         </div>
+                        <div class="slider-handle">
+                            <div class="slider-grip">
+                                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 15 12 9 6" transform="translate(6, 0)"/></svg>
+                            </div>
+                        </div>
+                        <div class="slider-hint">Drag to compare</div>
                     </div>
                     <div class="project-details">
                         <h3>Stamped Concrete Transformation - Winter Park</h3>
@@ -983,7 +1037,7 @@
                 </div>
 
                 <div class="before-after-item">
-                    <div class="before-after-slider">
+                    <div class="before-after-slider" style="--slider-position: 50%;">
                         <div class="comparison-images">
                             <img class="before-img" src="images/winter-park/orlando-before.webp" alt="Old driveway before replacement in Orlando" loading="lazy">
                             <img class="after-img" src="images/winter-park/orlando-after.webp" alt="Beautiful new concrete driveway in Orlando" loading="lazy">
@@ -992,6 +1046,12 @@
                             <span class="label-before">Before</span>
                             <span class="label-after">After</span>
                         </div>
+                        <div class="slider-handle">
+                            <div class="slider-grip">
+                                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 15 12 9 6" transform="translate(6, 0)"/></svg>
+                            </div>
+                        </div>
+                        <div class="slider-hint">Drag to compare</div>
                     </div>
                     <div class="project-details">
                         <h3>Complete Driveway Upgrade - Orlando</h3>
@@ -1000,7 +1060,7 @@
                 </div>
 
                 <div class="before-after-item">
-                    <div class="before-after-slider">
+                    <div class="before-after-slider" style="--slider-position: 50%;">
                         <div class="comparison-images">
                             <img class="before-img" src="images/winter-park/maitland-before.webp" alt="Old driveway before replacement in Maitland" loading="lazy">
                             <img class="after-img" src="images/winter-park/maitland-after.webp" alt="Beautiful decorative concrete driveway in Maitland" loading="lazy">
@@ -1009,6 +1069,12 @@
                             <span class="label-before">Before</span>
                             <span class="label-after">After</span>
                         </div>
+                        <div class="slider-handle">
+                            <div class="slider-grip">
+                                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 15 12 9 6" transform="translate(6, 0)"/></svg>
+                            </div>
+                        </div>
+                        <div class="slider-hint">Drag to compare</div>
                     </div>
                     <div class="project-details">
                         <h3>Decorative Concrete Installation - Maitland</h3>
@@ -5679,10 +5745,48 @@
         </section>
     </div>
 
-    <!-- Sticky CTA Button -->
-    <div class="sticky-cta" id="stickyCta">
-        <a href="contact.html" class="btn btn-primary">Get Free Quote →</a>
+    <!-- Floating Action Buttons -->
+    <div class="fab-container" id="fabContainer">
+        <a href="tel:4079001517" class="fab fab-call" aria-label="Call us">
+            <span class="fab-label">Call Now</span>
+            <svg viewBox="0 0 24 24">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+        </a>
+        <a href="contact.html" class="fab fab-quote" aria-label="Get a quote">
+            <span class="fab-label">Get Quote</span>
+            <svg viewBox="0 0 24 24">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                <line x1="9" y1="9" x2="15" y2="9"/>
+                <line x1="9" y1="13" x2="13" y2="13"/>
+            </svg>
+        </a>
     </div>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <svg viewBox="0 0 24 24">
+            <polyline points="18 15 12 9 6 15"/>
+        </svg>
+    </button>
+
+    <!-- Dark Mode Toggle -->
+    <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode">
+        <svg class="moon-icon" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg class="sun-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+    </button>
 
     <!-- Footer Trust Badges -->
     <section class="footer-trust-badges">
@@ -5757,18 +5861,370 @@
     </footer>
 
     <script>
-        // Sticky CTA button visibility handler
-        window.addEventListener('scroll', function() {
-            const stickyCta = document.getElementById('stickyCta');
-            if (window.scrollY > 800) {
-                stickyCta.classList.add('visible');
-            } else {
-                stickyCta.classList.remove('visible');
+        // ===========================================
+        // SCROLL-BASED UI HANDLERS
+        // ===========================================
+
+        // Cache DOM elements
+        const fabContainer = document.getElementById('fabContainer');
+        const backToTop = document.getElementById('backToTop');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const header = document.querySelector('header');
+        const menuToggle = document.getElementById('menuToggle');
+
+        // Throttle function for performance
+        function throttle(func, limit) {
+            let inThrottle;
+            return function() {
+                const args = arguments;
+                const context = this;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
             }
+        }
+
+        // Scroll handler for all scroll-based UI
+        const handleScroll = throttle(function() {
+            const scrollY = window.scrollY;
+
+            // FAB visibility (show after 400px)
+            if (scrollY > 400) {
+                fabContainer?.classList.add('visible');
+                backToTop?.classList.add('visible');
+                darkModeToggle?.classList.add('visible');
+            } else {
+                fabContainer?.classList.remove('visible');
+                backToTop?.classList.remove('visible');
+                darkModeToggle?.classList.remove('visible');
+            }
+
+            // Header shrink (after 100px)
+            if (scrollY > 100) {
+                header?.classList.add('shrink');
+            } else {
+                header?.classList.remove('shrink');
+            }
+        }, 100);
+
+        window.addEventListener('scroll', handleScroll);
+
+        // Back to top smooth scroll
+        backToTop?.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
 
-        // Form submission handler with Web3Forms
+        // ===========================================
+        // HAMBURGER MENU TOGGLE
+        // ===========================================
+
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+            menuToggle?.classList.toggle('active');
+        }
+
+        // ===========================================
+        // DARK MODE TOGGLE
+        // ===========================================
+
+        function initDarkMode() {
+            // Check for saved preference or system preference
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+
+            // Toggle handler
+            darkModeToggle?.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('theme')) {
+                    document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+                }
+            });
+        }
+
+        // Initialize dark mode immediately to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+
+        // ===========================================
+        // COUNTER ANIMATION
+        // ===========================================
+
+        function animateCounters() {
+            const counters = document.querySelectorAll('.stat-number');
+
+            counters.forEach(counter => {
+                // Extract numeric value and suffix (like +, %)
+                const text = counter.textContent;
+                const match = text.match(/^([\d,]+)(.*)$/);
+                if (!match) return;
+
+                const targetNum = parseInt(match[1].replace(/,/g, ''));
+                const suffix = match[2] || '';
+
+                // Skip if already animated
+                if (counter.dataset.animated === 'true') return;
+
+                // Store original value
+                counter.dataset.target = targetNum;
+                counter.dataset.suffix = suffix;
+
+                // Create intersection observer
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && counter.dataset.animated !== 'true') {
+                            counter.dataset.animated = 'true';
+                            counter.classList.add('counting');
+
+                            const duration = 2000;
+                            const startTime = performance.now();
+                            const startNum = 0;
+
+                            function updateCounter(currentTime) {
+                                const elapsed = currentTime - startTime;
+                                const progress = Math.min(elapsed / duration, 1);
+
+                                // Easing function (ease-out)
+                                const easeOut = 1 - Math.pow(1 - progress, 3);
+                                const currentNum = Math.floor(startNum + (targetNum - startNum) * easeOut);
+
+                                counter.textContent = currentNum.toLocaleString() + suffix;
+
+                                if (progress < 1) {
+                                    requestAnimationFrame(updateCounter);
+                                } else {
+                                    counter.classList.remove('counting');
+                                }
+                            }
+
+                            requestAnimationFrame(updateCounter);
+                            observer.unobserve(counter);
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                observer.observe(counter);
+            });
+        }
+
+        // ===========================================
+        // SCROLL REVEAL ANIMATIONS
+        // ===========================================
+
+        function initScrollReveal() {
+            const reveals = document.querySelectorAll('.reveal, .reveal-stagger, .reveal-left, .reveal-right, .reveal-scale');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            reveals.forEach(el => observer.observe(el));
+        }
+
+        // ===========================================
+        // INITIALIZE ON DOM READY
+        // ===========================================
+
+        // ===========================================
+        // INTERACTIVE BEFORE/AFTER SLIDER
+        // ===========================================
+
+        function initBeforeAfterSliders() {
+            const sliders = document.querySelectorAll('.before-after-slider');
+
+            sliders.forEach(slider => {
+                let isDragging = false;
+
+                const updateSliderPosition = (clientX) => {
+                    const rect = slider.getBoundingClientRect();
+                    let position = ((clientX - rect.left) / rect.width) * 100;
+                    position = Math.max(0, Math.min(100, position));
+                    slider.style.setProperty('--slider-position', position + '%');
+                };
+
+                // Mouse events
+                slider.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    slider.classList.add('dragging', 'interacted');
+                    updateSliderPosition(e.clientX);
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    updateSliderPosition(e.clientX);
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    slider.classList.remove('dragging');
+                });
+
+                // Touch events for mobile
+                slider.addEventListener('touchstart', (e) => {
+                    isDragging = true;
+                    slider.classList.add('dragging', 'interacted');
+                    updateSliderPosition(e.touches[0].clientX);
+                }, { passive: true });
+
+                slider.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    updateSliderPosition(e.touches[0].clientX);
+                }, { passive: true });
+
+                slider.addEventListener('touchend', () => {
+                    isDragging = false;
+                    slider.classList.remove('dragging');
+                });
+
+                // Keyboard accessibility
+                slider.setAttribute('tabindex', '0');
+                slider.setAttribute('role', 'slider');
+                slider.setAttribute('aria-label', 'Before and after comparison slider');
+                slider.setAttribute('aria-valuemin', '0');
+                slider.setAttribute('aria-valuemax', '100');
+                slider.setAttribute('aria-valuenow', '50');
+
+                slider.addEventListener('keydown', (e) => {
+                    const currentPos = parseFloat(slider.style.getPropertyValue('--slider-position')) || 50;
+                    let newPos = currentPos;
+
+                    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                        newPos = Math.max(0, currentPos - 5);
+                    } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                        newPos = Math.min(100, currentPos + 5);
+                    }
+
+                    if (newPos !== currentPos) {
+                        slider.style.setProperty('--slider-position', newPos + '%');
+                        slider.setAttribute('aria-valuenow', newPos);
+                        slider.classList.add('interacted');
+                    }
+                });
+            });
+        }
+
+        // ===========================================
+        // FORM VALIDATION
+        // ===========================================
+
+        function initFormValidation() {
+            const forms = document.querySelectorAll('form');
+
+            forms.forEach(form => {
+                const inputs = form.querySelectorAll('input, textarea, select');
+
+                inputs.forEach(input => {
+                    // Add validation on blur
+                    input.addEventListener('blur', () => validateField(input));
+                    // Real-time validation on input
+                    input.addEventListener('input', () => validateField(input));
+                });
+            });
+        }
+
+        function validateField(field) {
+            const formGroup = field.closest('.form-group');
+            if (!formGroup) return true;
+
+            const value = field.value.trim();
+            let isValid = true;
+            let errorMsg = '';
+
+            // Check required
+            if (field.required && !value) {
+                isValid = false;
+                errorMsg = 'This field is required';
+            }
+
+            // Check email format
+            if (field.type === 'email' && value) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                    isValid = false;
+                    errorMsg = 'Please enter a valid email address';
+                }
+            }
+
+            // Check phone format
+            if (field.type === 'tel' && value) {
+                const phoneRegex = /^[\d\s\-\(\)\+]{10,}$/;
+                if (!phoneRegex.test(value)) {
+                    isValid = false;
+                    errorMsg = 'Please enter a valid phone number';
+                }
+            }
+
+            // Update UI
+            formGroup.classList.remove('valid', 'invalid');
+            if (value) {
+                formGroup.classList.add(isValid ? 'valid' : 'invalid');
+            }
+
+            // Show/update error message
+            let errorEl = formGroup.querySelector('.form-error');
+            if (!errorEl && !isValid) {
+                errorEl = document.createElement('div');
+                errorEl.className = 'form-error';
+                formGroup.appendChild(errorEl);
+            }
+            if (errorEl) {
+                errorEl.textContent = errorMsg;
+            }
+
+            return isValid;
+        }
+
+        // Initialize all features on DOM ready
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize dark mode
+            initDarkMode();
+
+            // Initialize before/after sliders
+            initBeforeAfterSliders();
+
+            // Initialize form validation
+            initFormValidation();
+
+            // Initialize counter animations
+            animateCounters();
+
+            // Initialize scroll reveal
+            initScrollReveal();
+
+            // Trigger initial scroll check
+            handleScroll();
+
+            // Form submission handler with Web3Forms
             const form = document.getElementById('contactForm');
             if (form) {
                 form.addEventListener('submit', async function(e) {
