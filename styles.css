@@ -82,6 +82,18 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 1.2;
 }
 
+/* Top Blocker - solid visual barrier that prevents ANY content from appearing above header/banner */
+.top-blocker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 130px; /* header (78px) + urgency banner (~52px) */
+    background: var(--color-surface-dark);
+    z-index: 9998; /* Below header (10000) and urgency banner (9999), but above all content */
+    pointer-events: none; /* Don't block clicks */
+}
+
 /* Header */
 header {
     background: var(--color-surface-dark);
@@ -1763,10 +1775,18 @@ tr:hover td {
     right: 0;
     z-index: 9999;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
+}
+
+/* Visual blocker - prevents content from showing above banner */
+.urgency-banner::before {
+    content: '';
+    position: absolute;
+    top: -100vh;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    background: var(--color-surface-dark);
+    z-index: -1;
 }
 
 .urgency-content {
